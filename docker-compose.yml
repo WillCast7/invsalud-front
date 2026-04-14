@@ -1,10 +1,10 @@
 services:
   angular-frontend:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.prod
-    container_name: angular-frontend
+    container_name: invsalud-front
     ports:
-      - "4200:80"
+      - "4201:80"
     networks:
-      - kayros-shared-net
+      - invsalud-net

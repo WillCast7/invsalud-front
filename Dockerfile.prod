@@ -2,23 +2,27 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
+# Copiamos archivos de dependencias
 COPY package*.json ./
 
-# 1. Limpiamos y forzamos la instalación de la versión que NO falla
-RUN npm install entities@4.5.0 --save-exact
-RUN npm install --legacy-peer-deps
+# 1. En lugar de parches manuales, forzamos la versión desde la instalación
+# El flag --legacy-peer-deps es necesario por la antigüedad de algunas librerías
+RUN npm install entities@4.5.0 --save-exact && \
+    npm install --legacy-peer-deps
 
 COPY . .
 
-# 2. El truco maestro: Borramos cualquier versión anidada que cause conflicto
-RUN rm -rf node_modules/parse5-html-rewriting-stream/node_modules/entities
+# 2. Ejecución con npx para asegurar que el binario de Angular se encuentre
+RUN npx ng build --configuration production
 
-# Generamos los archivos estáticos
-RUN npm run build -- --configuration production
-
-# Etapa 2: Servidor de alto rendimiento
+# Etapa 2: Nginx
 FROM nginx:alpine
+
+# AJUSTE DE RUTA: Asegúrate de que 'front' sea el nombre de tu proyecto en angular.json
 COPY --from=builder /app/dist/front/browser /usr/share/nginx/html
+
+# Configuración de Nginx para SPAs (Vital para no romper rutas al recargar)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
