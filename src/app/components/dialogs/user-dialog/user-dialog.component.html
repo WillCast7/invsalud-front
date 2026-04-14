@@ -1,0 +1,217 @@
+<h2 mat-dialog-title>
+  <mat-icon class="vertical-align-middle me-2">person</mat-icon>
+  {{title()}}
+</h2>
+@if(data.mode === "view") {
+  <h2 mat-dialog-title class="d-flex align-items-center justify-content-between border-bottom pb-3">
+    <div class="d-flex align-items-center gap-2">
+      <mat-icon color="primary" class="scale-150">account_circle</mat-icon>
+      <span class="fw-light text-secondary">Usuario:</span>
+      <span class="fw-bold">{{ user.userName }}</span>
+    </div>
+    <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2" style="font-size: 0.8rem;">
+      {{ user.role.roleName || 'SIN ROL' }}
+    </span>
+  </h2>
+
+  <mat-dialog-content class="py-4">
+    <div class="container-fluid">
+      
+      <div class="row mb-4">
+        <div class="col-12 mb-3">
+          <h3 class="mat-title-medium text-primary d-flex align-items-center gap-2">
+            <mat-icon>person</mat-icon> Datos Personales
+          </h3>
+          <mat-divider></mat-divider>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <div class="detail-item">
+            <label>Nombre Completo</label>
+            <p>{{ user.person.names }} {{ user.person.surnames }}</p>
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <div class="detail-item">
+            <label>Identificación</label>
+            <p>{{ user.person.documentType }} - {{ user.person.documentNumber }}</p>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <div class="detail-item">
+            <label>Teléfono</label>
+            <p class="d-flex align-items-center gap-1">
+              <mat-icon class="text-secondary fs-6">smartphone</mat-icon>
+              {{ user.person.phoneNumber }}
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-8 mb-3">
+          <div class="detail-item">
+            <label>Fecha de Nacimiento</label>
+            <p class="d-flex align-items-center gap-1">
+              <mat-icon class="text-secondary fs-6">event</mat-icon>
+              {{ user.person.birthDate | date:'fullDate' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="detail-item">
+            <label>Dirección de Residencia</label>
+            <p class="d-flex align-items-center gap-1">
+              <mat-icon class="text-secondary fs-6">push_pin</mat-icon>
+              {{ user.person.address }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 mb-3">
+          <h3 class="mat-title-medium text-primary d-flex align-items-center gap-2">
+            <mat-icon>admin_panel_settings</mat-icon> Detalles de Cuenta
+          </h3>
+          <mat-divider></mat-divider>
+        </div>
+
+        <div class="col-md-6">
+          <div class="detail-item">
+            <label>Correo Electrónico</label>
+            <p class="text-lowercase">{{ user.email }}</p>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="detail-item">
+            <label>Estado de Acceso</label>
+            <div class="d-flex align-items-center gap-2 mt-1">
+              <div class="status-indicator" [ngClass]="user.enable ? 'bg-success' : 'bg-danger'"></div>
+              <span [class]="user.enable ? 'text-success' : 'text-danger'">
+                {{ user.enable ? 'Habilitado' : 'Bloqueado' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="detail-item text-md-end">
+            <label>ID Interno</label>
+            <p class="text-muted font-monospace">#{{ user.id }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end" class="p-3">
+    <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+  </mat-dialog-actions>
+} @else {
+  <mat-dialog-content class="pt-3">
+    
+    <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Datos de Acceso</p>
+    <form [formGroup]="userForm" class="container-fluid">
+      <div class="row">
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nombre de Usuario</mat-label>
+            <input matInput formControlName="userName" placeholder="ej: wcastano">
+            <mat-icon matSuffix>account_box</mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" placeholder="correo@ejemplo.com">
+            <mat-icon matSuffix>email</mat-icon>
+          </mat-form-field>
+        </div>
+        @if(data.mode !== "editMyAccount") {
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Rol de Usuario</mat-label>
+            <mat-select formControlName="role" [compareWith]="compareRoles">
+              @for (role of roles(); track role.id) {
+                <mat-option [value]="role">
+                    <span class="fw-medium">{{role.roleName}}</span> - <small class="text-muted" style="font-size: small;">{{role.roleDescription}}</small>
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      }
+      </div>
+    </form>
+
+    <form [formGroup]="personForm" class="container-fluid">
+      <p class="fw-bold text-secondary border-bottom pb-1 mb-3 mt-3">Información Personal</p>
+      <div class="row">
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Tipo Documento</mat-label>
+            <mat-select formControlName="documentType">
+              @for (type of documentTypes(); track type) {
+                  <mat-option [value]="type.name">
+                    <span class="fw-medium">{{type.name}}</span> - <small class="text-muted" style="font-size: small;">{{type.shortname}}</small>
+                  </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-md-8">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Número de Documento</mat-label>
+            <input matInput formControlName="documentNumber">
+          </mat-form-field>
+        </div>
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nombres</mat-label>
+            <input matInput formControlName="names">
+          </mat-form-field>
+        </div>
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Apellidos</mat-label>
+            <input matInput formControlName="surnames">
+          </mat-form-field>
+        </div>
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="phoneNumber">
+            <mat-icon matSuffix>phone</mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Fecha de Nacimiento</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="birthDate">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-12">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Dirección</mat-label>
+            <textarea matInput formControlName="address" rows="2"></textarea>
+            <mat-icon matSuffix>location_on</mat-icon>
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="p-3">
+    
+    <button mat-flat-button class="save-button" (click)="onSubmit()" >
+      Guardar Usuario
+    </button>
+    <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+  </mat-dialog-actions>
+}

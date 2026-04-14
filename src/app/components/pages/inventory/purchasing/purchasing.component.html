@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="row">
+        <app-table-header-controls-component [toggleList]="toggleList()" [buttonsList]="buttonsList()"
+            (action)="buttonAction($event)" />
+        @if (pageMode() === 'special' || pageMode() === 'public') {
+        <app-table [columns]="purchaseColumns" [pageable]="dataValue" [options]="tableOptions"
+            (action)="tableAction($event)" />
+        } @else if (pageMode() === 'recipe') {
+        <app-table [columns]="purchaseColumnsRecipe" [pageable]="dataValue" [options]="tableOptions"
+            (action)="tableAction($event)" />
+        }
+    </div>
+</div>

@@ -1,0 +1,18 @@
+.mat-mdc-row .mat-mdc-cell {
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid transparent;
+    cursor: pointer;
+  }
+  
+
+button[mat-icon-button][color="primary"] {
+  color: var(--mdc-filled-button-label-text-color, #3f51b5); 
+}
+
+button[mat-icon-button][color="warn"] {
+  color: #f44336;
+}
+
+button[mat-icon-button][color="accent"] {
+  color: #ff4081;
+}

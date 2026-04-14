@@ -1,0 +1,22 @@
+/* CSS para unir los campos visualmente */
+.input-group-custom {
+    display: flex;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.input-group-custom input,
+.input-group-custom select {
+    border: none;
+    padding: 10px;
+    text-align: center;
+}
+
+.divider {
+    background: #f8f9fa;
+    padding: 10px;
+    font-weight: bold;
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+}

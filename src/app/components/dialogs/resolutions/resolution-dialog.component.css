@@ -1,0 +1,13 @@
+.cancel-button {
+  color: #6c757d;
+}
+
+.save-button {
+  background-color: #3f51b5;
+  color: white;
+  margin-right: 8px;
+}
+
+mat-label {
+  font-weight: 500;
+}

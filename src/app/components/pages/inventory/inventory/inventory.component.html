@@ -1,0 +1,11 @@
+<div class="container">
+    <div class="row">
+        <app-table-header-controls-component [toggleList]="toggleList()" (action)="buttonAction($event)" />
+        @if (pageMode() !== 'recipe') {
+        <app-table [columns]="inventoryColumns" [pageable]="dataValue" [options]="tableOptions"
+            (action)="tableAction($event)" />
+        } @else {
+        <app-recipe-table [recipeData]="recipeData"></app-recipe-table>
+        }
+    </div>
+</div>

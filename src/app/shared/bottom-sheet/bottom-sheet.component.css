@@ -1,0 +1,40 @@
+/* Contenedor principal para evitar bordes pegados */
+.enterprise-sheet-container {
+  min-width: 320px;
+}
+
+/* Estilo para cada item del menú */
+.enterprise-item {
+  height: 64px !important; /* Un poco más alto para mayor comodidad táctil/click */
+  transition: all 0.2s ease-in-out !important;
+}
+
+.enterprise-item:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  transform: translateX(4px); /* Sutil desplazamiento a la derecha al pasar el mouse */
+}
+
+/* Contenedor circular suave para el icono */
+.icon-wrapper {
+  width: 40px;
+  height: 40px;
+  background-color: #f0f4f8;
+  border-radius: 8px;
+  margin-right: 12px;
+}
+
+/* Ajuste de líneas de texto de Material */
+[matListItemTitle] {
+  font-size: 0.95rem !important;
+  margin-bottom: 2px;
+}
+
+[matListItemLine] {
+  font-size: 0.8rem !important;
+  opacity: 0.8;
+}
+
+/* Quitar el subrayado predeterminado de los enlaces */
+a {
+  text-decoration: none !important;
+}

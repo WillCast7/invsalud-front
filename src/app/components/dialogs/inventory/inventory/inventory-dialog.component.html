@@ -1,0 +1,144 @@
+<h2 mat-dialog-title>
+  <mat-icon class="vertical-align-middle me-2">inventory_2</mat-icon>
+  {{title()}}
+</h2>
+
+@if(data.mode === "view") {
+<mat-dialog-content class="py-4">
+  <div class="container-fluid">
+    <div class="row mb-4">
+      <div class="col-12 mb-3">
+        <h3 class="mat-title-medium text-primary d-flex align-items-center gap-2">
+          <mat-icon>inventory</mat-icon> Detalles del Inventario
+        </h3>
+        <mat-divider></mat-divider>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="detail-item">
+          <label>Producto</label>
+          <p>{{ inventory.product.code }} - {{ inventory.product.presentation }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="detail-item">
+          <label>Lote</label>
+          <p>{{ inventory.batch.code }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="detail-item">
+          <label>Precio Compra</label>
+          <p>{{ inventory.purchasePrice | currency }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="detail-item">
+          <label>Precio Venta</label>
+          <p>{{ inventory.salePrice | currency }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <div class="detail-item">
+          <label>Unidades Totales</label>
+          <p>{{ inventory.totalUnits }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <div class="detail-item">
+          <label>Unidades Disponibles</label>
+          <p>{{ inventory.availableUnits }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <div class="detail-item">
+          <label>Fecha Vencimiento</label>
+          <p>{{ inventory.expirationDate | date:'shortDate' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="p-3">
+  <button mat-button mat-dialog-close class="cancel-button">Cerrar</button>
+</mat-dialog-actions>
+} @else {
+<mat-dialog-content class="pt-3">
+  <form [formGroup]="inventoryForm" class="container-fluid">
+    <div class="row">
+
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Producto</mat-label>
+          <mat-select formControlName="product" [compareWith]="compareObjects">
+            @for (prod of products(); track prod.id) {
+            <mat-option [value]="prod">
+              {{prod.code}} - {{prod.presentation}}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Lote</mat-label>
+          <mat-select formControlName="batch" [compareWith]="compareObjects">
+            @for (b of batches(); track b.id) {
+            <mat-option [value]="b">
+              {{b.code}}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Precio Compra</mat-label>
+          <input matInput type="number" formControlName="purchasePrice">
+          <mat-icon matSuffix>attach_money</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Precio Venta</mat-label>
+          <input matInput type="number" formControlName="salePrice">
+          <mat-icon matSuffix>attach_money</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Unidades Totales</mat-label>
+          <input matInput type="number" formControlName="totalUnits">
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Fecha de Vencimiento</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="expirationDate">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="p-3">
+  <button mat-flat-button class="save-button" color="primary" (click)="onSubmit()" [disabled]="inventoryForm.invalid">
+    Guardar
+  </button>
+  <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+</mat-dialog-actions>
+}

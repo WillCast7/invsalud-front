@@ -1,0 +1,19 @@
+<div class="menu-container col-12 p-3">
+  <h3 class="text-muted small fw-bold mb-3 text-uppercase">Navegación</h3>
+  
+  <div class="nav-grid d-flex">
+    @for (item of menu; track item.id) {
+      <button mat-button 
+              class="menu-item-btn w-100 mb-2 py-4"
+              [routerLink]="item.route"
+              routerLinkActive="active-route">
+        <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+          <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
+          <span class="menu-label">{{ item.name }}</span>
+        </div>
+      </button>
+    } @empty {
+      <p class="text-center text-muted">No hay opciones de menú disponibles.</p>
+    }
+  </div>
+</div>

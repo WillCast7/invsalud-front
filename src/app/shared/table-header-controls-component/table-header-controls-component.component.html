@@ -1,0 +1,42 @@
+<div class="col-12 d-flex align-items-center mb-2">
+    <div class="col-6 d-flex justify-content-start align-items-center gap-1 ">
+        <mat-form-field appearance="outline" class="example-form-field" subscriptSizing="dynamic">
+            <mat-label>Buscar</mat-label>
+            <input matInput type="text" [(ngModel)]="searchValue">
+            @if (searchValue) {
+            <button matSuffix mat-icon-button (click)="searchValue=''; buttonAction('search', searchValue)">
+                <mat-icon>close</mat-icon>
+            </button>
+            }
+        </mat-form-field>
+
+        <button mat-icon-button class="bg-white d-flex" (click)="buttonAction('search', searchValue)">
+            <mat-icon class="font-colored">search</mat-icon>
+        </button>
+
+    </div>
+
+    <div class="col-6 d-flex justify-content-end align-items-center gap-1">
+        @if (toggles().length > 0) {
+        <mat-button-toggle-group [value]="toggles()[0].identifier" (change)="buttonAction($event.value, null)"
+            class="enterprise-toggle-group shadow-sm" appearance="standard">
+
+            @for (toggle of toggles(); track toggle.identifier) {
+            <mat-button-toggle [value]="toggle.identifier" class="enterprise-toggle">
+                <div class="d-flex align-items-center justify-content-center px-1" [attr.title]="toggle.title">
+                    <mat-icon class="me-2">{{toggle.icon}}</mat-icon>
+                    <span class="fw-medium">{{toggle.label}}</span>
+                </div>
+            </mat-button-toggle>
+            }
+        </mat-button-toggle-group>
+        }
+
+        @for (button of buttons(); track button) {
+        <button mat-icon-button class="d-flex align-items-center bg-white"
+            (click)="buttonAction(button.identifier, null)" [attr.title]="button.title">
+            <mat-icon class="font-colored">{{button.icon}}</mat-icon>
+        </button>
+        }
+    </div>
+</div>

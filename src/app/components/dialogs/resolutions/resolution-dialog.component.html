@@ -1,0 +1,182 @@
+<div mat-dialog-title class="d-flex align-items-center gap-2 border-bottom py-3">
+  <mat-icon>gavel</mat-icon>
+  <h2 class="m-0">{{title()}}</h2>
+</div>
+
+@if(data.mode === "view") {
+<mat-dialog-content class="pt-4">
+  <div class="container-fluid">
+    <div class="row mb-4">
+      <div class="col-md-2">
+        <label class="text-muted small d-block">ID</label>
+        <span class="fs-5 fw-medium text-dark">{{ resolutionSearched.id }}</span>
+      </div>
+      <div class="col-md-5">
+        <label class="text-muted small d-block">Código</label>
+        <span class="fs-5 fw-medium text-dark">{{ resolutionSearched.code }}</span>
+      </div>
+      <div class="col-md-5">
+        <label class="text-muted small d-block">Tercero</label>
+        <span class="fs-6 fw-bold">
+          {{ resolutionSearched.thirdParty.fullName || 'Sin asignar' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <label class="text-muted small d-block">Fecha de Inicio</label>
+        <div class="d-flex align-items-center gap-2">
+          <mat-icon class="text-secondary fs-5">calendar_today</mat-icon>
+          <span>{{ resolutionSearched.startDate | date:'shortDate' }}</span>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label class="text-muted small d-block">Fecha de Vencimiento</label>
+        <div class="d-flex align-items-center gap-2">
+          <mat-icon class="text-secondary fs-5">event_busy</mat-icon>
+          <span>{{ resolutionSearched.expirationDate | date:'shortDate' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-12">
+        <label class="text-muted small d-block">Descripción</label>
+        <div class="d-flex align-items-center gap-2">
+          <mat-icon class="text-secondary fs-5">description</mat-icon>
+          <span>{{ resolutionSearched.description || 'Sin descripción' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-12">
+        <label class="text-muted small d-block">Estado</label>
+        <mat-chip-set>
+          @if (resolutionSearched.isActive) {
+          <mat-chip class="custom-active-chip" style="background-color: #e8f5e9; color: #2e7d32;">
+            <mat-icon matChipAvatar>check_circle</mat-icon>
+            Activa
+          </mat-chip>
+          } @else {
+          <mat-chip class="custom-inactive-chip" style="background-color: #ffebee; color: #c62828;">
+            <mat-icon matChipAvatar>cancel</mat-icon>
+            Inactiva
+          </mat-chip>
+          }
+        </mat-chip-set>
+      </div>
+    </div>
+
+    <mat-divider class="my-3"></mat-divider>
+
+    <div class="row mb-4">
+      <div class="col-12 mt-2">
+        <label class="text-muted small d-block mb-2">Productos Autorizados</label>
+        <mat-chip-set>
+          @for (prod of resolutionSearched.products; track prod.id) {
+          <mat-chip class="small">
+            <mat-icon matChipAvatar style="font-size: 18px; width: 18px; height: 18px;">medication</mat-icon>
+            {{prod.name}} ({{prod.code}})
+          </mat-chip>
+          } @empty {
+          <span class="text-muted italic small">Sin productos asignados.</span>
+          }
+        </mat-chip-set>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="mb-2 pe-3">
+  <button mat-button (click)="onCancel()" class="cancel-button">Salir</button>
+</mat-dialog-actions>
+} @else {
+<mat-dialog-content>
+  <form [formGroup]="form" class="container-fluid mt-2">
+    <div class="row">
+      <div class="col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Código</mat-label>
+          <input matInput formControlName="code" placeholder="Ej: RES-001">
+        </mat-form-field>
+      </div>
+      <div class="col-md-8">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Tercero (Opcional)</mat-label>
+          <input matInput type="text" placeholder="Escriba para buscar (mín 3 letras)..." formControlName="thirdParty" [matAutocomplete]="autoTp">
+          <mat-autocomplete #autoTp="matAutocomplete" [displayWith]="displayThirdParty">
+            @for (tp of thirdPartiesList; track tp.id) {
+            <mat-option [value]="tp">{{ tp.fullName }} - {{ tp.documentNumber }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Fecha de Inicio</mat-label>
+          <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+          <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Fecha de Vencimiento</mat-label>
+          <input matInput [matDatepicker]="endPicker" formControlName="expirationDate">
+          <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput formControlName="description" rows="2"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Productos Autorizados</mat-label>
+          <mat-chip-grid #chipGrid aria-label="Selección de productos">
+            @for (prod of selectedProducts; track prod.id) {
+              <mat-chip-row (removed)="removeProduct(prod)">
+                {{prod.name}} ({{prod.code}})
+                <button matChipRemove [attr.aria-label]="'Quitar ' + prod.name">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
+            }
+          </mat-chip-grid>
+          <input placeholder="Escriba para buscar productos..." #productInput
+                 [formControl]="productSearchCtrl"
+                 [matChipInputFor]="chipGrid"
+                 [matAutocomplete]="autoProducts" 
+                 (keydown.enter)="$event.preventDefault()" />
+          <mat-autocomplete #autoProducts="matAutocomplete" (optionSelected)="addProduct($event)">
+            @for (prod of productsList; track prod.id) {
+              <mat-option [value]="prod">
+                {{prod.name}} ({{prod.code}})
+              </mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 mt-2">
+        <mat-checkbox formControlName="isActive" color="primary">Resolución Activa</mat-checkbox>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="mb-2 pe-3">
+  <button mat-raised-button class="save-button" color="primary" [disabled]="form.invalid" (click)="onSend()">
+    Guardar Resolución
+  </button>
+  <button mat-button (click)="onCancel()" class="cancel-button">Cancelar</button>
+</mat-dialog-actions>
+}

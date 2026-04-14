@@ -1,0 +1,166 @@
+.example-container {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+}
+
+.drawer-content {
+  width: 250px;
+  max-width: 100vw;
+  background: linear-gradient(135deg, #293241cc 0%, #004e98cc 100%);
+  backdrop-filter: blur(5px);
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.accordion-item {
+  background-color: transparent;
+}
+
+.accordion-button {
+  background-color: transparent;
+
+}
+
+.drawer-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo-button {
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: center;
+}
+
+.menu-item {
+  width: 100%;
+  text-align: start;
+}
+
+.logout-section {
+  position: absolute;
+  bottom: 1rem;
+  width: 80%;
+
+}
+
+.main-content {
+  flex-grow: 1;
+  position: relative;
+  height: 100%;
+  background-color: #fafafa;
+  overflow: auto;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 64px;
+  flex-shrink: 0;
+  /* IMPORTANTE: Evita que la barra se aplaste */
+  z-index: 1000;
+  background: linear-gradient(135deg, #293241 0%, #004e98 100%);
+}
+
+.router-container {
+  flex: 1;
+  /* ESTA ES LA CLAVE: Empuja el contenido para llenar el fondo */
+  width: 100%;
+  overflow-y: auto;
+  /* El scroll solo ocurre aquí adentro */
+  padding: 2rem;
+  /* Espaciado interno para que la tabla no pegue a los bordes */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Centra la tabla horizontalmente */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .drawer-content {
+    width: 220px;
+    padding: 0.5rem;
+  }
+
+  .menu-button {
+    top: 0.5rem;
+    left: 0.5rem;
+    transform: scale(0.9);
+  }
+
+  .router-container {
+    padding: 3rem 0.5rem 1rem;
+  }
+
+  .logo-button h3 {
+    font-size: 1.2rem;
+  }
+
+  .menu-item {
+    font-size: 0.9rem;
+  }
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.greeting-message {
+  font-size: 0.8rem;
+}
+
+.greeting-name {
+  font-size: 1.2rem;
+}
+
+.route-text {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+
+.btn-visto {
+  background-color: #ffffff;
+  /* Verde */
+}
+
+.notifications-menu {
+  max-height: 30vh;
+  /* Máximo 30% de la pantalla */
+  overflow-y: auto;
+  /* Activa scroll si hay muchas notificaciones */
+}
+
+.font-colored {
+  color: #fafafa;
+}
+
+.page-subtitle {
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  /* Línea divisoria sutil */
+  color: rgba(255, 255, 255, 0.7);
+  /* Blanco con transparencia para que no brille tanto */
+  font-weight: 300;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+}
+
+.brand-logo {
+  letter-spacing: 1px;
+  font-size: 1.1rem;
+}

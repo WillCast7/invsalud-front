@@ -1,0 +1,249 @@
+<div mat-dialog-title class="d-flex align-items-center gap-2 border-bottom py-3">
+  <mat-icon>account_circle</mat-icon>
+  <h2 class="m-0">{{title()}}</h2>
+</div>
+
+@if(data.mode === "view") {
+
+<mat-dialog-content class="pt-4">
+  <div class="container-fluid">
+    <div class="row mb-4">
+      <div class="col-md-1">
+        <label class="text-muted small d-block">ID</label>
+        <span class="fs-5 fw-medium text-dark">{{ thirdPartySearched.id }}</span>
+      </div>
+      <div class="col-md-6">
+        <label class="text-muted small d-block">Nombre Completo</label>
+        <span class="fs-5 fw-medium text-dark">{{ thirdPartySearched.fullName }}</span>
+      </div>
+      <div class="col-md-5">
+        <label class="text-muted small d-block">Identificación</label>
+        <span class="fs-6 fw-bold">
+          <mat-icon class="vertical-align-middle fs-6" style="width:18px; height:18px">badge</mat-icon>
+          {{ thirdPartySearched.documentType }} {{ thirdPartySearched.documentNumber }}
+        </span>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <label class="text-muted small d-block">Correo Electrónico</label>
+        <div class="d-flex align-items-center gap-2">
+          <mat-icon class="text-secondary fs-5">email</mat-icon>
+          <span>{{ thirdPartySearched.email || 'No registrado' }}</span>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label class="text-muted small d-block">Teléfono / Celular</label>
+        <div class="d-flex align-items-center gap-2">
+          <mat-icon class="text-secondary fs-5">phone</mat-icon>
+          <span>{{ thirdPartySearched.phoneNumber || 'No registrado' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-12">
+        <label class="text-muted small d-block">Dirección de Residencia</label>
+        <div class="d-flex align-items-center gap-2">
+          <mat-icon class="text-secondary fs-5">location_on</mat-icon>
+          <span>{{ thirdPartySearched.address || 'Sin dirección registrada' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <mat-divider class="my-3"></mat-divider>
+
+    <div class="row mb-4 col-12">
+      <div class="col-12">
+        <label class="text-muted small d-block mb-2">Roles Asignados</label>
+        <mat-chip-set aria-label="Roles del usuario">
+          @for (role of thirdPartySearched.roles; track role.id) {
+          <mat-chip class="custom-role-chip">
+            <mat-icon matChipAvatar>settings_accessibility</mat-icon>
+            {{ role.roleName }}
+          </mat-chip>
+          } @empty {
+          <span class="text-muted italic small">Este tercero no tiene roles asignados.</span>
+          }
+        </mat-chip-set>
+      </div>
+
+      <div class="col-12 mt-4">
+        <label class="text-muted small d-block mb-2">Resoluciones</label>
+        @if (thirdPartySearched.resolutions && thirdPartySearched.resolutions.length > 0) {
+        <div class="d-flex flex-column gap-3">
+          @for (res of thirdPartySearched.resolutions; track res.id; let i = $index) {
+          <div class="border rounded p-3 bg-light">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <span class="fw-bold d-block">Código: {{res.code}}</span>
+                <span class="text-muted small">{{res.description}}</span>
+              </div>
+              <div class="text-end text-muted small">
+                <mat-icon class="align-middle" style="font-size: 16px; width: 16px; height: 16px;">date_range</mat-icon>
+                <span>{{res.startDate | date:'shortDate'}} - {{res.expirationDate | date:'shortDate'}}</span>
+              </div>
+            </div>
+
+            <mat-divider class="my-2"></mat-divider>
+            <label class="text-muted small d-block mb-2">Productos autorizados:</label>
+            <mat-chip-set>
+              @for (prod of res.products; track prod.id) {
+              <mat-chip class="small">
+                <mat-icon matChipAvatar style="font-size: 18px; width: 18px; height: 18px;">medication</mat-icon>
+                {{prod.name}} ({{prod.code}})
+              </mat-chip>
+              } @empty {
+              <span class="text-muted italic small">Sin productos asignados.</span>
+              }
+            </mat-chip-set>
+          </div>
+          }
+        </div>
+        } @else {
+        <span class="text-muted italic small">Este tercero no tiene resoluciones asignadas.</span>
+        }
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="mb-2 pe-3">
+  <button mat-button (click)="onCancel()" class="cancel-button">Salir</button>
+</mat-dialog-actions>
+}@else{
+<mat-dialog-content>
+  <form [formGroup]="form" class="container-fluid mt-2">
+    <div class="row">
+      <div class="col-md-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Tipo Documento</mat-label>
+          <mat-select formControlName="documentType">
+            @for (type of documentTypes; track type) {
+            <mat-option [value]="type.name">
+              <span class="fw-medium">{{type.name}}</span> - <small class="text-muted"
+                style="font-size: small;">{{type.shortname}}</small>
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-5">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Número de Documento</mat-label>
+          <input matInput formControlName="documentNumber" placeholder="Ej: 12345678">
+        </mat-form-field>
+      </div>
+
+      <div class="col-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Roles del Tercero</mat-label>
+          <mat-select formControlName="rolesIds" multiple>
+            @for (role of thirdPartyTypes; track role.id) {
+            <mat-option [value]="role.id">{{ role.roleName }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nombre Completo / Razón Social</mat-label>
+          <input matInput formControlName="fullName" class="text-uppercase">
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Teléfono</mat-label>
+          <input matInput mask="000 000 0000" formControlName="phoneNumber">
+        </mat-form-field>
+      </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Correo Electrónico</mat-label>
+          <input matInput formControlName="email" type="email">
+        </mat-form-field>
+      </div>
+
+      <div class="col-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="address">
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="m-0 text-secondary">Resoluciones</h5>
+          <button mat-stroked-button color="primary" type="button" (click)="addResolution()">
+            <mat-icon>add</mat-icon> Agregar Resolución
+          </button>
+        </div>
+        <mat-divider class="mb-3"></mat-divider>
+
+        <div formArrayName="resolutions">
+          @for (resCtrl of resolutions.controls; track resCtrl; let i = $index) {
+          <div [formGroupName]="i" class="border rounded p-3 mb-3 position-relative bg-white shadow-sm mt-2">
+            <button mat-icon-button color="warn" class="position-absolute shadow"
+              style="top: -15px; right: -15px; background: white; z-index: 10;" type="button"
+              (click)="removeResolution(i)">
+              <mat-icon>close</mat-icon>
+            </button>
+
+            <div class="row">
+              <div class="col-md-4">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Código</mat-label>
+                  <input matInput formControlName="code">
+                </mat-form-field>
+              </div>
+              <div class="col-md-4">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Fecha de Inicio</mat-label>
+                  <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+                  <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #startPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Fecha de Venc.</mat-label>
+                  <input matInput [matDatepicker]="endPicker" formControlName="expirationDate">
+                  <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #endPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class="col-md-6">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Descripción</mat-label>
+                  <input matInput formControlName="description">
+                </mat-form-field>
+              </div>
+              <div class="col-md-6">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Productos</mat-label>
+                  <mat-select formControlName="products" multiple>
+                    @for (product of productsList; track product.id) {
+                    <mat-option [value]="product.id">{{ product.name }} ({{product.code}})</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="mb-2 pe-3">
+  <button mat-raised-button class="save-button" [disabled]="form.invalid" (click)="onSend()">
+    Guardar Tercero
+  </button>
+  <button mat-button (click)="onCancel()" class="cancel-button">Cancelar</button>
+</mat-dialog-actions>
+}

@@ -1,0 +1,140 @@
+<h2 mat-dialog-title>
+  <mat-icon color="primary" class="vertical-align-middle me-2">request_quote</mat-icon>
+  {{title()}}
+  @if (!isPublicHealth && grandTotal > 0) {
+    <span class="fs-5 fw-bold text-success">Total: {{ grandTotal | currency }}</span>
+  }
+</h2>
+
+<mat-dialog-content class="pt-3" style="overflow-x: hidden;">
+  <form [formGroup]="mainForm" class="container-fluid">
+    <div class="row">
+      <div class="col-12 mb-3">
+        <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Datos del Cliente (Tercero)</p>
+        <mat-divider></mat-divider>
+      </div>
+
+      <div class="col-md-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Cliente (Tercero)</mat-label>
+          <mat-select formControlName="thirdParty" [compareWith]="compareWithId">
+            @for (supplier of suppliers; track supplier.id) {
+            <mat-option [value]="supplier">
+              <span class="fw-medium">{{supplier.fullName}}</span> -
+              <small class="text-muted">{{supplier.documentType}} {{supplier.documentNumber}}</small>
+            </mat-option>
+            }
+          </mat-select>
+          <mat-icon matSuffix>business</mat-icon>
+        </mat-form-field>
+
+        @if (mainForm.get('thirdParty')?.value) {
+        <div class="bg-light p-2 rounded mb-4 text-secondary small d-flex flex-wrap gap-4">
+          <span><strong>Nombre:</strong> {{ mainForm.get('thirdParty')?.value?.fullName }}</span>
+          <span><strong>Documento:</strong> {{ mainForm.get('thirdParty')?.value?.documentType }} {{
+            mainForm.get('thirdParty')?.value?.documentNumber }}</span>
+          <span><strong>Email:</strong> {{ mainForm.get('thirdParty')?.value?.email || 'N/A' }}</span>
+          <span><strong>Dirección:</strong> {{ mainForm.get('thirdParty')?.value?.address || 'N/A' }}</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Layout Productos Cotizados -->
+    <div class="row mt-2">
+      <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
+        <p class="fw-bold text-secondary border-bottom pb-1 mb-3 w-100 m-0">Medicamentos Cotizados</p>
+        @if(mode !== 'view') {
+          <button mat-stroked-button color="primary" type="button" class="ms-3 shadow-sm" (click)="addDetail()">
+            <mat-icon>add</mat-icon> Agregar Medicamento
+          </button>
+        }
+      </div>
+      <div class="col-12">
+        <mat-divider class="mb-3"></mat-divider>
+      </div>
+    </div>
+
+    <div formArrayName="details">
+      @for (detailCtrl of details.controls; track detailCtrl; let i = $index) {
+      <div [formGroupName]="i" class="border rounded p-3 mb-3 position-relative bg-white shadow-sm mt-3">
+        
+        @if(mode !== 'view') {
+        <button mat-icon-button color="warn" class="position-absolute shadow"
+          style="top: -15px; right: -15px; background: white; z-index: 10;" type="button" (click)="removeDetail(i)" matTooltip="Remover Producto">
+          <mat-icon>close</mat-icon>
+        </button>
+        }
+
+        <div class="row">
+          <!-- Producto: Obtenido de resoluciones -->
+          <div [class]="isPublicHealth ? 'col-md-8' : 'col-md-5'">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Medicamento Habilitado en Resolución</mat-label>
+              <mat-select formControlName="product" [compareWith]="compareWithId">
+                @for (product of authorizedProducts; track product.id) {
+                <mat-option [value]="product">
+                  <span class="fw-medium">{{product.name}}</span> ({{product.code}})
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            @if (mainForm.value.details[i].product) {
+            <div class="px-2 text-muted small border-start border-2 border-primary mb-2">
+              <strong>Concentración:</strong> {{ mainForm.value.details[i].product.concentration }} <br>
+              <strong>Forma Farm.:</strong> {{ mainForm.value.details[i].product.pharmaceuticalForm }} - {{ mainForm.value.details[i].product.presentation }}
+            </div>
+            }
+          </div>
+
+          <!-- Unidades -->
+          <div [class]="isPublicHealth ? 'col-md-4' : 'col-md-2'">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Cant. Uds</mat-label>
+              <input matInput type="number" min="1" formControlName="quantity">
+            </mat-form-field>
+          </div>
+
+          <!-- Precios y Subtotal: Solo si NO es Salud Publica -->
+          @if (!isPublicHealth) {
+          <div class="col-md-2">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Precio Unitario</mat-label>
+              <input matInput type="number" min="0" formControlName="priceUnit">
+              <span matTextPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-100 bg-light rounded">
+              <mat-label>Subtotal</mat-label>
+              <input matInput formControlName="total" readonly class="fw-bold text-success">
+              <span matTextPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+          }
+
+        </div>
+      </div>
+      }
+
+      @if (details.length === 0) {
+      <div class="text-center py-5 bg-light rounded border border-dashed text-secondary">
+        <mat-icon style="font-size: 40px; width: 40px; height: 40px; opacity: 0.5;">assignment_add</mat-icon>
+        <p class="mt-2 text-muted">Aún no ha cotizado ningún medicamento permitido.</p>
+        @if(mode !== 'view') {
+          <button mat-button color="primary" type="button" (click)="addDetail()">Agregar Medicamento</button>
+        }
+      </div>
+      }
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-3 border-top bg-light">
+  <button mat-button mat-dialog-close class="cancel-button me-2" (click)="onCancel()">Cerrar</button>
+  @if (mode !== 'view') {
+    <button mat-flat-button color="primary" class="save-button" (click)="onSubmit()">Guardar Cotización</button>
+  }
+</mat-dialog-actions>

@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="row">
+        <app-table-header-controls-component [buttonsList]="buttonsList()" [toggleList]="toggleList()"
+            (action)="buttonAction($event)" />
+        @if(pageMode()=="medications"){
+        <app-table [columns]="productColumns" [pageable]="dataValue" [options]="tableOptions"
+            (action)="tableAction($event)" />
+        }@else{
+        <app-table [columns]="batchColumns" [pageable]="dataValue" [options]="tableOptions"
+            (action)="tableAction($event)" />
+        }
+    </div>
+</div>

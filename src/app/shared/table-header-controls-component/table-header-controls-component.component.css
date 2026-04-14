@@ -1,0 +1,59 @@
+/* Estilo del grupo principal */
+.enterprise-toggle-group {
+    border: 1px solid #dee2e6 !important;
+    /* border de Bootstrap */
+    border-radius: 8px !important;
+    background-color: #f8f9fa !important;
+    /* bg-light */
+    height: 44px;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px;
+    /* Espaciado interno para el efecto "cápsula" */
+}
+
+/* Estilo individual de cada botón */
+.enterprise-toggle {
+    border: none !important;
+    color: #6c757d !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease;
+}
+
+/* Estado SELECCIONADO */
+.mat-button-toggle-checked {
+    background-color: #ffffff !important;
+    /* Fondo blanco para resaltar */
+    color: #0d6efd !important;
+    /* Primary color */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Quitar líneas divisorias predeterminadas */
+::ng-deep .mat-button-toggle-divider {
+    display: none !important;
+}
+
+/* Ajuste de iconos y fuentes */
+.enterprise-toggle mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+}
+
+.enterprise-toggle span {
+    font-size: 0.9rem;
+}
+
+/* Hover para botones no seleccionados */
+.enterprise-toggle:not(.mat-button-toggle-checked):hover {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+    color: #212529 !important;
+}
+
+/* Limpieza de overlays de focus de Material */
+::ng-deep .mat-button-toggle-focus-overlay {
+    display: none !important;
+}

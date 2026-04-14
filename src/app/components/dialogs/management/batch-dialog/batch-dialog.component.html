@@ -1,0 +1,80 @@
+@if(data.mode == "view"){
+<div class="batch-detail-container">
+  <div class="d-flex justify-content-between align-items-start p-4 border-bottom bg-light">
+    <div>
+      <h2 class="mb-0 fw-bold text-dark">LOTE: {{ data.data?.code }}</h2>
+      <span class="text-muted small">ID: {{ data.data?.id }} | Creado: {{ data.data?.createdAt | date:'short' }}</span>
+    </div>
+  </div>
+
+  <mat-dialog-content class="py-4">
+    <div class="row g-4">
+
+      <div class="col-12">
+        <div class="p-3 border rounded bg-white shadow-sm">
+          <div class="text-muted small text-uppercase fw-semibold mb-2">Detalles / Descripción</div>
+          <p class="mb-0 text-secondary">
+            {{ data.data?.details || 'Sin detalles registrados' }}
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="p-3 bg-light border-top">
+    <button mat-button mat-dialog-close class="cancel-button">Cerrar</button>
+    <button mat-flat-button class="save-button" color="primary" (click)="onEdit()">
+      Editar Lote
+    </button>
+  </mat-dialog-actions>
+</div>
+}@else{
+<h2 mat-dialog-title class="p-3 d-flex align-items-center gap-2 m-0 bg-light border-bottom">
+  <mat-icon color="primary">{{ data.mode === 'edit' ? 'edit' : 'add_box' }}</mat-icon>
+  {{ title() }}
+</h2>
+
+<mat-dialog-content class="pt-4">
+  <form [formGroup]="batchForm" class="container-fluid px-0">
+    <div class="row">
+
+      <div class="col-12 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Código del Lote</mat-label>
+          <input matInput formControlName="code" class="text-uppercase">
+          <mat-icon matSuffix>qr_code</mat-icon>
+          @if (batchForm.get('code')?.hasError('required')) {
+          <mat-error>El código es obligatorio</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Detalles</mat-label>
+          <textarea matInput formControlName="details" rows="5"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="col-12 py-2">
+        <div class="d-flex align-items-center gap-3 bg-light p-3 rounded border">
+          <mat-slide-toggle formControlName="isActive" color="primary">
+            Lote Activo
+          </mat-slide-toggle>
+          <span class="text-muted small">
+            (Habilita o deshabilita la disponibilidad del lote)
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-3 border-top bg-light">
+  <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+  <button mat-flat-button color="primary" class="save-button" (click)="onSave()" [disabled]="batchForm.invalid">
+    {{ batchSearched ? 'Actualizar' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>
+}

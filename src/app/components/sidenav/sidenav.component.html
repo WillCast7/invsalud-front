@@ -1,0 +1,68 @@
+@if (isSessionActive()) {
+<mat-drawer-container class="example-container" [hasBackdrop]="true">
+  <mat-drawer #drawer [mode]="'over'" class="drawer-content">
+    <div class="drawer-header">
+      <button (click)="navigateTo('')" class="logo-button font-colored">
+        <h3><strong>INVSALUD</strong></h3>
+      </button>
+    </div>
+
+    <div class="accordion accordion-flush" id="accordionFlushExample">
+      @for (menu of menues(); track menu.father) {
+      <div class="accordion-item ">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed font-colored" type="button" data-bs-toggle="collapse"
+            [attr.data-bs-target]="'#' + menu.father" aria-expanded="false" [attr.aria-controls]="menu.father">
+            {{ menu.nameFather }}
+          </button>
+        </h2>
+
+        @for (item of menu.children; track item.id) {
+        <div id="{{menu.father}}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+          <button mat-button (click)="navigateTo(item.route)" class="menu-item font-colored">
+            <span class="font-colored">{{ item.name }}</span>
+          </button>
+        </div>
+        }
+      </div>
+      }
+    </div>
+
+    <div class="logout-section">
+      <button mat-button (click)="logOut()" title="Cerrar Sesión">
+        <span class="menu-item font-colored">Cerrar Sesión</span>
+        <mat-icon class="menu-item font-colored" aria-hidden="false">exit_to_app</mat-icon>
+      </button>
+    </div>
+  </mat-drawer>
+
+  <mat-drawer-content class="main-content">
+    <mat-toolbar class="navbar">
+      <button mat-icon-button (click)="drawer.toggle()" title="Abrir el Menú" class="menu-button">
+        <mat-icon class="font-colored" aria-hidden="false">menu</mat-icon>
+      </button>
+
+      <button mat-button (click)="navigateTo('')" title="Ir al Dashboard">
+        <strong class="text-light brand-logo">INVSALUD</strong>
+      </button>
+      <span class="page-subtitle">{{pageTitle()}}</span>
+
+      <span class="example-spacer"></span>
+      <button mat-button (click)="navigateTo('/configuracion/micuenta')" title="Ir al Mi cuenta" class="">
+        <span class="mx-1 fw-light greeting-message font-colored">Hola,</span>
+        <span class="fw-medium greeting-name font-colored">{{namesUser()}}</span>
+      </button>
+
+      <button mat-icon-button class="example-icon font-colored" (click)="logOut()" title="Cerrar Sesión">
+        <mat-icon aria-hidden="false">exit_to_app</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <div class="router-container">
+      <router-outlet />
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>
+} @else {
+<app-login />
+}

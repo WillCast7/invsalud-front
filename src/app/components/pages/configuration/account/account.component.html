@@ -1,0 +1,81 @@
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-12">
+      
+      <div class="d-flex align-items-center justify-content-between mb-4 bg-white p-4 rounded shadow-sm border-start border-warning border-5" style="border-left-color: #3d5a80 !important;">
+        <div class="d-flex align-items-center gap-3">
+          <div>
+            <h1 class="h3 mb-0 fw-bold text-dark">{{ user().person.names }} {{ user().person.surnames }}</h1>
+            <span class="badge rounded-pill text-dark px-3">{{ user().role.roleName }}</span>
+          </div>
+        </div>
+        <button mat-button extended class="save-button" (click)="openEditModal()">
+          Editar
+        </button>
+        <button mat-button extended class="save-button" (click)="openChangePassModal()">
+          Cambiar contraseña
+        </button>
+      </div>
+
+      <div class="row g-2">
+        <div class="col-lg-5">
+          <mat-card class="h-100 shadow-sm border-0">
+            <mat-card-header>
+              <mat-card-title class="d-flex align-items-center gap-2" style="color: #3d5a80;">
+                <mat-icon>settings_account_box</mat-icon>
+                Cuenta
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="pt-3">
+              <div class="mb-4">
+                <label class="text-muted small d-block text-uppercase fw-bold">Nombre de Usuario</label>
+                <p class="fs-5 mb-0 font-monospace">{{ user().userName }}</p>
+              </div>
+              <div class="mb-4">
+                <label class="text-muted small d-block text-uppercase fw-bold">Correo Electrónico</label>
+                <p class="fs-6 mb-0 text-break">{{ user().email }}</p>
+              </div>
+              <div class="mb-2">
+                <label class="text-muted small d-block text-uppercase fw-bold">Estado del Usuario</label>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                  <div class="status-dot" [ngClass]="user().enable ? 'bg-success' : 'bg-danger'"></div>
+                  <span [class]="user().enable ? 'text-success font-medium' : 'text-danger font-medium'">
+                    {{ user().enable ? 'Cuenta Activa' : 'Inhabilitada' }}
+                  </span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <div class="col-lg-7">
+          <mat-card class="shadow-sm border-0">
+            <mat-card-header>
+              <mat-card-title class="d-flex align-items-center gap-2" style="color: #3d5a80;">
+                <mat-icon>badge</mat-icon>
+                Información Personal
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="pt-3">
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Identificación</label>
+                  <p class="fs-6">{{ user().person.documentType }} - {{ user().person.documentNumber }}</p>
+                </div>
+                <div class="col-md-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Teléfono</label>
+                  <p class="fs-6">{{ user().person.phoneNumber || 'No registrado' }}</p>
+                </div>
+                <div class="col-12">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Dirección</label>
+                  <p class="fs-6">{{ user().person.address || 'Sin dirección registrada' }}</p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

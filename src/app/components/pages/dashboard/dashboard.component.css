@@ -1,0 +1,38 @@
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.menu-item-btn {
+  height: auto !important;
+  border-radius: 12px !important;
+  background-color: #ffffff;
+  border: 1px solid #e9ecef !important;
+  transition: all 0.3s ease;
+}
+
+.menu-item-btn:hover {
+  background-color: #f8f9fa !important;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border-color: #3d5a80 !important; /* Usando tu color azul de Kayros */
+}
+
+.menu-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: #3d5a80;
+}
+
+.menu-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.active-route {
+  background-color: #e3f2fd !important;
+  border-color: #3d5a80 !important;
+}

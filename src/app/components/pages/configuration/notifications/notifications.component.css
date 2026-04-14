@@ -1,0 +1,17 @@
+.btn-visto{
+  background-color: #ffffff; /* Verde */
+}
+.btn-enviada{
+  background-color: #f1f1f1; /* Verde */
+}
+
+.mat-mdc-row .mat-mdc-cell {
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid transparent;
+    cursor: pointer;
+    padding: 1px 8px;
+  }
+  
+.mat-mdc-row :hover {
+    background-color: #e6e6e6;
+}

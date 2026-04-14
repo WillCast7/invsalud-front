@@ -1,0 +1,10 @@
+services:
+  angular-frontend:
+    build: 
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: angular-frontend
+    ports:
+      - "4200:80"
+    networks:
+      - kayros-shared-net

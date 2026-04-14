@@ -1,0 +1,130 @@
+@if(data.mode == "view"){
+<div class="config-param-detail-container">
+    <div class="d-flex justify-content-between align-items-start p-4 border-bottom bg-light">
+        <div>
+            <h2 class="mb-0 fw-bold text-dark">PARÁMETRO: {{ data.data?.shortname }}</h2>
+            <span class="text-muted small">ID: {{ data.data?.id }}</span>
+        </div>
+        <span class="badge rounded-pill"
+            [ngClass]="data.data?.active ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'">
+            <mat-icon inline class="align-middle me-1">{{ data.data?.active ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ data.data?.active ? 'ACTIVO' : 'INACTIVO' }}
+        </span>
+    </div>
+
+    <mat-dialog-content class="py-4">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="p-3 border rounded bg-white shadow-sm">
+                    <div class="text-muted small text-uppercase fw-semibold mb-2">Padre</div>
+                    <p class="mb-0 text-secondary">{{ data.data?.parent || '-' }}</p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="p-3 border rounded bg-white shadow-sm">
+                    <div class="text-muted small text-uppercase fw-semibold mb-2">Orden</div>
+                    <p class="mb-0 text-secondary">{{ data.data?.order }}</p>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="p-3 border rounded bg-white shadow-sm">
+                    <div class="text-muted small text-uppercase fw-semibold mb-2">Definición</div>
+                    <p class="mb-0 text-secondary">
+                        {{ data.data?.definition || 'Sin definición registrada' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="p-3 bg-light border-top">
+        <button mat-button mat-dialog-close class="cancel-button">Cerrar</button>
+        <button mat-flat-button class="save-button" color="primary" (click)="onEdit()">
+            Editar Parámetro
+        </button>
+    </mat-dialog-actions>
+</div>
+}@else{
+<h2 mat-dialog-title class="p-3 d-flex align-items-center gap-2 m-0 bg-light border-bottom">
+    <mat-icon color="primary">{{ data.mode === 'edit' ? 'edit' : 'add_box' }}</mat-icon>
+    {{ title() }}
+</h2>
+
+<mat-dialog-content class="pt-4">
+    <form [formGroup]="configParamForm" class="container-fluid px-0">
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Nombre Corto (Shortname)</mat-label>
+                    <input matInput formControlName="shortname">
+                    @if (configParamForm.get('shortname')?.hasError('required')) {
+                    <mat-error>El nombre corto es obligatorio</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput formControlName="name">
+                    @if (configParamForm.get('name')?.hasError('required')) {
+                    <mat-error>El nombre es obligatorio</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Padre</mat-label>
+                    <input matInput formControlName="parent">
+                    @if (configParamForm.get('parent')?.hasError('required')) {
+                    <mat-error>El padre es obligatorio</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Orden</mat-label>
+                    <input matInput type="number" formControlName="order">
+                    @if (configParamForm.get('order')?.hasError('required')) {
+                    <mat-error>El orden es obligatorio</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+
+            <div class="col-12 mb-3">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Definición</mat-label>
+                    <textarea matInput formControlName="definition" rows="3"></textarea>
+                    @if (configParamForm.get('definition')?.hasError('required')) {
+                    <mat-error>La definición es obligatoria</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+
+            <div class="col-12 py-2">
+                <div class="d-flex align-items-center gap-3 bg-light p-3 rounded border">
+                    <mat-slide-toggle formControlName="isActive" color="primary">
+                        Parametro Activo
+                    </mat-slide-toggle>
+                    <span class="text-muted small">
+                        (Habilita o deshabilita la disponibilidad del producto)
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-3 border-top bg-light">
+    <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+    <button mat-flat-button color="primary" class="save-button" (click)="onSave()" [disabled]="configParamForm.invalid">
+        {{ configParamSearched ? 'Actualizar' : 'Guardar' }}
+    </button>
+</mat-dialog-actions>
+}

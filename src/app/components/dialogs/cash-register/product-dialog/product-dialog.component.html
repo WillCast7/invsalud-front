@@ -1,0 +1,128 @@
+@if(data.mode == "view"){
+  <div class="product-detail-container">
+    <div class="d-flex justify-content-between align-items-start p-4 border-bottom bg-light">
+      <div>
+        <h2 class="mb-0 fw-bold text-dark">{{ data.data?.name }}</h2>
+        <span class="text-muted small">ID: {{ data.data?.id }}</span>
+      </div>
+      <span class="badge rounded-pill" 
+            [ngClass]="data.data?.active ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'">
+        <mat-icon inline class="align-middle me-1">{{ data.data?.active ? 'check_circle' : 'cancel' }}</mat-icon>
+        {{ data.data?.active ? 'ACTIVO' : 'INACTIVO' }}
+      </span>
+    </div>
+
+    <mat-dialog-content class="py-4">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="p-3 border rounded bg-white shadow-sm h-100">
+            <div class="text-muted small text-uppercase fw-semibold mb-1">Precio Base</div>
+            <div class="h4 mb-0 text-primary">
+              {{ data.data?.name }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="p-3 border rounded bg-white shadow-sm h-100">
+            <div class="text-muted small text-uppercase fw-semibold mb-1">Tipo de Operación</div>
+            <div class="d-flex align-items-center gap-2">
+              <mat-icon [color]="data.data?.type === 'INCOME' ? 'primary' : 'warn'">
+                {{ data.data?.type === 'INCOME' ? 'trending_up' : 'trending_down' }}
+              </mat-icon>
+              <span class="fw-bold">{{ data.data?.type === 'INCOME' ? 'INGRESO' : 'EGRESO' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="p-3 border rounded bg-white shadow-sm">
+            <div class="text-muted small text-uppercase fw-semibold mb-2">Descripción</div>
+            <p class="mb-0 text-secondary italic">
+              {{ data.data?.concentration }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="p-3 bg-light border-top">
+      <button mat-button mat-dialog-close class="cancel-button">Cerrar</button>
+      <button mat-flat-button class="save-button" (click)="onEdit()">
+        Editar Producto
+      </button>
+    </mat-dialog-actions>
+  </div>
+}@else{
+  <h2 mat-dialog-title class="p-3 d-flex align-items-center gap-2">
+    <mat-icon>{{ data.mode ? 'edit' : 'add_circle' }}</mat-icon>
+    {{ title() }}
+  </h2>
+
+  <mat-dialog-content class="pt-4">
+    <form [formGroup]="productForm" class="container-fluid">
+      <div class="row">
+        <div class="col-12 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nombre del Producto</mat-label>
+            <input matInput formControlName="name">
+            <mat-icon matSuffix>inventory_2</mat-icon>
+            @if (productForm.get('name')?.hasError('required')) {
+              <mat-error>El nombre es obligatorio</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-6 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Precio Base</mat-label>
+            <input matInput formControlName="basePrice"
+              mask="separator.0"
+              thousandSeparator="."
+              prefix="$ "
+              inputmode="numeric">
+            @if (productForm.get('basePrice')?.hasError('min')) {
+              <mat-error>El precio no puede ser negativo</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-6 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Tipo</mat-label>
+            <mat-select formControlName="type">
+              @for (item of productTypes; track item.value) {
+                <mat-option [value]="item.value">{{ item.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 mb-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="description" rows="3" placeholder="Detalles adicionales..."></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 py-2">
+          <div class="d-flex align-items-center gap-3 bg-light p-2 rounded border">
+            <mat-slide-toggle formControlName="active" color="primary">
+              Producto Habilitado
+            </mat-slide-toggle>
+            <span class="text-muted small">
+              (Determina si el producto aparece en las ventas)
+            </span>
+          </div>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="p-3 border-top mt-3">
+    <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+    <button mat-flat-button class="save-button" (click)="onSave()" [disabled]="productForm.invalid">
+      {{ productSearched ? 'Actualizar' : 'Guardar' }}
+    </button>
+  </mat-dialog-actions>
+}

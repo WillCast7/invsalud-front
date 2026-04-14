@@ -1,0 +1,347 @@
+<h2 mat-dialog-title>
+  <mat-icon color="primary" class="vertical-align-middle me-2">inventory_2</mat-icon>
+  {{title()}}
+  @if (!isPublicHealth && grandTotal > 0 ) {
+  <span class="fs-5 fw-bold text-success">Total: {{ grandTotal | currency }}</span>
+  }
+</h2>
+
+@if (data.mode === "view") {
+
+<!-- ===== VISTA DE DETALLE ===== -->
+<mat-dialog-content class="pt-4" style="overflow-x: hidden;">
+
+  <div class="container-fluid">
+
+    <!-- Encabezado de la compra -->
+    <div class="row mb-4">
+      <div class="col-md-2">
+        <label class="text-muted small d-block">ID</label>
+        <span class="fs-5 fw-bold text-dark">{{ objData.id }}</span>
+      </div>
+      <div class="col-md-4">
+        <label class="text-muted small d-block">Código de Entrada</label>
+        <span class="fs-5 fw-medium text-dark">
+          <mat-icon class="vertical-align-middle fs-6 me-1" style="width:18px; height:18px">tag</mat-icon>
+          {{ objData.purchasedCode }}
+        </span>
+      </div>
+      <div class="col-md-3">
+        <label class="text-muted small d-block">Tipo</label>
+        <span class="badge rounded-pill px-3 py-2" [class.bg-primary]="objData.type === 'special'"
+          [class.bg-success]="objData.type === 'public'">
+          {{ objData.type === 'special' ? 'Control Especial' : 'Salud Pública' }}
+        </span>
+      </div>
+      <div class="col-md-3">
+        <label class="text-muted small d-block">Estado</label>
+        <span class="badge rounded-pill px-3 py-2" [class.bg-success]="objData.isActive"
+          [class.bg-danger]="!objData.isActive">
+          {{ objData.isActive ? 'Activo' : 'Anulado' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <label class="text-muted small d-block">Proveedor (Tercero)</label>
+        <div class="d-flex align-items-center gap-2">
+          <mat-icon class="text-secondary fs-5">business</mat-icon>
+          <span class="fw-medium">{{ objData.thirdParty.fullName }}</span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <label class="text-muted small d-block">Registrado por</label>
+        <div class="d-flex align-items-center gap-2">
+          <mat-icon class="text-secondary fs-5">person</mat-icon>
+          <span>{{ objData.purchasedBy }}</span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <label class="text-muted small d-block">Fecha</label>
+        <div class="d-flex align-items-center gap-2">
+          <mat-icon class="text-secondary fs-5">calendar_today</mat-icon>
+          <span>{{ objData.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+    </div>
+
+    @if (!isPublicHealth && objData.total > 0) {
+    <div class="row mb-3">
+      <div class="col-12">
+        <div
+          class="d-flex align-items-center gap-2 p-3 rounded bg-success bg-opacity-10 border border-success border-opacity-25">
+          <mat-icon class="text-success">payments</mat-icon>
+          <span class="text-muted small">Total de la compra:</span>
+          <span class="fs-5 fw-bold text-success">{{ objData.total | currency }}</span>
+        </div>
+      </div>
+    </div>
+    }
+
+    <mat-divider class="my-3"></mat-divider>
+
+    <!-- Items / Productos -->
+    <div class="row">
+      <div class="col-12 mb-3">
+        <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Productos Ingresados</p>
+      </div>
+      @if (objData.items && objData.items.length > 0) {
+      <div class="col-12 d-flex flex-column gap-3">
+        @for (item of objData.items; track item.id; let i = $index) {
+        <div class="border rounded p-3 bg-white shadow-sm">
+          <div class="row align-items-center">
+            <div class="col-md-1 text-center">
+              <span class="badge bg-secondary rounded-pill">#{{ i + 1 }}</span>
+            </div>
+
+            <!-- Info del producto -->
+            <div class="col-md-5">
+              <label class="text-muted small d-block">Medicamento / Producto</label>
+              <span class="fw-medium">{{ item.product.name }}</span>
+              <small class="text-muted ms-2">({{ item.product.code }})</small>
+              <div class="text-muted small border-start border-2 border-primary ps-2 mt-1">
+                @if (item.product.concentration) {
+                <span><strong>Concentración:</strong> {{ item.product.concentration }}</span><br>
+                }
+                @if (item.product.pharmaceuticalForm) {
+                <span><strong>Forma Farm.:</strong> {{ item.product.pharmaceuticalForm }}</span><br>
+                }
+                @if (item.product.presentation) {
+                <span><strong>Presentación:</strong> {{ item.product.presentation }}</span>
+                }
+              </div>
+            </div>
+
+            <!-- Lote -->
+            <div class="col-md-2">
+              <label class="text-muted small d-block">Lote</label>
+              <span class="fw-medium">
+                <mat-icon class="vertical-align-middle fs-6 me-1" style="width:16px; height:16px">inventory</mat-icon>
+                {{ item.batch.code }}
+              </span>
+            </div>
+
+            <!-- Cantidad -->
+            <div class="col-md-1 text-center">
+              <label class="text-muted small d-block">Cantidad</label>
+              <span class="fs-5 fw-bold">{{ item.units }}</span>
+            </div>
+
+            <!-- Precios (solo para Control Especial) -->
+            @if (!isPublicHealth) {
+            <div class="col-md-3">
+              <div class="d-flex flex-column gap-1">
+                <div>
+                  <label class="text-muted small d-block">Precio Compra</label>
+                  <span class="fw-medium">{{ item.priceUnit | currency }}</span>
+                </div>
+                <div>
+                  <label class="text-muted small d-block">Precio Venta</label>
+                  <span class="fw-medium">{{ item.sellPrice | currency }}</span>
+                </div>
+                <div>
+                  <label class="text-muted small d-block">Subtotal</label>
+                  <span class="fw-bold text-success">{{ item.priceTotal | currency }}</span>
+                </div>
+              </div>
+            </div>
+            }
+
+            <!-- Fecha vencimiento -->
+            <div class="col-12 mt-2">
+              <div class="d-flex align-items-center gap-2 text-muted small">
+                <mat-icon class="fs-6" style="width:16px; height:16px">event</mat-icon>
+                <span>Vence: <strong>{{ item.expirationDate | date:'dd/MM/yyyy' }}</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="col-12 text-center py-4 text-muted bg-light rounded border">
+        <mat-icon style="font-size: 36px; width: 36px; height: 36px; opacity: 0.5;">shopping_cart</mat-icon>
+        <p class="mt-2 mb-0">No hay productos registrados para esta entrada.</p>
+      </div>
+      }
+    </div>
+
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-3 border-top bg-light">
+  <button mat-button mat-dialog-close class="cancel-button" (click)="onCancel()">Salir</button>
+</mat-dialog-actions>
+} @else {
+
+<!-- ===== FORMULARIO CREAR / EDITAR ===== -->
+<mat-dialog-content class="pt-3" style="overflow-x: hidden;">
+  <form [formGroup]="mainForm" class="container-fluid">
+    <div class="row">
+      <div class="col-12 mb-3">
+        <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Datos del Proveedor y Compra</p>
+        <mat-divider></mat-divider>
+      </div>
+
+      <div class="col-md-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Proveedor (Tercero)</mat-label>
+          <mat-select formControlName="thirdParty" [compareWith]="compareWithId">
+            @for (supplier of suppliers; track supplier.id) {
+            <mat-option [value]="supplier">
+              <span class="fw-medium">{{supplier.fullName}}</span> -
+              <small class="text-muted">{{supplier.documentType}} {{supplier.documentNumber}}</small>
+            </mat-option>
+            }
+          </mat-select>
+          <mat-icon matSuffix>business</mat-icon>
+        </mat-form-field>
+
+        @if (mainForm.get('thirdParty')?.value) {
+        <div class="bg-light p-2 rounded mb-4 text-secondary small d-flex gap-4">
+          <span><strong>Nombre:</strong> {{ mainForm.get('thirdParty')?.value?.fullName }}</span>
+          <span><strong>Documento:</strong> {{ mainForm.get('thirdParty')?.value?.documentType }} {{
+            mainForm.get('thirdParty')?.value?.documentNumber }}</span>
+          <span><strong>Email:</strong> {{ mainForm.get('thirdParty')?.value?.email || 'N/A' }}</span>
+          <span><strong>Dirección:</strong> {{ mainForm.get('thirdParty')?.value?.address || 'N/A' }}</span>
+          <span><strong>Teléfono:</strong> {{ mainForm.get('thirdParty')?.value?.phoneNumber || 'N/A' }}</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="row mt-2">
+      <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
+        <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Productos</p>
+        <button mat-stroked-button color="primary" type="button" (click)="addDetail()">
+          <mat-icon>add</mat-icon> Agregar Producto
+        </button>
+      </div>
+      <div class="col-12">
+        <mat-divider class="mb-3"></mat-divider>
+      </div>
+    </div>
+
+    <div formArrayName="details">
+      @for (detailCtrl of details.controls; track detailCtrl; let i = $index) {
+      <div [formGroupName]="i" class="border rounded p-3 mb-3 position-relative bg-white shadow-sm mt-3">
+        <button mat-icon-button color="warn" class="position-absolute shadow"
+          style="top: -15px; right: -15px; background: white; z-index: 10;" type="button" (click)="removeDetail(i)">
+          <mat-icon>close</mat-icon>
+        </button>
+
+        <div class="row">
+          <!-- Producto -->
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Medicamento / Producto</mat-label>
+              <mat-select formControlName="product" [compareWith]="compareWithId">
+                @for (product of products; track product.id) {
+                <mat-option [value]="product">
+                  <span class="fw-medium">{{product.name}}</span> ({{product.code}})
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            @if (mainForm.value.details[i].product) {
+            <div class="mb-3 px-2 text-muted small border-start border-2 border-primary">
+              <strong>Concentración:</strong> {{ mainForm.value.details[i].product.concentration }} <br>
+              <strong>Forma Farmaceutica:</strong> {{ mainForm.value.details[i].product.pharmaceuticalForm }} <br>
+              <strong>Presentación:</strong> {{ mainForm.value.details[i].product.presentation }}
+            </div>
+            }
+          </div>
+
+          <!-- Lote -->
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Lote Asignado</mat-label>
+              <mat-select formControlName="batch" [compareWith]="compareWithId">
+                @for (batch of batches; track batch.id) {
+                <mat-option [value]="batch">
+                  <span class="fw-medium">Lote #{{batch.code}}</span>
+                  @if (batch.details) { <small>- {{batch.details}}</small> }
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="w-100 mt-2"></div>
+
+          <!-- Cantidad -->
+          <div [class]="isPublicHealth ? 'col-md-6' : 'col-md-3'">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Cantidad</mat-label>
+              <input matInput type="number" min="1" formControlName="units">
+            </mat-form-field>
+          </div>
+
+          <!-- Precios y Subtotal: Solo si NO es Salud Publica -->
+          @if (!isPublicHealth) {
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Precio Unidad (Compra)</mat-label>
+              <input matInput type="number" min="0" formControlName="priceUnit">
+              <span matTextPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Precio de Venta</mat-label>
+              <input matInput type="number" min="0" formControlName="sellPrice">
+              <span matTextPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-100 bg-light rounded">
+              <mat-label>Subtotal (Compra)</mat-label>
+              <input matInput formControlName="priceTotal" readonly class="fw-bold text-success">
+              <span matTextPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+          }
+
+          <!-- Fecha Expiracion -->
+          <div [class]="isPublicHealth ? 'col-md-6' : 'col-md-4'">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Fecha de Vencimiento</mat-label>
+              <input matInput [matDatepicker]="expPicker" formControlName="expirationDate">
+              <mat-datepicker-toggle matIconSuffix [for]="expPicker"></mat-datepicker-toggle>
+              <mat-datepicker #expPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+        </div>
+      </div>
+      }
+
+      @if (details.length === 0) {
+      <div class="text-center py-5 bg-light rounded border border-dashed text-secondary">
+        <mat-icon style="font-size: 40px; width: 40px; height: 40px; opacity: 0.5;">shopping_cart</mat-icon>
+        <p class="mt-2 text-muted">Aún no ha agregado productos a esta entrada.</p>
+        <button mat-button color="primary" type="button" (click)="addDetail()">Agregar Producto</button>
+      </div>
+      }
+    </div>
+
+    <div class="col-md-12">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Observaciones</mat-label>
+        <input matInput formControlName="observations">
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-3 border-top bg-light">
+  <button mat-button mat-dialog-close class="cancel-button me-2" (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button class="save-button" (click)="onSubmit()">Guardar</button>
+</mat-dialog-actions>
+
+}

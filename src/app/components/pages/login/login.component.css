@@ -1,0 +1,10 @@
+.login-container{
+  background-color: rgba(255, 255, 255, 0.1);
+  min-height: 100vh;
+  overflow: hidden; /* Asegura que ocupe todo el ancho */
+  margin: 0; /* Elimina márgenes */
+}
+  
+  .login-row{
+    background-color: rgb(255, 255, 255)
+  }

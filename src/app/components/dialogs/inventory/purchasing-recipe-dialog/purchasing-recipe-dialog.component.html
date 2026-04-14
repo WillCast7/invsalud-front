@@ -1,0 +1,77 @@
+<h2 mat-dialog-title>
+  <mat-icon color="primary" class="vertical-align-middle me-2">inventory_2</mat-icon>
+  {{title()}}
+</h2>
+
+<mat-dialog-content class="pt-3" style="overflow-x: hidden;">
+  <form [formGroup]="mainForm" class="container-fluid">
+    <div class="row">
+      <div class="col-12 mb-3">
+        <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Datos del Proveedor</p>
+      </div>
+
+      <div class="col-md-12">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Proveedor (Tercero)</mat-label>
+          <mat-select formControlName="thirdParty" [compareWith]="compareWithId">
+            @for (supplier of suppliers; track supplier.id) {
+            <mat-option [value]="supplier">
+              <span class="fw-medium">{{supplier.fullName}}</span> -
+              <small class="text-muted">{{supplier.documentType}} {{supplier.documentNumber}}</small>
+            </mat-option>
+            }
+          </mat-select>
+          <mat-icon matSuffix>business</mat-icon>
+        </mat-form-field>
+
+        @if (mainForm.get('thirdParty')?.value) {
+        <div class="bg-light p-2 rounded mb-4 text-secondary small d-flex gap-4">
+          <span><strong>Nombre:</strong> {{ mainForm.get('thirdParty')?.value?.fullName }}</span>
+          <span><strong>Documento:</strong> {{ mainForm.get('thirdParty')?.value?.documentType }} {{
+            mainForm.get('thirdParty')?.value?.documentNumber }}</span>
+          <span><strong>Email:</strong> {{ mainForm.get('thirdParty')?.value?.email || 'N/A' }}</span>
+          <span><strong>Dirección:</strong> {{ mainForm.get('thirdParty')?.value?.address || 'N/A' }}</span>
+          <span><strong>Teléfono:</strong> {{ mainForm.get('thirdParty')?.value?.phoneNumber || 'N/A' }}</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="row mt-2">
+      <div class="col-12 mb-3">
+        <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Detalle de la Compra</p>
+      </div>
+
+      <div class="col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Cantidad</mat-label>
+          <input matInput type="number" min="1" formControlName="units">
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Precio Unidad</mat-label>
+          <input matInput type="number" min="0" formControlName="priceUnit">
+          <span matTextPrefix>$&nbsp;</span>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-4">
+        <mat-form-field appearance="outline" class="w-100 bg-light rounded">
+          <mat-label>Total</mat-label>
+          <input matInput formControlName="total" readonly class="fw-bold text-success">
+          <span matTextPrefix>$&nbsp;</span>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-3 border-top bg-light">
+  <button mat-button mat-dialog-close class="cancel-button me-2" (click)="onCancel()">Cerrar</button>
+  @if (mode === 'create') {
+  <button mat-flat-button color="primary" class="save-button" (click)="onSubmit()" [disabled]="mainForm.invalid">Guardar
+    Compra</button>
+  }
+</mat-dialog-actions>
