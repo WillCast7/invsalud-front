@@ -21,9 +21,6 @@ import {
   coerceArray
 } from "./chunk-N4DOILP3.js";
 import {
-  _CdkPrivateStyleLoader
-} from "./chunk-TH5FZGM6.js";
-import {
   ScrollDispatcher,
   ScrollingModule,
   ViewportRuler
@@ -35,6 +32,9 @@ import {
   BidiModule,
   Directionality
 } from "./chunk-JLBUACPJ.js";
+import {
+  _CdkPrivateStyleLoader
+} from "./chunk-TH5FZGM6.js";
 import {
   Platform
 } from "./chunk-RODSRFG6.js";
@@ -2663,4 +2663,4 @@ export {
   CdkConnectedOverlay,
   OverlayModule
 };
-//# sourceMappingURL=chunk-H7W2YA7U.js.map
+//# sourceMappingURL=chunk-RGRJ75JA.js.map

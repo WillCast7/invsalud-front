@@ -44,7 +44,7 @@ import { ThirdPartyDialogComponent } from '../../../dialogs/cash-register/third-
     MatCardModule,
     TableHeaderControlsComponentComponent,
     TableComponent
-],
+  ],
 
   templateUrl: './third-party.component.html',
   styleUrl: './third-party.component.css'
@@ -55,18 +55,18 @@ export class ThirdPartyComponent {
   dataValue: PageableInterface<ThirdPartyInterface> = PageableInitializer;
   searchValue = "";
 
-  displayedColumns : ColumnTableInterface [] = [
+  displayedColumns: ColumnTableInterface[] = [
     { key: 'id', label: 'id', isSortable: true },
     { key: 'documentType', label: 'Tipo doc.', isSortable: true },
     { key: 'documentNumber', label: 'Número de documento', isSortable: true },
     { key: 'fullName', label: 'Nombres', isSortable: true },
-    { key: 'email', label: 'Correo', isSortable: true},
+    { key: 'email', label: 'Correo', isSortable: true },
     { key: 'phoneNumber', label: 'Telefono', isSortable: false },
     { key: 'address', label: 'Dirección', isSortable: false }
   ];
 
   buttonsList: TableOption[] = [
-    { icon: 'person_add', label: 'Crear tercero', identifier: 'thirdParty'}
+    { icon: 'add', label: 'Crear tercero', identifier: 'thirdParty' }
   ];
 
   tableOptions: TableOption[] = [
@@ -80,19 +80,19 @@ export class ThirdPartyComponent {
         break;
     }
   }
-  
-pageChange(event: PageEvent) {
-  this.getData(
-    event.pageIndex,
-    event.pageSize,
-    this.searchValue
-  );
-}
 
-tableAction(event: { type: string, row: ThirdPartyInterface }) {
-  switch (event.type) {
-    case 'edit':
-      this.openThirdPartyModal("edit", event.row);
+  pageChange(event: PageEvent) {
+    this.getData(
+      event.pageIndex,
+      event.pageSize,
+      this.searchValue
+    );
+  }
+
+  tableAction(event: { type: string, row: ThirdPartyInterface }) {
+    switch (event.type) {
+      case 'edit':
+        this.openThirdPartyModal("edit", event.row);
         break;
       case 'view':
         this.openThirdPartyModal("view", event.row);
@@ -103,17 +103,17 @@ tableAction(event: { type: string, row: ThirdPartyInterface }) {
   constructor(
     private readonly restService: RestApiService,
     private readonly alertService: AlertService
-  ) { 
+  ) {
     this.getData(
       this.dataValue.pageable.pageNumber,
       this.dataValue.pageable.pageSize,
       this.searchValue
     );
-  } 
+  }
 
   getData(page: number, size: number, searchValue: string) {
     this.dataValue = PageableInitializer;
-    this.restService.getRequest("/thirdparty", {page: page, size: size, searchValue: searchValue}).subscribe({
+    this.restService.getRequest("/thirdparty", { page: page, size: size, searchValue: searchValue }).subscribe({
       next: (objData) => {
         this.dataValue = objData.pageable;
 
@@ -134,14 +134,14 @@ tableAction(event: { type: string, row: ThirdPartyInterface }) {
   }
 
   openThirdPartyModal(mode: string, row: ThirdPartyInterface | undefined = undefined) {
-    const dialogRef: MatDialogRef<any> = this.dialog.open(ThirdPartyDialogComponent, {... SizemodalInitializer, data: {data: row, mode: mode}});
-      dialogRef.afterClosed().subscribe(result => {
-        this.getData(
-          this.dataValue.pageable.pageNumber,
-          this.dataValue.pageable.pageSize,
-          this.searchValue
-        );
-      }); 
+    const dialogRef: MatDialogRef<any> = this.dialog.open(ThirdPartyDialogComponent, { ...SizemodalInitializer, data: { data: row, mode: mode } });
+    dialogRef.afterClosed().subscribe(result => {
+      this.getData(
+        this.dataValue.pageable.pageNumber,
+        this.dataValue.pageable.pageSize,
+        this.searchValue
+      );
+    });
   }
 
 }

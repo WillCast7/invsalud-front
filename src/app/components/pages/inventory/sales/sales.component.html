@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row">
-        <app-table-header-controls-component (action)="buttonAction($event)" />
-        <app-table [columns]="orderColumns" [pageable]="dataValue" [options]="tableOptions"
-            (action)="tableAction($event)" />
+        <app-table-header-controls-component [toggleList]="toggleList()" [buttonsList]="buttonsList()"
+            (action)="buttonAction($event)" />
+        <app-table [columns]="orderColumns" [pageable]="dataValue" (action)="tableAction($event)" />
     </div>
 </div>

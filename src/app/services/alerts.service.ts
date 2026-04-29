@@ -5,69 +5,73 @@ import Swal from 'sweetalert2';
   providedIn: 'root'
 })
 export class AlertService {
-    infoMixin = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        background: 'rgba(255, 255, 255, 0.97)',
-        showConfirmButton: false,
-        timer: 7000,
-        customClass: {
-          container: 'swal2-on-top'
-        },
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-      });
+  infoMixin = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    background: 'rgba(255, 255, 255, 0.97)',
+    showConfirmButton: false,
+    timer: 7000,
+    target: 'mat-dialog-container',
+    customClass: {
+      container: 'swal2-on-top'
+    },
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  });
 
-      reCallMixin = Swal.mixin({
-        toast: true,
-        showConfirmButton: true,
-        showCancelButton: true,
-        cancelButtonColor: '#ac0505',
-        confirmButtonColor: '#3d5a80',
-        confirmButtonText: 'Aceptar',
-        cancelButtonText: 'Cerrar',
-        position: 'top-end',
-        background: 'rgba(255, 255, 255, 0.9)',
-        timer: 6000,
-        customClass: {
-          container: 'swal2-on-top'
-        },
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-      });
+  reCallMixin = Swal.mixin({
+    toast: true,
+    showConfirmButton: true,
+    showCancelButton: true,
+    cancelButtonColor: '#ac0505',
+    confirmButtonColor: '#3d5a80',
+    confirmButtonText: 'Aceptar',
+    cancelButtonText: 'Cerrar',
+    target: 'mat-dialog-container',
+    position: 'top-end',
+    background: 'rgba(255, 255, 255, 0.9)',
+    timer: 6000,
+    customClass: {
+      container: 'swal2-on-top'
+    },
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  });
 
-      modal  = Swal.mixin({
-        showCancelButton: true,
-        inputAttributes: {
-          autocorrect: 'off'
-        },
-        showLoaderOnConfirm: true,
-        cancelButtonColor: '#ac0505',
-        confirmButtonColor: '#3d5a80',
-        confirmButtonText: 'Aceptar',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-          container: 'swal2-on-top'
-        },
-      })
+  modal = Swal.mixin({
+    showCancelButton: true,
+    inputAttributes: {
+      autocorrect: 'off'
+    },
+    showLoaderOnConfirm: true,
+    cancelButtonColor: '#ac0505',
+    confirmButtonColor: '#3d5a80',
+    confirmButtonText: 'Aceptar',
+    cancelButtonText: 'Cancelar',
+    target: 'mat-dialog-container',
+    customClass: {
+      container: 'swal2-on-top'
+    },
+  })
 
-      modalWithInput = Swal.mixin({
-        showCancelButton: true,
-        inputAttributes: {
-          autocorrect: 'off'
-        },
-        showLoaderOnConfirm: true,
-        cancelButtonColor: '#ac0505',
-        confirmButtonColor: '#3d5a80',
-        confirmButtonText: 'Aceptar',
-        cancelButtonText: 'Cancelar',
-        input: 'text',
-        customClass: {
-          container: 'swal2-on-top'
-        },
-      })
+  modalWithInput = Swal.mixin({
+    showCancelButton: true,
+    inputAttributes: {
+      autocorrect: 'off'
+    },
+    showLoaderOnConfirm: true,
+    cancelButtonColor: '#ac0505',
+    confirmButtonColor: '#3d5a80',
+    confirmButtonText: 'Aceptar',
+    cancelButtonText: 'Cancelar',
+    target: 'mat-dialog-container',
+    input: 'text',
+    customClass: {
+      container: 'swal2-on-top'
+    },
+  })
 }

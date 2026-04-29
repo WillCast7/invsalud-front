@@ -226,7 +226,7 @@
                   <mat-label>Productos</mat-label>
                   <mat-select formControlName="products" multiple>
                     @for (product of productsList; track product.id) {
-                    <mat-option [value]="product.id">{{ product.name }} ({{product.code}})</mat-option>
+                    <mat-option [value]="product">{{ product.name }} ({{product.code}})</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>

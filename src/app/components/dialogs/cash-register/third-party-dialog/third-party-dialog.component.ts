@@ -116,15 +116,8 @@ export class ThirdPartyDialogComponent {
 
   onSend() {
     if (this.form.valid) {
-      const payload = { ...this.form.value };
-      if (payload.resolutions && payload.resolutions.length > 0) {
-        payload.resolutions = payload.resolutions.map((res: any) => ({
-          ...res,
-          products: res.products ? res.products.map((pId: number) => ({ id: pId })) : []
-        }));
-      }
 
-      this.restService.postRequest("/thirdparty", payload).subscribe({
+      this.restService.postRequest("/thirdparty", this.form.value).subscribe({
         next: (objData) => {
           this.alertService.infoMixin.fire({
             icon: 'success',
@@ -204,7 +197,7 @@ export class ThirdPartyDialogComponent {
                       expirationDate: [res.expirationDate, Validators.required],
                       description: [res.description],
                       isActive: [res.isActive],
-                      products: [res.products ? res.products.map(p => p.id) : []]
+                      products: [res.products]
                     })
                   );
                 });

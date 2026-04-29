@@ -23,37 +23,43 @@
       </div>
       }
 
-      <div class="grid grid-cols-2 gap-4">
-        <mat-form-field appearance="outline" class="col-6">
-          <mat-label>Serial Inicial</mat-label>
-          <input matInput type="number" formControlName="initialSerial">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="col-6">
+      <div class="grid grid-cols-2 gap-4 justify-content-center d-flex">
+        <mat-form-field appearance="outline" class="col-5">
           <mat-label>Unidades</mat-label>
           <input matInput type="number" formControlName="units">
         </mat-form-field>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <mat-form-field appearance="outline" class="col-6">
-          <mat-label>Serial Final</mat-label>
-          <input matInput [value]="finalSerial" readonly>
-        </mat-form-field>
-
         <mat-form-field appearance="outline" class="col-6">
           <mat-label>Total</mat-label>
           <input matInput [value]="total" readonly>
           <span matTextPrefix>$&nbsp;</span>
         </mat-form-field>
       </div>
+      <!-- Resumen de Totales Inferior -->
+      <div class="col-12 mt-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between bg-light p-3 rounded border shadow-sm">
+          <div class="d-flex flex-column mb-2 mb-md-0">
+            <span class="text-muted small text-uppercase fw-bold">Unidades</span>
+            <span class="fs-4 fw-bold text-dark">{{ mainForm.get('units')?.value || 0 }}</span>
+          </div>
+
+          <div class="d-flex flex-column mb-2 mb-md-0 border-start ps-4">
+            <span class="text-muted small text-uppercase fw-bold">Precio Unitario</span>
+            <span class="fs-4 fw-bold text-primary">{{ salePrice | currency }}</span>
+          </div>
+
+          <div class="d-flex flex-column border-start ps-4">
+            <span class="text-muted small text-uppercase fw-bold">Total Cotizado</span>
+            <span class="fs-3 fw-bold text-success">{{ total | currency }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </form>
 </mat-dialog-content>
 
-<hr>
-<mat-dialog-actions align="end">
-  <button mat-flat-button class="save-button" color="primary" (click)="onSubmit()" [disabled]="mode === 'view'">
-    Guardar
-  </button>
-  <button mat-button mat-dialog-close class="cancel-button" (click)="onCancel()">Cancelar</button>
+<mat-dialog-actions align="end" class="p-3 border-top bg-light">
+  <button mat-button mat-dialog-close class="cancel-button me-2" (click)="onCancel()">Cerrar</button>
+  @if (mode === 'create') {
+  <button mat-flat-button color="primary" class="save-button" (click)="onSubmit()">Guardar</button>
+  }
 </mat-dialog-actions>

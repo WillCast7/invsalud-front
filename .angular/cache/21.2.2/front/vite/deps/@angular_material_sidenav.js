@@ -18,8 +18,6 @@ import "./chunk-N4DOILP3.js";
 import "./chunk-X7HBQNBS.js";
 import "./chunk-AYGN46MO.js";
 import "./chunk-L54X2O2E.js";
-import "./chunk-TH5FZGM6.js";
-import "./chunk-FPHCFDLT.js";
 import {
   CdkScrollable,
   CdkScrollableModule,
@@ -32,6 +30,8 @@ import {
   BidiModule,
   Directionality
 } from "./chunk-JLBUACPJ.js";
+import "./chunk-FPHCFDLT.js";
+import "./chunk-TH5FZGM6.js";
 import {
   Platform
 } from "./chunk-RODSRFG6.js";

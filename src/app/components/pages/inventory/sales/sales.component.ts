@@ -19,6 +19,9 @@ import { TableComponent } from "../../../../shared/table/table.component";
 import { ColumnTableInterface } from '../../../../models/table/column-table-interface';
 import { TableOption } from '../../../../models/table/table-options-interface';
 import { OrderInterface } from '../../../../models/inventory/order-interface';
+import { SaleDialogComponent } from '../../../dialogs/inventory/sale/sale-dialog.component';
+import { SaleRecipeDialogComponent } from '../../../dialogs/inventory/sale-recipe/sale-recipe-dialog.component';
+import { SizemodalInitializer } from '../../../../models/modal/sizemodal-interface';
 
 @Component({
   selector: 'app-sales',
@@ -47,29 +50,47 @@ export class SalesComponent {
   pageEvent: PageEvent = new PageEvent;
   dataValue: PageableInterface<OrderInterface> = PageableInitializer;
   searchValue = "";
-  url = '/orders/sales';
+  url = '/sales/special';
+
+  pageMode = signal<string>('special');
 
   orderColumns: ColumnTableInterface[] = [
-    { key: 'id', label: 'ID', isSortable: true },
     { key: 'orderCode', label: 'Cod. Venta', isSortable: true },
     { key: 'thirdParty', label: 'Tercero', isSortable: true },
     { key: 'total', label: 'Total', isSortable: true },
-    { key: 'status', label: 'Estado', isSortable: true },
-    { key: 'createdAt', label: 'F. Creación', isSortable: true, pipe: 'date' },
-    { key: 'expirateAt', label: 'F. Expiración', isSortable: true, pipe: 'date' },
-    { key: 'observations', label: 'Observaciones', isSortable: false }
+    { key: 'createdAt', label: 'F. Creación', isSortable: true, pipe: 'date' }
   ];
 
-  tableOptions: TableOption[] = [
-    { icon: 'visibility', label: 'Ver cotización', identifier: 'view', color: 'primary' },
-    { icon: 'edit', label: 'Editar cotización', identifier: 'edit', color: 'primary' },
-    { icon: 'autorenew', label: 'Cambiar estado', identifier: 'changeStatus', color: 'accent' }
-  ];
+  toggleList = signal<TableOption[]>([
+    { icon: 'inventory', label: 'Control Especial', identifier: 'special', color: 'primary', title: 'Medicamentos de control especial y monopolio del estado' },
+    { icon: 'inventory', label: 'Salud Publica', identifier: 'public', color: 'primary', title: 'Medicamentos de salud publica' },
+    { icon: 'inventory', label: 'Recetarios', identifier: 'recipe', color: 'primary', title: 'Recetarios' }
+  ]);
+
+  buttonsList = signal<TableOption[]>([]);
 
   buttonAction(event: { type: string, row: any }) {
     switch (event.type) {
-      case 'createOrder':
-        this.openModalOrder('create');
+      case 'special':
+        this.pageMode.set('special');
+        this.url = '/sales/special';
+        this.buttonsList.set([]);
+        this.getData(0, this.dataValue.pageable.pageSize, this.searchValue);
+        break;
+      case 'public':
+        this.pageMode.set('public');
+        this.url = '/sales/public';
+        this.buttonsList.set([{ icon: 'add', label: 'Crear Salida', identifier: 'createSale', color: 'primary' }]);
+        this.getData(0, this.dataValue.pageable.pageSize, this.searchValue);
+        break;
+      case 'recipe':
+        this.pageMode.set('recipe');
+        this.url = '/sales/recipe';
+        this.buttonsList.set([]);
+        this.getData(0, this.dataValue.pageable.pageSize, this.searchValue);
+        break;
+      case 'createSale':
+        this.openModalSale('create', undefined);
         break;
       case 'search':
         this.search(event.row);
@@ -79,14 +100,12 @@ export class SalesComponent {
 
   tableAction(event: { type: string, row: OrderInterface }) {
     switch (event.type) {
-      case 'edit':
-        this.openModalOrder(event.type, event.row);
-        break;
       case 'view':
-        this.openModalOrder(event.type, event.row);
-        break;
-      case 'changeStatus':
-        this.changeStatus(event.row);
+        if (this.pageMode() === 'recipe') {
+          this.openModalSaleRecipe(event.row);
+        } else {
+          this.openModalSale('view', event.row);
+        }
         break;
     }
   }
@@ -145,11 +164,24 @@ export class SalesComponent {
     });
   }
 
-  openModalOrder(type: string, row: OrderInterface | undefined = undefined) {
-    // Modal en desarrollo. Cuando se cree el dialogComponent, se añadirá aquí su lógica.
-    this.alertService.infoMixin.fire({
-      icon: 'info',
-      title: 'Funcionalidad de formulario en desarrollo',
+  openModalSale(mode: string, row: OrderInterface | undefined) {
+    this.dialog.open(SaleDialogComponent, {
+      ...SizemodalInitializer,
+      data: { mode: mode, type: this.pageMode(), data: row }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        if (result.message) {
+          this.alertService.infoMixin.fire({ icon: 'success', title: result.message });
+        }
+        this.getData(this.dataValue.pageable.pageNumber, this.dataValue.pageable.pageSize, this.searchValue);
+      }
+    });
+  }
+
+  openModalSaleRecipe(row: OrderInterface) {
+    this.dialog.open(SaleRecipeDialogComponent, {
+      ...SizemodalInitializer,
+      data: { mode: 'view', type: 'recipe', data: row }
     });
   }
 

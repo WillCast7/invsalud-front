@@ -70,16 +70,8 @@ export class OrderRecipeDialogComponent implements OnInit {
   initForm() {
     this.mainForm = this.fb.group({
       thirdParty: [null, Validators.required],
-      initialSerial: [null, [Validators.required, Validators.min(0)]],
       units: [1, [Validators.required, Validators.min(1)]]
     });
-  }
-
-  get finalSerial() {
-    const init = this.mainForm.get('initialSerial')?.value || 0;
-    const units = this.mainForm.get('units')?.value || 0;
-    if (units <= 0) return 0;
-    return init + units - 1;
   }
 
   get total() {
@@ -126,21 +118,15 @@ export class OrderRecipeDialogComponent implements OnInit {
   }
 
   loadDataForEditAndView(order: any) {
-    // Attempt to extract units and initialSerial from observations if possible, 
-    // or from custom properties if the backend returns them.
-    let parsedInitial = order.initialSerial || 0;
     let parsedUnits = order.units || 1;
 
     if (order.observations) {
       // Regex to extract basic text from "Serial Inicial: 10, Serial Final: 10, Unidades: 1"
-      const initialMatch = order.observations.match(/Serial Inicial:\s*(\d+)/);
       const unitsMatch = order.observations.match(/Unidades:\s*(\d+)/);
-      if (initialMatch) parsedInitial = parseInt(initialMatch[1], 10);
       if (unitsMatch) parsedUnits = parseInt(unitsMatch[1], 10);
     }
 
     this.mainForm.patchValue({
-      initialSerial: parsedInitial,
       units: parsedUnits
     });
   }
@@ -164,11 +150,8 @@ export class OrderRecipeDialogComponent implements OnInit {
       thirdParty: value.thirdParty?.id?.toString() || value.thirdParty,
       type: 'recipe',
       total: this.total,
-      initialSerial: value.initialSerial,
-      finalSerial: this.finalSerial,
       units: value.units,
-      observations: `Serial Inicial: ${value.initialSerial}, Serial Final: ${this.finalSerial}, Unidades: ${value.units}`,
-      orderItems: [] // Keeping orderItems empty; typical for recetarios orders if handled specially 
+      items: []
     };
 
     const url = this.mode === 'edit' ? `/orders/${this.data.data.id}` : '/orders';
@@ -176,11 +159,7 @@ export class OrderRecipeDialogComponent implements OnInit {
 
     request.subscribe({
       next: (res) => {
-        this.alertService.infoMixin.fire({
-          icon: 'success',
-          title: 'Cotización guardada correctamente'
-        });
-        this.dialogRef.close(true);
+        this.dialogRef.close({ success: true, message: 'Cotización guardada correctamente' });
       },
       error: (err) => {
         this.alertService.infoMixin.fire({

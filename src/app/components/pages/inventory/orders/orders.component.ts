@@ -50,24 +50,16 @@ export class OrdersComponent {
   pageEvent: PageEvent = new PageEvent;
   dataValue: PageableInterface<OrderInterface> = PageableInitializer;
   searchValue = "";
-  url = '/orders';
+  url = '/orders/special';
   pageMode = signal<string>('special');
 
   orderColumns: ColumnTableInterface[] = [
-    { key: 'id', label: 'ID', isSortable: true },
     { key: 'orderCode', label: 'Cod. Cotización', isSortable: true },
     { key: 'thirdParty', label: 'Tercero', isSortable: true },
     { key: 'total', label: 'Total', isSortable: true },
-    { key: 'status', label: 'Estado', isSortable: true },
     { key: 'createdAt', label: 'F. Creación', isSortable: true, pipe: 'date' },
     { key: 'expirateAt', label: 'F. Expiración', isSortable: true, pipe: 'date' },
-    { key: 'observations', label: 'Observaciones', isSortable: false }
-  ];
-
-  tableOptions: TableOption[] = [
-    { icon: 'visibility', label: 'Ver cotización', identifier: 'view', color: 'primary' },
-    { icon: 'edit', label: 'Editar cotización', identifier: 'edit', color: 'primary' },
-    { icon: 'autorenew', label: 'Cambiar estado', identifier: 'changeStatus', color: 'accent' }
+    { key: 'status', label: 'Estado', isSortable: true }
   ];
 
   buttonsList = signal<TableOption[]>([
@@ -76,7 +68,6 @@ export class OrdersComponent {
 
   toggleList = signal<TableOption[]>([
     { icon: 'inventory', label: 'Control Especial', identifier: 'special', color: 'primary', title: 'Medicamentos de control especial y monopolio del estado' },
-    { icon: 'inventory', label: 'Salud Publica', identifier: 'public', color: 'primary', title: 'Medicamentos de salud publica' },
     { icon: 'inventory', label: 'Recetarios', identifier: 'recipe', color: 'primary', title: 'Recetarios' }
   ]);
 
@@ -84,12 +75,13 @@ export class OrdersComponent {
     switch (event.type) {
       case 'special':
         this.pageMode.set(event.type);
-        break;
-      case 'public':
-        this.pageMode.set(event.type);
+        this.url = '/orders/special';
+        this.getData(0, this.dataValue.pageable.pageSize, this.searchValue);
         break;
       case 'recipe':
         this.pageMode.set(event.type);
+        this.url = '/orders/recipe';
+        this.getData(0, this.dataValue.pageable.pageSize, this.searchValue);
         break;
       case 'createOrder':
         if (this.pageMode() !== 'recipe') {
@@ -101,7 +93,6 @@ export class OrdersComponent {
       case 'search':
         this.search(event.row);
         break;
-
     }
   }
 
@@ -179,8 +170,14 @@ export class OrdersComponent {
       data: { mode: type, type: this.pageMode(), data: row }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
+        if (result.message) {
+          this.alertService.infoMixin.fire({
+            icon: 'success',
+            title: result.message
+          });
+        }
         this.getData(
           this.dataValue.pageable.pageNumber,
           this.dataValue.pageable.pageSize,
@@ -197,8 +194,14 @@ export class OrdersComponent {
       data: { mode: type, type: this.pageMode(), data: row }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
+        if (result.message) {
+          this.alertService.infoMixin.fire({
+            icon: 'success',
+            title: result.message
+          });
+        }
         this.getData(
           this.dataValue.pageable.pageNumber,
           this.dataValue.pageable.pageSize,

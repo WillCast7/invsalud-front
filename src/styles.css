@@ -3,7 +3,7 @@
 button.mat-mdc-button.save-button,
 button.mat-mdc-raised-button.save-button,
 button.mat-mdc-unelevated-button.save-button {
-  background: linear-gradient(135deg, #3d5a80 0%, #3d5a80 100%) !important;
+  background: linear-gradient(135deg, #3d5a80 0%, #102239 100%) !important;
   color: white !important;
   padding: 0 24px !important;
 }
@@ -16,20 +16,36 @@ button.mat-mdc-unelevated-button.cancel-button {
   padding: 0 24px !important;
 }
 
+button.mat-mdc-button.return-button,
+button.mat-mdc-raised-button.return-button,
+button.mat-mdc-unelevated-button.return-button {
+  background: linear-gradient(135deg, #391010 0%, #803d3d 100%) !important;
+  color: white !important;
+  padding: 0 24px !important;
+}
+
 button.save-button:disabled {
   background: #ccc !important;
   color: #666 !important;
 }
 
-button.save-button:hover:not(:disabled){ 
+button.save-button:hover:not(:disabled) {
   filter: brightness(1.1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   transition: all 0.25s ease;
 }
 
 
-html, body { height: 100%;  }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
 /* Fuerza a SweetAlert2 a estar siempre por encima de Angular Material (z-index: 1000) */
 .swal2-on-top {
   z-index: 10000 !important;

@@ -1,0 +1,121 @@
+<h2 mat-dialog-title>{{ title() }}</h2>
+<hr>
+
+<mat-dialog-content>
+  @if (mode === 'view') {
+  <div class="container-fluid py-2">
+    <!-- Header info: Codigo y Estado -->
+    <div class="row mb-4 bg-light p-3 rounded border">
+      <div class="col-md-6">
+        <p class="mb-0 text-muted small">Código de Venta</p>
+        <h3 class="fw-bold text-primary mb-0">{{ data.data?.orderCode || '---' }}</h3>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <p class="mb-0 text-muted small">Fecha de Creación</p>
+        <p class="fw-medium mb-0">{{ data.data?.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    </div>
+
+    <!-- Tercero Info -->
+    <div class="p-3 rounded mb-4 border shadow-sm bg-white">
+      <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Información del Cliente</p>
+      <div class="row small">
+        <div class="col-md-4 mb-2">
+          <strong class="text-muted">Nombre:</strong><br> {{ data.data?.thirdParty?.fullName }}
+        </div>
+        <div class="col-md-4 mb-2">
+          <strong class="text-muted">Documento:</strong><br> {{ data.data?.thirdParty?.documentType }} {{
+          data.data?.thirdParty?.documentNumber }}
+        </div>
+        <div class="col-md-4 mb-2">
+          <strong class="text-muted">Dirección:</strong><br> {{ data.data?.thirdParty?.address || 'N/A' }}
+        </div>
+        <div class="col-md-4">
+          <strong class="text-muted">Email:</strong><br> {{ data.data?.thirdParty?.email || 'N/A' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen de Totales Inferior -->
+    <div class="col-12 mt-4">
+      <div class="d-flex flex-wrap align-items-center justify-content-between bg-light p-3 rounded border shadow-sm">
+        <div class="d-flex flex-column mb-2 mb-md-0">
+          <span class="text-muted small text-uppercase fw-bold">Unidades</span>
+          <span class="fs-4 fw-bold text-dark">{{ mainForm.get('units')?.value || 0 }}</span>
+        </div>
+
+        <div class="d-flex flex-column mb-2 mb-md-0 border-start ps-4">
+          <span class="text-muted small text-uppercase fw-bold">Precio Unitario</span>
+          <span class="fs-4 fw-bold text-primary">{{ salePrice | currency }}</span>
+        </div>
+
+        <div class="d-flex flex-column border-start ps-4">
+          <span class="text-muted small text-uppercase fw-bold">Total Cotizado</span>
+          <span class="fs-3 fw-bold text-success">{{ total | currency }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  } @else {
+  <form [formGroup]="mainForm" class="flex col-12 gap-4 mt-4">
+    <div class="col-md-12">
+      <mat-form-field appearance="outline" class="col-12">
+        <mat-label>Tercero (Cliente/Proveedor)</mat-label>
+        <mat-select formControlName="thirdParty" [compareWith]="compareWithId">
+          <mat-option *ngFor="let supplier of suppliers" [value]="supplier">
+            {{ supplier.fullName }} - {{ supplier.documentNumber }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      @if (mainForm.get('thirdParty')?.value) {
+      <div class="bg-light p-2 rounded mb-4 text-secondary small d-flex flex-wrap gap-4">
+        <span><strong>Nombre:</strong> {{ mainForm.get('thirdParty')?.value?.fullName }}</span>
+        <span><strong>Documento:</strong> {{ mainForm.get('thirdParty')?.value?.documentType }} {{
+          mainForm.get('thirdParty')?.value?.documentNumber }}</span>
+        <span><strong>Email:</strong> {{ mainForm.get('thirdParty')?.value?.email || 'N/A' }}</span>
+        <span><strong>Dirección:</strong> {{ mainForm.get('thirdParty')?.value?.address || 'N/A' }}</span>
+      </div>
+      }
+
+      <div class="grid grid-cols-2 gap-4 justify-content-center d-flex">
+        <mat-form-field appearance="outline" class="col-5">
+          <mat-label>Unidades</mat-label>
+          <input matInput type="number" formControlName="units">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col-6">
+          <mat-label>Total</mat-label>
+          <input matInput [value]="total" readonly>
+          <span matTextPrefix>$&nbsp;</span>
+        </mat-form-field>
+      </div>
+      <!-- Resumen de Totales Inferior -->
+      <div class="col-12 mt-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between bg-light p-3 rounded border shadow-sm">
+          <div class="d-flex flex-column mb-2 mb-md-0">
+            <span class="text-muted small text-uppercase fw-bold">Unidades</span>
+            <span class="fs-4 fw-bold text-dark">{{ mainForm.get('units')?.value || 0 }}</span>
+          </div>
+
+          <div class="d-flex flex-column mb-2 mb-md-0 border-start ps-4">
+            <span class="text-muted small text-uppercase fw-bold">Precio Unitario</span>
+            <span class="fs-4 fw-bold text-primary">{{ salePrice | currency }}</span>
+          </div>
+
+          <div class="d-flex flex-column border-start ps-4">
+            <span class="text-muted small text-uppercase fw-bold">Total Cotizado</span>
+            <span class="fs-3 fw-bold text-success">{{ total | currency }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-3 border-top bg-light">
+  <button mat-button mat-dialog-close class="cancel-button me-2" (click)="onCancel()">Cerrar</button>
+  @if (mode === 'create' || mode === 'edit') {
+  <button mat-flat-button color="primary" class="save-button" (click)="onSubmit()">Guardar</button>
+  }
+</mat-dialog-actions>
