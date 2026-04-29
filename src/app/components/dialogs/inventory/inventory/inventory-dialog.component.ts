@@ -33,8 +33,8 @@ import { BatchInterface } from '../../../../models/inventory/batch-interface';
     CommonModule
   ],
   providers: [
-    {provide: DateAdapter, useClass: NativeDateAdapter},
-    {provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS}
+    { provide: DateAdapter, useClass: NativeDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS }
   ],
   templateUrl: './inventory-dialog.component.html',
   styleUrl: './inventory-dialog.component.css'
@@ -48,10 +48,10 @@ export class InventoryDialogComponent {
   batches = signal<BatchInterface[]>([]);
 
   constructor(
-      private readonly formBuilder: FormBuilder,
-      private restService: RestApiService,
-      private alertService: AlertService,
-      @Inject(MAT_DIALOG_DATA) public data: {mode: string, data: any | undefined}
+    private readonly formBuilder: FormBuilder,
+    private restService: RestApiService,
+    private alertService: AlertService,
+    @Inject(MAT_DIALOG_DATA) public data: { mode: string, data: any | undefined }
   ) {
     this.getData();
   }
@@ -70,13 +70,13 @@ export class InventoryDialogComponent {
     });
   }
 
-  onSubmit(){
+  onSubmit() {
     if (this.inventoryForm.valid) {
       const payload = this.inventoryForm.value;
       const url = "/prescription-inventory";
-      
-      const request$ = this.data.mode === 'create' 
-        ? this.restService.postRequest(url, payload) 
+
+      const request$ = this.data.mode === 'create'
+        ? this.restService.postRequest(url, payload)
         : this.restService.putRequest(url + "/" + payload.id, payload);
 
       request$.subscribe({
@@ -108,22 +108,22 @@ export class InventoryDialogComponent {
 
   getData() {
     this.initializeForm();
-    
-    this.restService.getRequest("/products", {page: 0, size: 1000, searchValue: ''}).subscribe({
+
+    this.restService.getRequest("/products", { page: 0, size: 1000, searchValue: '' }).subscribe({
       next: (res) => this.products.set(res.pageable?.content || [])
     });
-    this.restService.getRequest("/batches", {page: 0, size: 1000, searchValue: ''}).subscribe({
+    this.restService.getRequest("/batches", { page: 0, size: 1000, searchValue: '' }).subscribe({
       next: (res) => this.batches.set(res.pageable?.content || [])
     });
 
-    if(this.data.mode === "create"){
+    if (this.data.mode === "create") {
       this.title.set("Crear inventario");
     } else {
       this.restService.getRequest("/prescription-inventory/" + this.data.data?.id).subscribe({
         next: (objData) => {
           this.inventory = objData.data || objData;
-          
-          if(this.data.mode === "edit"){
+
+          if (this.data.mode === "edit") {
             this.title.set("Editar inventario");
             this.inventoryForm.patchValue({
               id: this.inventory.id,
@@ -137,7 +137,7 @@ export class InventoryDialogComponent {
               isActive: this.inventory.isActive
             });
           } else {
-            this.title.set("Ver inventario");
+            this.title.set("Detalles del medicamento");
           }
         },
         error: (error) => {

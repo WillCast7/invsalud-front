@@ -1,6 +1,6 @@
 export interface RecipeInterface {
     id: number;
-    totalUnits: number;
-    availableUnits: number;
-    salePrice: number;
+    total: number;
+    units: number;
+    priceUnit: number;
 }

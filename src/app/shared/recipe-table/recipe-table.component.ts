@@ -17,7 +17,7 @@ import { RecipeInterface } from '../../models/inventory/recipe-interface';
                <mat-icon color="primary" class="me-3" style="font-size: 3rem; width: 3rem; height: 3rem;">inventory_2</mat-icon>
                <div>
                  <p class="text-muted mb-1 fw-bold">Unidades Disponibles</p>
-                 <h2 class="mb-0 text-primary fw-bold fs-1">{{ recipeData.availableUnits }}</h2>
+                 <h2 class="mb-0 text-primary fw-bold fs-1">{{ recipeData.units }}</h2>
                </div>
             </mat-card-content>
           </mat-card>
@@ -29,7 +29,7 @@ import { RecipeInterface } from '../../models/inventory/recipe-interface';
                <mat-icon color="accent" class="me-3" style="font-size: 3rem; width: 3rem; height: 3rem;">archive</mat-icon>
                <div>
                  <p class="text-muted mb-1 fw-bold">Unidades Historicas Totales</p>
-                 <h2 class="mb-0 fw-bold fs-1" style="color: #6c757d;">{{ recipeData.totalUnits }}</h2>
+                 <h2 class="mb-0 fw-bold fs-1" style="color: #6c757d;">{{ recipeData.total }}</h2>
                </div>
             </mat-card-content>
           </mat-card>
@@ -41,7 +41,7 @@ import { RecipeInterface } from '../../models/inventory/recipe-interface';
                <mat-icon color="warn" class="me-3" style="font-size: 3rem; width: 3rem; height: 3rem;">payments</mat-icon>
                <div>
                  <p class="text-muted mb-1 fw-bold">Precio de Venta</p>
-                 <h2 class="mb-0 fw-bold fs-2 text-success">{{ recipeData.salePrice | currency }}</h2>
+                 <h2 class="mb-0 fw-bold fs-2 text-success">{{ recipeData.priceUnit | currency }}</h2>
                </div>
             </mat-card-content>
           </mat-card>

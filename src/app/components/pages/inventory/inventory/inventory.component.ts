@@ -67,12 +67,6 @@ export class InventoryComponent {
     { key: 'isActive', label: 'Estado', isSortable: false, pipe: 'status' }
   ];
 
-  tableOptions: TableOption[] = [
-    { icon: 'visibility', label: 'Ver inventario', identifier: 'view', color: 'primary' },
-    { icon: 'edit', label: 'Editar inventario', identifier: 'edit', color: 'primary' },
-    { icon: 'autorenew', label: 'Cambiar estado', identifier: 'changeStatus', color: 'accent' }
-  ];
-
   toggleList = signal<TableOption[]>([
     { icon: 'inventory', label: 'Control Especial', identifier: 'special', color: 'primary', title: 'Medicamentos de control especial y monopolio del estado' },
     { icon: 'inventory', label: 'Salud Publica', identifier: 'public', color: 'primary', title: 'Medicamentos de salud publica' },
@@ -96,8 +90,7 @@ export class InventoryComponent {
         if (event.type === 'recipe') {
           this.getRecipeData(0, 10, this.searchValue);
         } else {
-          // Si hay que cambiar parametros según tipo, se hace aquí
-          this.getData(0, 10, this.searchValue);
+          this.getData(0, 10, this.searchValue, event.type);
         }
         break;
     }
@@ -124,7 +117,8 @@ export class InventoryComponent {
     this.getData(
       this.dataValue.pageable.pageNumber,
       this.dataValue.pageable.pageSize,
-      this.searchValue
+      this.searchValue,
+      this.pageMode()
     );
   }
 
@@ -133,7 +127,7 @@ export class InventoryComponent {
       // Recetario view has no pagination since it's a single item
       return;
     } else {
-      this.getData(e.pageIndex, e.pageSize, this.searchValue);
+      this.getData(e.pageIndex, e.pageSize, this.searchValue, this.pageMode());
     }
   }
 
@@ -158,7 +152,8 @@ export class InventoryComponent {
             this.getData(
               this.dataValue.pageable.pageNumber,
               this.dataValue.pageable.pageSize,
-              this.searchValue
+              this.searchValue,
+              this.pageMode()
             );
           },
           error: (error) => {
@@ -180,13 +175,14 @@ export class InventoryComponent {
       this.getData(
         this.dataValue.pageable.pageNumber,
         this.dataValue.pageable.pageSize,
-        this.searchValue
+        this.searchValue,
+        this.pageMode()
       );
     });
   }
 
-  getData(page: number, size: number, searchValue: string) {
-    this.restService.getRequest(this.url, { page: page, size: size, searchValue: searchValue }).subscribe({
+  getData(page: number, size: number, searchValue: string, type: string) {
+    this.restService.getRequest(this.url, { page: page, size: size, searchValue: searchValue, type: type }).subscribe({
       next: (objData) => {
         this.dataValue = objData.pageable;
       },
@@ -202,7 +198,7 @@ export class InventoryComponent {
   getRecipeData(page: number, size: number, searchValue: string) {
     // Si la API devuelve un solo objeto en la raíz, o dentro de 'data'
     // Puedes ajustar el endpoint si es distinto de '/recipes'
-    this.restService.getRequest('/recipes', { searchValue }).subscribe({
+    this.restService.getRequest('/recipes').subscribe({
       next: (objData) => {
         // En caso de que venga dentro de data
         const payload = objData?.data || objData;
@@ -230,7 +226,7 @@ export class InventoryComponent {
     if (this.pageMode() === 'recipe') {
       this.getRecipeData(0, 10, this.searchValue);
     } else {
-      this.getData(0, 10, this.searchValue);
+      this.getData(0, 10, this.searchValue, this.pageMode());
     }
   }
 }
