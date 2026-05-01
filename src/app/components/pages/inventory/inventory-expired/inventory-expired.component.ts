@@ -49,6 +49,7 @@ export class InventoryExpiredComponent {
   dataValue: PageableInterface<PrescriptionInventoryTableInterface> = PageableInitializer;
   searchValue = "";
   url = '/prescription-inventory/expired';
+  pageMode = signal<string>('expired');
 
   inventoryColumns: ColumnTableInterface[] = [
     { key: 'id', label: 'ID', isSortable: true },
@@ -58,19 +59,16 @@ export class InventoryExpiredComponent {
     { key: 'salePrice', label: 'P. Venta', isSortable: true },
     { key: 'totalUnits', label: 'Unid. Totales', isSortable: true },
     { key: 'availableUnits', label: 'Unid. Disp.', isSortable: true },
-    { key: 'expirationDate', label: 'Fecha Venc.', isSortable: true, pipe: 'date' },
-    { key: 'isActive', label: 'Estado', isSortable: false, pipe: 'status' }
+    { key: 'expirationDate', label: 'Fecha Venc.', isSortable: true, pipe: 'date' }
   ];
 
   tableOptions: TableOption[] = [
-    { icon: 'visibility', label: 'Ver inventario', identifier: 'view', color: 'primary' },
-    { icon: 'edit', label: 'Editar inventario', identifier: 'edit', color: 'primary' },
-    { icon: 'autorenew', label: 'Cambiar estado', identifier: 'changeStatus', color: 'accent' }
+    { icon: 'delete', label: 'Retirar este medicamento', identifier: 'remove' }
   ];
 
   toggleList = signal<TableOption[]>([
-    { icon: 'inventory', label: 'Control Especial', identifier: 'special', color: 'primary', title: 'Medicamentos de control especial y monopolio del estado' },
-    { icon: 'inventory', label: 'Salud Publica', identifier: 'public', color: 'primary', title: 'Medicamentos de salud publica' }
+    { icon: 'inventory', label: 'Medicamentos vencidos', identifier: 'expired', color: 'primary', title: 'Medicamentos vencidos' },
+    { icon: 'inventory', label: 'Medicamentos retirados', identifier: 'removed', color: 'primary', title: 'Medicamentos retirados' }
   ]);
 
   buttonAction(event: { type: string, row: any }) {
@@ -81,21 +79,60 @@ export class InventoryExpiredComponent {
       case 'search':
         this.search(event.row);
         break;
+      case 'expired':
+      case 'removed':
+        this.pageMode.set(event.type);
+        this.searchValue = '';
+        this.getData(0, 10, this.searchValue, event.type);
+        break;
+      case 'remove':
+        this.remove(event.row);
+        break;
     }
   }
 
   tableAction(event: { type: string, row: PrescriptionInventoryTableInterface }) {
     switch (event.type) {
-      case 'edit':
-        this.openModalInventory(event.type, event.row);
-        break;
-      case 'view':
-        this.openModalInventory(event.type, event.row);
-        break;
-      case 'changeStatus':
-        this.changeStatus(event.row);
+      case 'remove':
+        this.remove(event.row);
         break;
     }
+  }
+
+  remove(row: PrescriptionInventoryTableInterface) {
+    this.alertService.modal.fire({
+      icon: "warning",
+      title: 'Retirar medicamento?',
+      text: 'Esta accion no se puede deshacer',
+      showCancelButton: true,
+      confirmButtonText: 'Si',
+      confirmButtonColor: '#3d5a80',
+      cancelButtonColor: '#ac0505',
+      cancelButtonText: 'No'
+    }).then((result: any) => {
+      if (result.isConfirmed) {
+        this.restService.putRequest(this.url + "/drawal/" + row.id, {}).subscribe({
+          next: () => {
+            this.alertService.infoMixin.fire({
+              icon: 'success',
+              title: "Eliminado correctamente",
+            });
+            this.getData(
+              this.dataValue.pageable.pageNumber,
+              this.dataValue.pageable.pageSize,
+              this.searchValue,
+              this.pageMode()
+            );
+          },
+          error: (error) => {
+            this.alertService.infoMixin.fire({
+              icon: 'error',
+              title: error.error.message,
+            });
+          }
+        });
+      }
+    });
   }
 
   constructor(
@@ -105,7 +142,8 @@ export class InventoryExpiredComponent {
     this.getData(
       this.dataValue.pageable.pageNumber,
       this.dataValue.pageable.pageSize,
-      this.searchValue
+      this.searchValue,
+      this.pageMode()
     );
   }
 
@@ -113,7 +151,8 @@ export class InventoryExpiredComponent {
     this.getData(
       e.pageIndex,
       e.pageSize,
-      this.searchValue
+      this.searchValue,
+      this.pageMode()
     );
   }
 
@@ -138,7 +177,8 @@ export class InventoryExpiredComponent {
             this.getData(
               this.dataValue.pageable.pageNumber,
               this.dataValue.pageable.pageSize,
-              this.searchValue
+              this.searchValue,
+              this.pageMode()
             );
           },
           error: (error) => {
@@ -160,13 +200,16 @@ export class InventoryExpiredComponent {
       this.getData(
         this.dataValue.pageable.pageNumber,
         this.dataValue.pageable.pageSize,
-        this.searchValue
+        this.searchValue,
+        this.pageMode()
       );
     });
   }
 
-  getData(page: number, size: number, searchValue: string) {
-    this.restService.getRequest(this.url, { page: page, size: size, searchValue: searchValue }).subscribe({
+  getData(page: number, size: number, searchValue: string, type: string) {
+    console.log("type");
+    console.log(type);
+    this.restService.getRequest(this.url, { page: page, size: size, searchValue: searchValue, type: type }).subscribe({
       next: (objData) => {
         this.dataValue = objData.pageable;
       },
@@ -181,6 +224,6 @@ export class InventoryExpiredComponent {
 
   search(searchValue: string) {
     this.searchValue = searchValue;
-    this.getData(0, 10, this.searchValue);
+    this.getData(0, 10, this.searchValue, this.pageMode());
   }
 }
