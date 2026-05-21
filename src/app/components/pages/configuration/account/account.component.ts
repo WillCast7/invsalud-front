@@ -59,6 +59,12 @@ export class AccountComponent implements OnInit {
           {... SizemodalInitializer, data: {data: this.user(), mode: "editMyAccount"}});
           
         dialogRef.afterClosed().subscribe(result => {
+          if (result.message) {
+            this.alertService.infoMixin.fire({
+              icon: result.success ? 'success' : 'warning',
+              title: result.message
+            });
+          }
           this.getData();
         }); 
   }
@@ -67,6 +73,12 @@ export class AccountComponent implements OnInit {
     const dialogRef: MatDialogRef<any> = this.dialog.open(ChangePasswordComponent);
       
     dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.alertService.infoMixin.fire({
+          icon: result.success ? 'success' : 'warning',
+          title: result.message
+        });
+      }
       this.getData();
     }); 
   }

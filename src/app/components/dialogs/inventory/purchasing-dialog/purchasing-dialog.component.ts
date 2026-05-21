@@ -1,23 +1,37 @@
 import { Component, inject, Inject, signal, type OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators, FormGroupDirective, NgForm } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MatNativeDateModule, NativeDateAdapter } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, MatNativeDateModule, NativeDateAdapter, ErrorStateMatcher } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { ProductInterface } from '../../../../models/inventory/product-interface';
 import { BatchInterface } from '../../../../models/inventory/batch-interface';
 import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-interface';
 import { PurchaseExample, PurchaseInterface } from '../../../../models/inventory/purchase-interface';
+import { greaterThanValidator } from '../../../../shared/validators/custom-validators';
+import { ProductDialogComponent } from '../../management/product-dialog/product-dialog.component';
+import { BatchDialogComponent } from '../../management/batch-dialog/batch-dialog.component';
+
+export class ParentErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    const isSubmitted = form ? form.submitted : false;
+    const controlInvalid = !!(control && control.invalid && (control.dirty || control.touched));
+    const parentInvalid = !!(control && control.parent && control.parent.invalid && control.parent.hasError('priceLow') && (control.dirty || control.touched));
+
+    return controlInvalid || parentInvalid || (isSubmitted && parentInvalid);
+  }
+}
 
 @Component({
   selector: 'app-purchasing-dialog',
@@ -36,24 +50,41 @@ import { PurchaseExample, PurchaseInterface } from '../../../../models/inventory
     MatAutocompleteModule,
     MatChipsModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxMaskDirective
   ],
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
-    { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS }
+    { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
+    provideNgxMask()
   ],
   templateUrl: './purchasing-dialog.component.html',
   styleUrl: './purchasing-dialog.component.css'
 })
 export class PurchasingDialogComponent implements OnInit {
+  today: Date = new Date(new Date().setHours(0, 0, 0, 0));
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<PurchasingDialogComponent>);
+  private dialog = inject(MatDialog);
   private restService = inject(RestApiService);
   private alertService = inject(AlertService);
 
   title = signal('Registrar Compra / Ingreso');
   isPublicHealth = false;
   objData: PurchaseInterface = PurchaseExample;
+  parentErrorMatcher = new ParentErrorStateMatcher();
+
+  suppliersFinded: ThirdPartyInterface[] = [];
+  productsFinded: { [key: number]: ProductInterface[] } = {};
+  batchesFinded: { [key: number]: BatchInterface[] } = {};
+
+  documentTypes = [
+    { name: 'Cédula de Ciudadanía', shortname: 'CC' },
+    { name: 'Tarjeta de Identidad', shortname: 'TI' },
+    { name: 'Cédula de Extranjería', shortname: 'CE' },
+    { name: 'Pasaporte', shortname: 'PA' },
+    { name: 'NIT', shortname: 'NIT' }
+  ];
 
   mainForm!: FormGroup;
 
@@ -74,6 +105,7 @@ export class PurchasingDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+
     this.initForm();
     if (this.data.mode === 'view') {
       console.log("view")
@@ -102,7 +134,15 @@ export class PurchasingDialogComponent implements OnInit {
 
   initForm() {
     this.mainForm = this.fb.group({
-      thirdParty: [null, Validators.required],
+      providerData: this.fb.group({
+        id: [null],
+        documentType: ['NIT', Validators.required],
+        documentNumber: ['', Validators.required],
+        fullName: ['', Validators.required],
+        phoneNumber: [''],
+        email: [''],
+        address: ['']
+      }),
       observations: [null],
       details: this.fb.array([])
     });
@@ -122,6 +162,9 @@ export class PurchasingDialogComponent implements OnInit {
       sellPrice: [this.isPublicHealth ? 0 : '', this.isPublicHealth ? [] : [Validators.required, Validators.min(0)]],
       expirationDate: [null, Validators.required],
       priceTotal: [0]
+    }, {
+      // Aquí lo aplicas de forma generalizada
+      validators: [greaterThanValidator('priceUnit', 'sellPrice', 'priceLow')]
     });
     this.details.push(detailGroup);
   }
@@ -182,7 +225,131 @@ export class PurchasingDialogComponent implements OnInit {
     return o1 && o2 ? o1.id === o2.id : o1 === o2;
   }
 
+  findSuppliers() {
+    const documentNumber = this.mainForm.get('providerData.documentNumber')?.value;
+    if (!documentNumber || documentNumber.length < 3) {
+      this.suppliersFinded = [];
+      return;
+    }
+    this.restService.getRequest('/thirdparty/' + documentNumber).subscribe({
+      next: (res) => {
+        this.suppliersFinded = res.data || [];
+      },
+      error: () => {
+        // Fallback to local filter if search endpoint is not available
+        this.suppliersFinded = this.suppliers.filter(s =>
+          s.documentNumber?.includes(documentNumber) || s.fullName?.toLowerCase().includes(documentNumber.toLowerCase())
+        );
+      }
+    });
+  }
+
+  onSupplierSelected(event: any) {
+    const selectedDoc = event.option.value;
+    const supplier = this.suppliersFinded.find(s => s.documentNumber === selectedDoc);
+    if (supplier) {
+      this.mainForm.get('providerData')?.patchValue({
+        id: supplier.id,
+        documentType: supplier.documentType,
+        documentNumber: supplier.documentNumber,
+        fullName: supplier.fullName,
+        phoneNumber: supplier.phoneNumber,
+        email: supplier.email,
+        address: supplier.address
+      });
+    }
+  }
+
+  displayProduct(product: ProductInterface): string {
+    return product ? `${product.name} (${product.code})` : '';
+  }
+
+  displayBatch(batch: BatchInterface): string {
+    return batch ? `${batch.code}` : '';
+  }
+
+  findProducts(index: number) {
+    let searchValue = this.details.at(index).get('product')?.value;
+    if (typeof searchValue !== 'string') {
+      searchValue = searchValue?.name || searchValue?.code || '';
+    }
+
+    if (!searchValue || searchValue.length < 2) {
+      this.productsFinded[index] = [];
+      return;
+    }
+
+    this.restService.getRequest('/products', { page: 0, size: 10, searchValue: searchValue }).subscribe({
+      next: (objData) => {
+        let items = objData.pageable?.content || [];
+        items = items.filter((p: any) => p.isPublicHealth === this.isPublicHealth);
+        this.productsFinded[index] = items;
+      }
+    });
+  }
+
+  findBatches(index: number) {
+    let searchValue = this.details.at(index).get('batch')?.value;
+    if (typeof searchValue !== 'string') {
+      searchValue = searchValue?.code || '';
+    }
+
+    if (!searchValue || searchValue.length < 2) {
+      this.batchesFinded[index] = [];
+      return;
+    }
+
+    this.restService.getRequest('/batches', { page: 0, size: 10, searchValue: searchValue }).subscribe({
+      next: (objData) => {
+        this.batchesFinded[index] = objData.pageable?.content || [];
+      }
+    });
+  }
+
+  onProductSelected(event: any, index: number) {
+    // We could do something here if needed when product is selected
+  }
+
+  onBatchSelected(event: any, index: number) {
+    // We could do something here if needed when batch is selected
+  }
+
   onSubmit() {
+    const detailsArray = this.details.controls;
+    for (let i = 0; i < detailsArray.length; i++) {
+      const product = detailsArray[i].get('product')?.value;
+      const batch = detailsArray[i].get('batch')?.value;
+
+      const isProductString = typeof product === 'string' && product.trim() !== '';
+      const isBatchString = typeof batch === 'string' && batch.trim() !== '';
+
+      if (isProductString || isBatchString) {
+        this.alertService.reCallMixin.fire({
+          title: 'Atención',
+          text: `No se ha seleccionado un ${isProductString ? 'medicamento' : 'lote'} en la fila ${i + 1}, deben estar los dos. ¿Desea crear uno nuevo?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, crear',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if (isProductString) {
+              this.dialog.open(ProductDialogComponent, {
+                width: '90vh',
+                data: { mode: 'create' }
+              });
+            } else {
+              this.dialog.open(BatchDialogComponent, {
+                width: '600px',
+                data: { mode: 'create' }
+              });
+            }
+          }
+        });
+        return;
+      }
+    }
+
     if (this.mainForm.invalid || this.details.length === 0) {
       this.mainForm.markAllAsTouched();
       if (this.details.length === 0) {
@@ -196,14 +363,42 @@ export class PurchasingDialogComponent implements OnInit {
           title: 'Por favor complete todos los campos requeridos correctamente.',
         });
       }
+
       return;
     }
 
     const value = this.mainForm.value;
+
+    if (!value.providerData.id) {
+      // Create supplier first
+      const newSupplier = {
+        ...value.providerData,
+        rolesIds: [2] // Assuming 2 is Provider, we should ideally fetch or know it, but setting fallback
+      };
+
+      this.restService.postRequest('/thirdparty', newSupplier).subscribe({
+        next: (res: any) => {
+          const createdSupplierId = res.data?.id || res.id;
+          this.savePurchase(createdSupplierId);
+        },
+        error: (err) => {
+          this.alertService.infoMixin.fire({
+            icon: 'error',
+            title: err.error?.message || 'Error al crear el proveedor'
+          });
+        }
+      });
+    } else {
+      this.savePurchase(value.providerData.id);
+    }
+  }
+
+  savePurchase(supplierId: any) {
+    const value = this.mainForm.value;
     const typeLabel = this.isPublicHealth ? 'public' : 'special';
 
     const payload = {
-      thirdParty: value.thirdParty?.id?.toString(),
+      thirdParty: supplierId?.toString(),
       type: typeLabel,
       total: this.grandTotal,
       observations: value.observations,
@@ -223,11 +418,10 @@ export class PurchasingDialogComponent implements OnInit {
 
     method.subscribe({
       next: (res) => {
-        this.alertService.infoMixin.fire({
-          icon: 'success',
-          title: 'Guardado correctamente'
-        });
-        //TODO: this.dialogRef.close(true);
+        this.dialogRef.close({
+            success: true,
+            message: 'Guardado correctamente'
+          });
       },
       error: (err) => {
         this.alertService.infoMixin.fire({
@@ -239,6 +433,17 @@ export class PurchasingDialogComponent implements OnInit {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
+  }
+
+  onPrint(row: any) {
+    console.log('print', row);
+    this.alertService.infoMixin.fire({
+      icon: 'info',
+      title: 'Funcionalidad en desarrollo'
+    });
   }
 }

@@ -47,7 +47,7 @@ export class PurchasingRecipeDialogComponent implements OnInit {
       this.mode = this.data.mode as any;
     }
     if (this.mode === 'view') {
-      this.title.set('Ver Compra de Recetarios');
+      this.title.set('Ver Ingreso de Recetarios');
     }
   }
 
@@ -60,6 +60,8 @@ export class PurchasingRecipeDialogComponent implements OnInit {
       const purchase = this.data.data;
       let qty = 0;
       let price = 0;
+
+      this.loadPurchaseDetails(this.data.data.id);
 
       if (purchase.purchasingItems && purchase.purchasingItems.length > 0) {
         qty = purchase.purchasingItems[0].units;
@@ -81,6 +83,8 @@ export class PurchasingRecipeDialogComponent implements OnInit {
       thirdParty: [null, Validators.required],
       units: [1, [Validators.required, Validators.min(1)]],
       priceUnit: ['', [Validators.required, Validators.min(0)]],
+      initialSerial: [0, [Validators.required, Validators.min(1)]],
+      finalSerial: [0, [Validators.required, Validators.min(1)]],
       total: [0]
     });
   }
@@ -118,6 +122,7 @@ export class PurchasingRecipeDialogComponent implements OnInit {
     return o1 && o2 ? o1.id === o2.id : o1 === o2;
   }
 
+
   onSubmit() {
     if (this.mainForm.invalid) {
       this.mainForm.markAllAsTouched();
@@ -136,17 +141,18 @@ export class PurchasingRecipeDialogComponent implements OnInit {
       recipe: {
         units: value.units,
         priceUnit: value.priceUnit,
-        priceTotal: value.total
+        priceTotal: value.total,
+        startSerial: value.initialSerial,
+        finalSerial: value.finalSerial
       }
     };
 
     this.restService.postRequest('/purchasing', payload).subscribe({
       next: (res) => {
-        this.alertService.infoMixin.fire({
-          icon: 'success',
-          title: 'Guardado correctamente'
-        });
-        this.dialogRef.close(true);
+        this.dialogRef.close({
+            success: true,
+            message: 'Registrado exitosamente'
+          });
       },
       error: (err) => {
         this.alertService.infoMixin.fire({
@@ -158,6 +164,32 @@ export class PurchasingRecipeDialogComponent implements OnInit {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
+  }
+
+  onPrint(row: any) {
+    console.log('print', row);
+    this.alertService.infoMixin.fire({
+      icon: 'info',
+      title: 'Funcionalidad en desarrollo'
+    });
+  }
+
+  loadPurchaseDetails(id: number) {
+    if (!id) return;
+    this.restService.getRequest(`/purchasing/${id}`).subscribe({
+      next: (res) => {
+        this.data.data = res.data;
+      },
+      error: (err) => {
+        this.alertService.infoMixin.fire({
+          icon: 'error',
+          title: err.error?.message || 'Error al cargar los datos de la compra'
+        });
+      }
+    });
   }
 }

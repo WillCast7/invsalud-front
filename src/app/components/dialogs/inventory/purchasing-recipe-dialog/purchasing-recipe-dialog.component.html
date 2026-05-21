@@ -1,8 +1,76 @@
-<h2 mat-dialog-title>
-  <mat-icon color="primary" class="vertical-align-middle me-2">inventory_2</mat-icon>
-  {{title()}}
-</h2>
+<div class="d-flex justify-content-between align-items-center w-100 px-3 py-2">
+  <h2 mat-dialog-title class="m-0 p-0 border-0">
+    {{title()}}
+  </h2>
 
+  <div>
+    @if(mode === 'view') {
+    <button mat-icon-button (click)="onPrint(data.data)" title="Imprimir">
+      <mat-icon>print</mat-icon>
+    </button>
+    }
+  </div>
+</div>
+
+@if (mode === 'view') {
+<div class="container-fluid py-1">
+  <!-- Header info: Codigo y Estado -->
+  <div class="row mb-1 bg-light p-3 rounded border">
+    <div class="col-md-6">
+      <p class="mb-0 text-muted small">Código de Ingreso</p>
+      <h3 class="fw-bold text-primary mb-0">{{ data.data?.purchasedCode || '---' }}</h3>
+    </div>
+    <div class="col-md-6 text-md-end">
+      <p class="mb-0 text-muted small">Fecha de Creación</p>
+      <p class="fw-medium mb-0">{{ data.data?.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+    </div>
+  </div>
+
+  <!-- Tercero Info -->
+  <div class="p-3 rounded mb-1 border shadow-sm bg-white">
+    <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Información del Cliente</p>
+    <div class="row small d-flex justify-content-between">
+      <div class="col-md-3 mb-2">
+        <strong class="text-muted">Nombre:</strong><br> {{ data.data?.thirdParty?.fullName }}
+      </div>
+      <div class="col-md-3 mb-2">
+        <strong class="text-muted">Documento:</strong><br> {{ data.data?.thirdParty?.documentType }} {{
+        data.data?.thirdParty?.documentNumber }}
+      </div>
+      <div class="col-md-3 mb-2">
+        <strong class="text-muted">Dirección:</strong><br> {{ data.data?.thirdParty?.address || 'N/A' }}
+      </div>
+      <div class="col-md-3">
+        <strong class="text-muted">Email:</strong><br> {{ data.data?.thirdParty?.email || 'N/A' }}
+      </div>
+    </div>
+  </div>
+
+  <div class="p-3 rounded mb-1 border shadow-sm">
+    <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Información del Ingreso</p>
+    <div class="row small d-flex justify-content-between">
+      <div class="col-md-2 mb-2">
+        <strong class="text-muted">Serial Inicial:</strong><br> {{ data.data?.purchasingRecipe?.startSerial }}
+      </div>
+      <div class="col-md-2 mb-2">
+        <strong class="text-muted">Serial Final:</strong><br> {{ data.data?.purchasingRecipe?.finalSerial }}
+      </div>
+      <div class="col-md-1 mb-2">
+        <strong class="text-muted">Unidades:</strong><br> {{ data.data?.purchasingRecipe?.units }}
+      </div>
+      <div class="col-md-3 mb-2">
+        <strong class="text-muted">Precio unitario:</strong><br> {{ data.data?.purchasingRecipe?.priceUnit |
+        currency }}
+      </div>
+      <div class="col-md-3 mb-2">
+        <strong class="text-muted">Total:</strong><br>
+        <strong class="fs-4 fw-bold text-success">{{ (data.data?.purchasingRecipe?.priceTotal || 0) | currency
+          }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
+} @else {
 <mat-dialog-content class="pt-3" style="overflow-x: hidden;">
   <form [formGroup]="mainForm" class="container-fluid">
     <div class="row">
@@ -25,13 +93,27 @@
         </mat-form-field>
 
         @if (mainForm.get('thirdParty')?.value) {
-        <div class="bg-light p-2 rounded mb-4 text-secondary small d-flex gap-4">
-          <span><strong>Nombre:</strong> {{ mainForm.get('thirdParty')?.value?.fullName }}</span>
-          <span><strong>Documento:</strong> {{ mainForm.get('thirdParty')?.value?.documentType }} {{
-            mainForm.get('thirdParty')?.value?.documentNumber }}</span>
-          <span><strong>Email:</strong> {{ mainForm.get('thirdParty')?.value?.email || 'N/A' }}</span>
-          <span><strong>Dirección:</strong> {{ mainForm.get('thirdParty')?.value?.address || 'N/A' }}</span>
-          <span><strong>Teléfono:</strong> {{ mainForm.get('thirdParty')?.value?.phoneNumber || 'N/A' }}</span>
+        <div class="bg-light p-2 rounded mb-4 text-secondary small d-flex justify-content-around gap-4">
+          <span><strong>Nombre:</strong>
+            <br>
+            {{ mainForm.get('thirdParty')?.value?.fullName }}
+          </span>
+          <span><strong>Documento:</strong>
+            <br>
+            {{ mainForm.get('thirdParty')?.value?.documentType }} {{mainForm.get('thirdParty')?.value?.documentNumber }}
+          </span>
+          <span><strong>Email:</strong>
+            <br>
+            {{ mainForm.get('thirdParty')?.value?.email || 'N/A' }}
+          </span>
+          <span><strong>Dirección:</strong>
+            <br>
+            {{ mainForm.get('thirdParty')?.value?.address || 'N/A' }}
+          </span>
+          <span><strong>Teléfono:</strong>
+            <br>
+            {{ mainForm.get('thirdParty')?.value?.phoneNumber || 'N/A' }}
+          </span>
         </div>
         }
       </div>
@@ -41,33 +123,49 @@
       <div class="col-12 mb-3">
         <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Detalle de la Compra</p>
       </div>
+      <div class="d-flex justify-content-around gap-2">
+        <div class="col-md-2">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Cantidad</mat-label>
+            <input matInput type="number" min="1" formControlName="units">
+          </mat-form-field>
+        </div>
 
-      <div class="col-md-4">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Cantidad</mat-label>
-          <input matInput type="number" min="1" formControlName="units">
-        </mat-form-field>
-      </div>
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Precio Unidad</mat-label>
+            <input matInput type="number" min="0" formControlName="priceUnit">
+            <span matTextPrefix>$&nbsp;</span>
+          </mat-form-field>
+        </div>
 
-      <div class="col-md-4">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Precio Unidad</mat-label>
-          <input matInput type="number" min="0" formControlName="priceUnit">
-          <span matTextPrefix>$&nbsp;</span>
-        </mat-form-field>
-      </div>
+        <div class="col-md-2">
+          <mat-form-field appearance="outline" class="w-100 bg-light rounded">
+            <mat-label>Serial inicial</mat-label>
+            <input matInput formControlName="initialSerial" class="fw-bold">
+          </mat-form-field>
+        </div>
 
-      <div class="col-md-4">
-        <mat-form-field appearance="outline" class="w-100 bg-light rounded">
-          <mat-label>Total</mat-label>
-          <input matInput formControlName="total" readonly class="fw-bold text-success">
-          <span matTextPrefix>$&nbsp;</span>
-        </mat-form-field>
+        <div class="col-md-2">
+          <mat-form-field appearance="outline" class="w-100 bg-light rounded">
+            <mat-label>Serial final</mat-label>
+            <input matInput formControlName="finalSerial" class="fw-bold">
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-2">
+          <mat-form-field appearance="outline" class="w-100 bg-light rounded">
+            <mat-label>Total</mat-label>
+            <input matInput formControlName="total" readonly class="fw-bold text-success">
+            <span matTextPrefix>$&nbsp;</span>
+          </mat-form-field>
+        </div>
+
       </div>
     </div>
   </form>
 </mat-dialog-content>
-
+}
 <mat-dialog-actions align="end" class="p-3 border-top bg-light">
   <button mat-button mat-dialog-close class="cancel-button me-2" (click)="onCancel()">Cerrar</button>
   @if (mode === 'create') {

@@ -171,7 +171,13 @@ export class InventoryComponent {
     const dialogRef: MatDialogRef<any> = this.dialog.open(InventoryDialogComponent,
       { data: { mode: type, data: row } });
 
-    dialogRef.afterClosed().subscribe(() => {
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.alertService.infoMixin.fire({
+          icon: result.success ? 'success' : 'warning',
+          title: result.message
+        });
+      }
       this.getData(
         this.dataValue.pageable.pageNumber,
         this.dataValue.pageable.pageSize,

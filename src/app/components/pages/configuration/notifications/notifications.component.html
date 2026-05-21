@@ -12,8 +12,8 @@
             <mat-form-field appearance="outline" class="col-2">
                 <mat-label>Rango de fechas</mat-label>
                 <mat-date-range-input [rangePicker]="picker">
-                    <input matStartDate placeholder="Start date" [(ngModel)]="startDate">
-                    <input matEndDate placeholder="End date" [(ngModel)]="endDate" (dateChange)="searchData()">
+                    <input matStartDate placeholder="Start date" [(ngModel)]="startDate" [min]="today">
+                    <input matEndDate placeholder="End date" [(ngModel)]="endDate" (dateChange)="searchData()" [min]="startDate">
                 </mat-date-range-input>
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker></mat-date-range-picker>

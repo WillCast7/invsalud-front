@@ -37,6 +37,7 @@ import { NotificationStoreService } from '../../../../services/notification-stor
   styleUrl: './notifications.component.css'
 })
 export class NotificationsComponent implements OnInit {
+  today: Date = new Date(new Date().setHours(0, 0, 0, 0));
   title: string = "Listado de notificaciones";
   startDate: Date | null = null;
   endDate: Date | null = null;

@@ -110,6 +110,12 @@ export class ConfigParamsComponent {
       { ...SizemodalInitializer, data: { data: row, mode: mode } });
 
     dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.alertService.infoMixin.fire({
+          icon: result.success ? 'success' : 'warning',
+          title: result.message
+        });
+      }
       this.getData(
         this.dataValue.pageable.pageNumber,
         this.dataValue.pageable.pageSize,

@@ -40,6 +40,7 @@ import { BatchInterface } from '../../../../models/inventory/batch-interface';
   styleUrl: './inventory-dialog.component.css'
 })
 export class InventoryDialogComponent {
+  today: Date = new Date(new Date().setHours(0, 0, 0, 0));
   private dialogRef = inject(MatDialogRef<InventoryDialogComponent>);
   inventory: PrescriptionInventoryInterface = PrescriptionInventoryExample;
   title = signal("Crear inventario");
@@ -85,7 +86,10 @@ export class InventoryDialogComponent {
             icon: 'success',
             title: this.data.mode === 'create' ? "Registrado exitosamente" : "Actualizado exitosamente",
           });
-          this.dialogRef.close(objData.data);
+          this.dialogRef.close({
+            success: true,
+            message: this.data.mode === 'create' ? 'Parámetro registrado exitosamente' : 'Parámetro actualizado exitosamente'
+          });
         },
         error: (error) => {
           this.alertService.infoMixin.fire({
@@ -103,7 +107,10 @@ export class InventoryDialogComponent {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
   }
 
   getData() {

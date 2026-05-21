@@ -67,6 +67,10 @@ export class SalesComponent {
     { icon: 'inventory', label: 'Recetarios', identifier: 'recipe', color: 'primary', title: 'Recetarios' }
   ]);
 
+  tableOptions: TableOption[] = [
+    { icon: 'print', label: 'Imprimir', identifier: 'print' }
+  ];
+
   buttonsList = signal<TableOption[]>([]);
 
   buttonAction(event: { type: string, row: any }) {
@@ -107,7 +111,18 @@ export class SalesComponent {
           this.openModalSale('view', event.row);
         }
         break;
+      case 'print':
+        this.onPrint(event.row);
+        break;
     }
+  }
+
+  onPrint(row: any) {
+    console.log('print', row);
+    this.alertService.infoMixin.fire({
+      icon: 'info',
+      title: 'Funcionalidad en desarrollo'
+    });
   }
 
   constructor(
@@ -170,11 +185,16 @@ export class SalesComponent {
       data: { mode: mode, type: this.pageMode(), data: row }
     }).afterClosed().subscribe(result => {
       if (result) {
-        if (result.message) {
-          this.alertService.infoMixin.fire({ icon: 'success', title: result.message });
-        }
-        this.getData(this.dataValue.pageable.pageNumber, this.dataValue.pageable.pageSize, this.searchValue);
+        this.alertService.infoMixin.fire({
+          icon: result.success ? 'success' : 'warning',
+          title: result.message
+        });
       }
+        this.getData(
+          this.dataValue.pageable.pageNumber,
+          this.dataValue.pageable.pageSize,
+          this.searchValue
+        );
     });
   }
 

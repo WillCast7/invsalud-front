@@ -77,11 +77,10 @@ export class BatchDialogComponent {
     if (this.batchForm.valid) {
       this.restService.postRequest('/batches', this.batchForm.value).subscribe({
         next: (objData) => {
-          this.alertService.infoMixin.fire({
-            icon: 'success',
-            title: this.batchSearched ? 'Lote actualizado exitosamente' : 'Lote registrado exitosamente',
+          this.dialogRef.close({
+            success: true,
+            message: this.batchSearched ? 'Lote actualizado exitosamente' : 'Lote registrado exitosamente'
           });
-          this.dialogRef.close(true);
         },
         error: (error) => {
           this.alertService.infoMixin.fire({
@@ -100,6 +99,9 @@ export class BatchDialogComponent {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
   }
 }

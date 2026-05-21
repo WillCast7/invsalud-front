@@ -80,6 +80,14 @@ readonly pageTitle = toSignal(
   ),
   { initialValue: this.titleService.getTitle() }
 );
+
+  // Signal para detectar la ruta pública de restablecimiento de contraseña
+  readonly isResetPasswordRoute = toSignal(
+    this.navEnd$.pipe(
+      map(() => this.router.url.split('?')[0] === '/reset-password')
+    ),
+    { initialValue: typeof window !== 'undefined' ? window.location.pathname === '/reset-password' : false }
+  );
   // Signal de Acciones Dinámicas (Botones extra en navbar si existen)
 
 

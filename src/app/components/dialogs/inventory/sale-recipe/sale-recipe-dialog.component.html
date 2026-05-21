@@ -114,8 +114,10 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="p-3 border-top bg-light">
-  <button mat-button mat-dialog-close class="cancel-button me-2" (click)="onCancel()">Cerrar</button>
   @if (mode === 'create' || mode === 'edit') {
   <button mat-flat-button color="primary" class="save-button" (click)="onSubmit()">Guardar</button>
+  }@else {
+  <button mat-flat-button color="primary" class="print-button me-2" (click)="onPrint(data.data)">Imprimir</button>
   }
+  <button mat-button mat-dialog-close class="cancel-button me-2" (click)="onCancel()">Cerrar</button>
 </mat-dialog-actions>

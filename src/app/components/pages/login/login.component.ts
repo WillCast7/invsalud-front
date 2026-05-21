@@ -11,6 +11,8 @@ import { ApiInterface } from '../../../models/api-interface';
 import { MenuInterface } from '../../../models/menu-interface';
 import { AuthInterface } from '../../../models/auth-interface';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { RememberPassDialogComponent } from '../../dialogs/remember-pass-dialog/remember-pass-dialog.component';
 
 @Component({
   selector: 'app-login',
@@ -34,7 +36,8 @@ export class LoginComponent {
     private readonly restService: RestApiService,
     private readonly alertService: AlertService,
     private readonly router: Router,
-    private readonly sessionService: SessionService
+    private readonly sessionService: SessionService,
+    private readonly dialog: MatDialog
   ) {
     console.log("session");
     console.log(this.sessionService.isSessionActive());
@@ -86,6 +89,13 @@ export class LoginComponent {
     this.alertService.infoMixin.fire({
       icon: 'error',
       title: error.error.message || 'Error desconocido',
+    });
+  }
+
+  openRememberPassDialog() {
+    this.dialog.open(RememberPassDialogComponent, {
+      width: '400px',
+      disableClose: true
     });
   }
 }

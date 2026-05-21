@@ -71,6 +71,7 @@ export class PurchasingComponent {
   ];
 
   tableOptions: TableOption[] = [
+    { icon: 'print', label: 'Imprimir', identifier: 'print' },
     { icon: 'do_not_disturb', label: 'Desactivar', identifier: 'changeStatus', color: 'accent' }
   ];
 
@@ -115,13 +116,24 @@ export class PurchasingComponent {
   tableAction(event: { type: string, row: PurchaseTableInterface }) {
     switch (event.type) {
       case 'edit':
-        this.openModalPurchase(event.type, event.row);
+        if (this.pageMode() === 'recipe') {
+          this.openModalPurchaseRecetario(event.type, event.row);
+        } else {
+          this.openModalPurchase(event.type, event.row);
+        }
         break;
       case 'view':
-        this.openModalPurchase(event.type, event.row);
+        if (this.pageMode() === 'recipe') {
+          this.openModalPurchaseRecetario(event.type, event.row);
+        } else {
+          this.openModalPurchase(event.type, event.row);
+        }
         break;
       case 'changeStatus':
         this.changeStatus(event.row);
+        break;
+      case 'print':
+        this.onPrint(event.row);
         break;
     }
   }
@@ -194,10 +206,6 @@ export class PurchasingComponent {
   }
 
   openModalPurchase(type: string, row: PurchaseTableInterface | undefined = undefined) {
-    if (this.pageMode() === 'recipe') {
-      this.openModalPurchaseRecetario(type, row);
-    };
-
     const dialogRef = this.dialog.open(PurchasingDialogComponent, {
       ...SizemodalInitializer,
       data: { mode: type, type: this.pageMode(), data: row }
@@ -205,12 +213,16 @@ export class PurchasingComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.getData(
-          this.dataValue.pageable.pageNumber,
-          this.dataValue.pageable.pageSize,
-          this.searchValue
-        );
+        this.alertService.infoMixin.fire({
+          icon: result.success ? 'success' : 'warning',
+          title: result.message
+        });
       }
+      this.getData(
+        this.dataValue.pageable.pageNumber,
+        this.dataValue.pageable.pageSize,
+        this.searchValue
+      );
     });
   }
 
@@ -222,12 +234,18 @@ export class PurchasingComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.getData(
-          this.dataValue.pageable.pageNumber,
-          this.dataValue.pageable.pageSize,
-          this.searchValue
-        );
+        this.alertService.infoMixin.fire({
+          icon: result.success ? 'success' : 'warning',
+          title: result.message
+        });
       }
+
+      this.getData(
+        this.dataValue.pageable.pageNumber,
+        this.dataValue.pageable.pageSize,
+        this.searchValue
+      );
+      
     });
   }
 
@@ -248,5 +266,13 @@ export class PurchasingComponent {
   search(searchValue: string) {
     this.searchValue = searchValue;
     this.getData(0, 10, this.searchValue);
+  }
+
+  onPrint(row: any) {
+    console.log('print', row);
+    this.alertService.infoMixin.fire({
+      icon: 'info',
+      title: 'Funcionalidad en desarrollo'
+    });
   }
 }

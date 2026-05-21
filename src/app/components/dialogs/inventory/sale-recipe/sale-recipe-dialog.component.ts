@@ -35,7 +35,7 @@ export class SaleRecipeDialogComponent implements OnInit {
   private restService = inject(RestApiService);
   private alertService = inject(AlertService);
 
-  title = signal('Crear Cotización (Recetarios)');
+  title = signal('Crear Salida');
   mode: 'create' | 'edit' | 'view' = 'create';
 
   mainForm!: FormGroup;
@@ -52,6 +52,14 @@ export class SaleRecipeDialogComponent implements OnInit {
     } else {
       this.title.set('Detalles de la Salida');
     }
+  }
+
+  onPrint(row: any) {
+    console.log('print', row);
+    this.alertService.infoMixin.fire({
+      icon: 'info',
+      title: 'Funcionalidad en desarrollo'
+    });
   }
 
   ngOnInit() {
@@ -171,6 +179,9 @@ export class SaleRecipeDialogComponent implements OnInit {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
   }
 }

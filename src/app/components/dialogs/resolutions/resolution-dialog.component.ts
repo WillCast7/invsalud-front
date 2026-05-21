@@ -48,6 +48,7 @@ import { ThirdPartyInterface } from '../../../models/inventory/thirdparty-interf
   styleUrl: './resolution-dialog.component.css'
 })
 export class ResolutionDialogComponent implements OnInit {
+  today: Date = new Date(new Date().setHours(0, 0, 0, 0));
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<ResolutionDialogComponent>);
   private restService = inject(RestApiService);
@@ -153,7 +154,10 @@ export class ResolutionDialogComponent implements OnInit {
             icon: 'success',
             title: "Resolución guardada exitosamente",
           });
-          this.dialogRef.close(true);
+          this.dialogRef.close({
+            success: true,
+            message: "Resolución guardada exitosamente"
+          });
         },
         error: (error) => {
           let errorMessage = "Ocurrió un error";
@@ -175,7 +179,10 @@ export class ResolutionDialogComponent implements OnInit {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
   }
 
   getData() {

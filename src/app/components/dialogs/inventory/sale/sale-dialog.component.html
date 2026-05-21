@@ -1,8 +1,5 @@
 <h2 mat-dialog-title>
   {{title()}}
-  @if (mode === 'view' && !isPublicHealth && data.data?.total > 0) {
-  <span class="fs-5 fw-bold text-success">Total: {{ data.data?.total | currency }}</span>
-  }
 </h2>
 
 <mat-dialog-content class="pt-3" style="overflow-x: hidden;">
@@ -162,8 +159,7 @@
             <div class="col-md-4 mt-3">
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Cant. Uds</mat-label>
-                <input matInput type="number" min="1"
-                  [max]="mainForm.value.details[i].product?.availableUnits"
+                <input matInput type="number" min="1" [max]="mainForm.value.details[i].product?.availableUnits"
                   formControlName="quantity">
                 @if (detailCtrl.get('quantity')?.hasError('max')) {
                 <mat-error>Máximo {{ mainForm.value.details[i].product?.availableUnits }} disponibles</mat-error>
@@ -179,7 +175,8 @@
                   <strong>Concentración:</strong> {{ mainForm.value.details[i].product.product.concentration }}
                 </div>
                 <div class="col-md-4">
-                  <strong>Vencimiento:</strong> {{ mainForm.value.details[i].product.expirationDate | date:'dd/MM/yyyy' }}
+                  <strong>Vencimiento:</strong> {{ mainForm.value.details[i].product.expirationDate | date:'dd/MM/yyyy'
+                  }}
                 </div>
                 <div class="col-md-4 text-success fw-bold">
                   <strong>Disponibles:</strong> {{ mainForm.value.details[i].product.availableUnits }}
@@ -204,8 +201,10 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="p-3 border-top bg-light">
-  <button mat-button mat-dialog-close class="cancel-button me-2" (click)="onCancel()">Cerrar</button>
   @if (mode === 'create') {
   <button mat-flat-button color="primary" class="save-button" (click)="onSubmit()">Guardar Salida</button>
+  } @else {
+  <button mat-flat-button color="primary" class="print-button me-2" (click)="onPrint(data.data)">Imprimir</button>
   }
+  <button mat-button mat-dialog-close class="cancel-button me-2" (click)="onCancel()">Cerrar</button>
 </mat-dialog-actions>

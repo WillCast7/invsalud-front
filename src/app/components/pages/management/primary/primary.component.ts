@@ -10,7 +10,6 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { PageableInitializer, PageableInterface } from '../../../../models/table/pageable-interface';
@@ -41,7 +40,7 @@ import { SizemodalInitializer } from '../../../../models/modal/sizemodal-interfa
     ReactiveFormsModule,
     MatPaginatorModule,
     MatButtonToggleModule,
-    MatDatepickerModule,
+    
     A11yModule,
     MatCardModule,
     TableHeaderControlsComponentComponent,
@@ -205,6 +204,12 @@ export class PrimaryComponent {
       { ...SizemodalInitializer, data: { mode: type, data: row } });
 
     dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.alertService.infoMixin.fire({
+          icon: result.success ? 'success' : 'warning',
+          title: result.message
+        });
+      }
       this.getData(
         this.dataValue.pageable.pageNumber,
         this.dataValue.pageable.pageSize,
@@ -218,6 +223,12 @@ export class PrimaryComponent {
       { data: { mode: type, data: row } });
 
     dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.alertService.infoMixin.fire({
+          icon: result.success ? 'success' : 'warning',
+          title: result.message
+        });
+      }
       this.getData(
         this.dataValue.pageable.pageNumber,
         this.dataValue.pageable.pageSize,

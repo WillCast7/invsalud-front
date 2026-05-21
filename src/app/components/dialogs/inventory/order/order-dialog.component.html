@@ -5,11 +5,11 @@
   }
 </h2>
 
-<mat-dialog-content class="pt-3" style="overflow-x: hidden;">
+<mat-dialog-content class="pt-1" style="overflow-x: hidden;">
   @if (mode === 'view') {
-  <div class="container-fluid py-2">
+  <div class="container-fluid py-1">
     <!-- Header info: Codigo y Estado -->
-    <div class="row mb-4 bg-light p-3 rounded border">
+    <div class="row mb-1 bg-light p-3 rounded border">
       <div class="col-md-6">
         <p class="mb-0 text-muted small">Código de Cotización</p>
         <h3 class="fw-bold text-primary mb-0">{{ data.data?.orderCode || '---' }}</h3>
@@ -21,27 +21,27 @@
     </div>
 
     <!-- Tercero Info -->
-    <div class="p-3 rounded mb-4 border shadow-sm bg-white">
+    <div class="p-3 rounded mb-1 border shadow-sm bg-white">
       <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Información del Cliente</p>
       <div class="row small">
-        <div class="col-md-4 mb-2">
+        <div class="col-md-3 mb-2">
           <strong class="text-muted">Nombre:</strong><br> {{ data.data?.thirdParty?.fullName }}
         </div>
-        <div class="col-md-4 mb-2">
+        <div class="col-md-3 mb-2">
           <strong class="text-muted">Documento:</strong><br> {{ data.data?.thirdParty?.documentType }} {{
           data.data?.thirdParty?.documentNumber }}
         </div>
-        <div class="col-md-4 mb-2">
+        <div class="col-md-3 mb-2">
           <strong class="text-muted">Dirección:</strong><br> {{ data.data?.thirdParty?.address || 'N/A' }}
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <strong class="text-muted">Email:</strong><br> {{ data.data?.thirdParty?.email || 'N/A' }}
         </div>
       </div>
     </div>
 
     <!-- Items Table -->
-    <div class="table-responsive border rounded bg-white mb-4 shadow-sm">
+    <div class="table-responsive border rounded bg-white mb-1 shadow-sm">
       <table class="table table-hover mb-0 align-middle">
         <thead class="table-primary bg-opacity-10">
           <tr class="small text-uppercase">
@@ -105,143 +105,217 @@
       <div class="col-md-12">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Cliente (Tercero)</mat-label>
-          <mat-select formControlName="thirdParty" [compareWith]="compareWithId">
-            @for (supplier of suppliers; track supplier.id) {
+          <input matInput formControlName="thirdParty" [matAutocomplete]="autoTp" (keyup)="findSuppliers($event)">
+          <mat-autocomplete #autoTp="matAutocomplete" [displayWith]="displaySupplier">
+            @for (supplier of suppliersFinded; track supplier.id) {
             <mat-option [value]="supplier">
               <span class="fw-medium">{{supplier.fullName}}</span> -
               <small class="text-muted">{{supplier.documentType}} {{supplier.documentNumber}}</small>
             </mat-option>
             }
-          </mat-select>
+          </mat-autocomplete>
           <mat-icon matSuffix>business</mat-icon>
         </mat-form-field>
 
-        @if (mainForm.get('thirdParty')?.value) {
-        <div class="bg-light p-2 rounded mb-4 text-secondary small d-flex flex-wrap gap-4">
-          <span><strong>Nombre:</strong> {{ mainForm.get('thirdParty')?.value?.fullName }}</span>
-          <span><strong>Documento:</strong> {{ mainForm.get('thirdParty')?.value?.documentType }} {{
-            mainForm.get('thirdParty')?.value?.documentNumber }}</span>
-          <span><strong>Email:</strong> {{ mainForm.get('thirdParty')?.value?.email || 'N/A' }}</span>
-          <span><strong>Dirección:</strong> {{ mainForm.get('thirdParty')?.value?.address || 'N/A' }}</span>
+        @if (mainForm.get('thirdParty')?.value && mainForm.get('thirdParty')?.value?.id) {
+        <div class="bg-light p-2 rounded mb-4 text-secondary small d-flex gap-4 justify-content-around">
+          <span>
+            <strong>Nombre:</strong>
+            <br>
+            {{ mainForm.get('thirdParty')?.value?.fullName }}
+          </span>
+          <span>
+            <strong>Documento:</strong>
+            <br>
+            {{ mainForm.get('thirdParty')?.value?.documentType }}
+            {{ mainForm.get('thirdParty')?.value?.documentNumber }}
+          </span>
+          <span>
+            <strong>Email:</strong>
+            <br>
+            {{ mainForm.get('thirdParty')?.value?.email || 'N/A' }}
+          </span>
+          <br>
+          <span>
+            <strong>Dirección:</strong>
+            <br>
+            {{ mainForm.get('thirdParty')?.value?.address || 'N/A' }}
+          </span>
         </div>
         }
       </div>
 
       <!-- Layout Productos Cotizados -->
       <div class="row mt-2">
-        <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
-          <p class="fw-bold text-secondary border-bottom pb-1 mb-3 w-100 m-0">Medicamentos Cotizados</p>
-          @if (!isRecipe) {
-          <button mat-stroked-button color="primary" type="button" class="ms-3 shadow-sm" (click)="addDetail()">
-            <mat-icon>add</mat-icon> Agregar Medicamento
-          </button>
-          }
-        </div>
-        <div class="col-12">
-          <mat-divider class="mb-3"></mat-divider>
-        </div>
-      </div>
-
-      <div formArrayName="details">
-        @for (detailCtrl of details.controls; track detailCtrl; let i = $index) {
-        <div [formGroupName]="i" class="border rounded p-3 mb-3 position-relative bg-white shadow-sm mt-3">
-
-          @if (!isRecipe) {
-          <button mat-icon-button color="warn" class="position-absolute shadow"
-            style="top: -15px; right: -15px; background: white; z-index: 10;" type="button" (click)="removeDetail(i)"
-            matTooltip="Remover Producto">
-            <mat-icon>close</mat-icon>
-          </button>
-          }
-
+        <div class="col-md-8">
           <div class="row">
-            <div class="col-6 d-flex flex-wrap p-2 mt-3 gap-1 justify-content-between">
+            <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
+              <p class="fw-bold text-secondary border-bottom pb-1 mb-3 w-100 m-0">Medicamentos Cotizados</p>
               @if (!isRecipe) {
-              <div class="col-md-7">
+              <button mat-stroked-button color="primary" type="button" class="ms-3 shadow-sm" (click)="addDetail()">
+                <mat-icon>add</mat-icon> Agregar Medicamento
+              </button>
+              }
+            </div>
+            <div class="col-12">
+              <mat-divider class="mb-3"></mat-divider>
+            </div>
+          </div>
 
-                <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Medicamento Habilitado en Resolución</mat-label>
-                  <mat-select formControlName="product" [compareWith]="compareWithId">
-                    @for (product of authorizedProducts; track product.id) {
-                    <mat-option [value]="product">
-                      <span class="fw-medium">{{product.product.name}} ({{product.product.code}})</span>
-                      {{product.batch.code}}
-                    </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              </div>
+          <div formArrayName="details">
+            @for (detailCtrl of details.controls; track detailCtrl; let i = $index) {
+            <div [formGroupName]="i" class="border rounded p-3 mb-3 position-relative bg-white shadow-sm mt-3">
+
+              @if (!isRecipe) {
+              <button mat-icon-button color="warn" class="position-absolute shadow"
+                style="top: -15px; right: -15px; background: white; z-index: 10;" type="button"
+                (click)="removeDetail(i)" matTooltip="Remover Producto">
+                <mat-icon>close</mat-icon>
+              </button>
               }
 
-              <!-- Unidades -->
-              <div class="col-md-4">
-                <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Cant. Uds</mat-label>
-                  <input matInput type="number" min="1"
-                    [max]="isRecipe ? 999999 : mainForm.value.details[i].product?.availableUnits"
-                    formControlName="quantity">
-                  @if (detailCtrl.get('quantity')?.hasError('max')) {
-                  <mat-error>Máximo {{ mainForm.value.details[i].product?.availableUnits }}</mat-error>
+              <div class="row">
+                <div class="col-7 d-flex flex-wrap p-2 mt-3 gap-1 justify-content-between">
+                  @if (!isRecipe) {
+                  <div class="col-md-8">
+                    <mat-form-field appearance="outline" class="w-100">
+                      <mat-label>Medicamento Habilitado en Resolución</mat-label>
+                      <input matInput formControlName="product" [matAutocomplete]="autoProduct" (focus)="filterProducts(i)" (keyup)="filterProducts(i)">
+                      <mat-autocomplete #autoProduct="matAutocomplete" [displayWith]="displayProduct">
+                        @for (product of filteredProducts[i]; track product.id) {
+                        <mat-option [value]="product">
+                          <span class="fw-medium">{{product.product.name}} {{product.product.pharmaceuticalForm}} {{product.product.concentration}} {{product.batch.code}}</span>
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                    </mat-form-field>
+                  </div>
                   }
-                </mat-form-field>
-              </div>
-            </div>
 
-            <!-- Resumen de Totales Inferior -->
-            <div class="col-6 mt-2">
-              <div class="d-flex flex-wrap align-items-center justify-content-between bg-light p-3 rounded border">
-                <div class="d-flex flex-column mb-2 mb-md-0">
-                  <span class="text-muted small text-uppercase fw-bold">Unidades</span>
-                  <span class="fs-5 fw-bold text-dark">{{ detailCtrl.get('quantity')?.value || 0 }}</span>
+                  <!-- Unidades -->
+                  <div class="col-md-3">
+                    <mat-form-field appearance="outline" class="w-100">
+                      <mat-label>Unds</mat-label>
+                      <input matInput type="number" min="1"
+                        [max]="isRecipe ? 999999 : mainForm.value.details[i].product?.availableUnits"
+                        formControlName="quantity">
+                      @if (detailCtrl.get('quantity')?.hasError('max')) {
+                      <mat-error>Máximo {{ mainForm.value.details[i].product?.availableUnits }}</mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
                 </div>
 
-                @if (!isPublicHealth) {
-                <div class="d-flex flex-column mb-2 mb-md-0 border-start ps-4">
-                  <span class="text-muted small text-uppercase fw-bold">Precio Unitario</span>
-                  <span class="fs-5 fw-bold text-primary">{{ detailCtrl.get('priceUnit')?.value | currency }}</span>
+                <!-- Resumen de Totales Inferior -->
+                <div class="col-5 my-auto p-2">
+                  <div class="d-flex flex-wrap align-items-center justify-content-around bg-light p-1 rounded border">
+                    @if (!isPublicHealth) {
+                    <div class="d-flex flex-column">
+                      <span class="text-muted small text-uppercase fw-bold">Precio Unitario</span>
+                      <span class="fs-5 fw-bold text-primary">{{ detailCtrl.get('priceUnit')?.value | currency }}</span>
+                    </div>
+
+                    <div class="d-flex flex-column">
+                      <span class="text-muted small text-uppercase fw-bold">Subtotal</span>
+                      <span class="fs-4 fw-bold text-success">{{ detailCtrl.get('total')?.value | currency }}</span>
+                    </div>
+                    }
+                  </div>
                 </div>
 
-                <div class="d-flex flex-column border-start ps-4">
-                  <span class="text-muted small text-uppercase fw-bold">Subtotal</span>
-                  <span class="fs-4 fw-bold text-success">{{ detailCtrl.get('total')?.value | currency }}</span>
+                <!-- Detalles del Producto (Solo si no es receta y hay producto seleccionado) -->
+                @if (!isRecipe && mainForm.value.details[i].product?.id) {
+                <div class="col-12 mt-3 px-3 py-2 text-muted small border-start border-3 border-primary bg-light rounded">
+                  <div class="row g-2 align-items-start">
+                    
+                    <!-- Columna 1: Datos del Medicamento -->
+                    <div class="col-md-4">
+                      <div class="mb-2">
+                        <strong class="text-dark d-block">Concentración:</strong>
+                        <span>{{ mainForm.value.details[i].product.product?.concentration }}</span>
+                      </div>
+                      <div>
+                        <strong class="text-dark d-block">Forma Farmacéutica:</strong>
+                        <span>
+                          {{ mainForm.value.details[i].product.product?.pharmaceuticalForm }} - 
+                          {{ mainForm.value.details[i].product.product?.presentation }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Columna 2: Inventario / Trazabilidad -->
+                    <div class="col-md-4">
+                      <div class="mb-2">
+                        <strong class="text-dark d-block">Lote:</strong> 
+                        <span>{{ mainForm.value.details[i].product.batch?.code }}</span>
+                      </div>
+                      <div>
+                        <strong class="text-dark d-block">Vencimiento:</strong>
+                        <span>{{ mainForm.value.details[i].product.expirationDate | date:'dd/MM/yyyy' }}</span>
+                      </div>
+                    </div>
+
+                    <!-- Columna 3: Stock -->
+                    <div class="col-md-4">
+                      <div>
+                        <strong class="text-dark d-block">Disponibles:</strong>
+                        <span class="fs-6 fw-semibold text-primary">
+                          {{ mainForm.value.details[i].product.availableUnits }}
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
                 }
               </div>
             </div>
+            }
 
-            <!-- Detalles del Producto (Solo si no es receta y hay producto seleccionado) -->
-            @if (!isRecipe && mainForm.value.details[i].product) {
-            <div class="col-12 mt-3 px-2 text-muted small border-start border-3 border-primary bg-light p-2 rounded">
-              <div class="row">
-                <div class="col-md-4">
-                  <strong>Concentración:</strong> {{ mainForm.value.details[i].product.product.concentration }} <br>
-                  <strong>Forma Farm.:</strong> {{ mainForm.value.details[i].product.product.pharmaceuticalForm }} - {{
-                  mainForm.value.details[i].product.product.presentation }}
-                </div>
-                <div class="col-md-4">
-                  <strong>Lote:</strong> {{ mainForm.value.details[i].product.batch.code }} <br>
-                  <strong>Vencimiento:</strong> {{ mainForm.value.details[i].product.expirationDate | date:'dd/MM/yyyy'
-                  }}
-                </div>
-                <div class="col-md-4">
-                  <strong>Disponibles:</strong> {{ mainForm.value.details[i].product.availableUnits }}
-                </div>
+            @if (details.length === 0) {
+            <div class="text-center py-5 bg-light rounded border border-dashed text-secondary">
+              <mat-icon style="font-size: 40px; width: 40px; height: 40px; opacity: 0.5;">assignment_add</mat-icon>
+              <p class="mt-2 text-muted">Aún no ha cotizado ningún medicamento permitido.</p>
+              @if (!isRecipe) {
+              <button mat-button color="primary" type="button" (click)="addDetail()">Agregar Medicamento</button>
+              }
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-3 h-100 border rounded bg-white shadow-sm mt-3 mt-md-0">
+            <h6 class="fw-semibold mb-3">Resumen de Cotización</h6>
+
+            <div class="mb-2">
+              <small class="text-muted d-block mb-1">Medicamentos</small>
+              @for (d of mainForm.value.details; track $index) {
+              <div class="d-flex justify-content-between align-items-center border-bottom pb-1 mb-1">
+                <span class="fw-medium text-truncate me-2" [title]="d.product?.product?.name || 'Sin seleccionar'">
+                  {{ d.quantity || 1 }}x {{ d.product?.product?.name || 'Sin seleccionar' }}
+                </span>
+                @if (!isPublicHealth) {
+                <span class="text-nowrap">{{ (d.total || 0) | currency:'$':'symbol':'1.0-0' }}</span>
+                }
+              </div>
+              } @empty {
+              <span class="fw-medium">Sin seleccionar</span>
+              }
+            </div>
+
+            @if (!isPublicHealth) {
+            <mat-divider class="my-3"></mat-divider>
+
+            <div class="row mx-0 mb-2">
+              <div class="col-12 px-0 text-end">
+                <small class="text-muted d-block">Total</small>
+                <span class="fs-5 fw-bold text-success">{{ grandTotal | currency:'$ ':'symbol':'1.0-0' }}</span>
               </div>
             </div>
             }
           </div>
         </div>
-        }
-
-        @if (details.length === 0) {
-        <div class="text-center py-5 bg-light rounded border border-dashed text-secondary">
-          <mat-icon style="font-size: 40px; width: 40px; height: 40px; opacity: 0.5;">assignment_add</mat-icon>
-          <p class="mt-2 text-muted">Aún no ha cotizado ningún medicamento permitido.</p>
-          @if (!isRecipe) {
-          <button mat-button color="primary" type="button" (click)="addDetail()">Agregar Medicamento</button>
-          }
-        </div>
-        }
       </div>
     </div>
   </form>
@@ -252,6 +326,7 @@
   @if (mode === 'view' && data.data?.status === 'PENDING') {
   <button mat-flat-button color="primary" class="save-button" (click)="onSell()">Vender</button>
   <button mat-flat-button color="warn" class="return-button me-2" (click)="onAbort()">Anular</button>
+  <button mat-flat-button color="primary" class="print-button me-2" (click)="onPrint(data.data)">Imprimir</button>
   }
   @if (mode === 'create') {
   <button mat-flat-button color="primary" class="save-button" (click)="onSubmit()">Guardar</button>

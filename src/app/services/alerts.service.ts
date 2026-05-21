@@ -10,8 +10,7 @@ export class AlertService {
     position: 'top-end',
     background: 'rgba(255, 255, 255, 0.97)',
     showConfirmButton: false,
-    timer: 7000,
-    target: 'mat-dialog-container',
+    timer: 6000,
     customClass: {
       container: 'swal2-on-top'
     },

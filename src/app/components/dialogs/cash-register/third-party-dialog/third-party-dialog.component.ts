@@ -63,6 +63,7 @@ interface Food {
 })
 
 export class ThirdPartyDialogComponent {
+  today: Date = new Date(new Date().setHours(0, 0, 0, 0));
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<ThirdPartyDialogComponent>);
   thirdPartyTypes: ThirdpartyRoleInterface[] = [];
@@ -101,7 +102,7 @@ export class ThirdPartyDialogComponent {
       this.fb.group({
         id: [null],
         code: ['', Validators.required],
-        startDate: ['', Validators.required],
+        startDate: [this.today, Validators.required],
         expirationDate: ['', Validators.required],
         description: [''],
         isActive: [true],
@@ -119,11 +120,10 @@ export class ThirdPartyDialogComponent {
 
       this.restService.postRequest("/thirdparty", this.form.value).subscribe({
         next: (objData) => {
-          this.alertService.infoMixin.fire({
-            icon: 'success',
-            title: "Ingreso registrado exitosamente",
+           this.dialogRef.close({
+            success: true,
+            message: 'Tercero registrado exitosamente'
           });
-          // this.dialogRef.close();
         },
         error: (error) => {
           this.alertService.infoMixin.fire({
@@ -142,7 +142,10 @@ export class ThirdPartyDialogComponent {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
   }
 
   getData() {
@@ -231,5 +234,9 @@ export class ThirdPartyDialogComponent {
         }
       }
     });
+  }
+
+  compareProducts(p1: any, p2: any): boolean {
+    return p1 && p2 ? p1.id === p2.id : p1 === p2;
   }
 }

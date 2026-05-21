@@ -1,10 +1,12 @@
 services:
-  angular-frontend:
+  inventario:
     build:
       context: .
-      dockerfile: Dockerfile.prod
-    container_name: invsalud-front
+      # Usamos el Dockerfile principal (desarrollo) o puedes cambiarlo a Dockerfile.prod para producción
+      dockerfile: Dockerfile
+    image: inventario
+    container_name: inventario
+    restart: always
     ports:
-      - "4201:80"
-    networks:
-      - invsalud-net
+      # Mapeamos el puerto 4330 de la máquina anfitriona al puerto 8000 del contenedor
+      - "4330:8000"

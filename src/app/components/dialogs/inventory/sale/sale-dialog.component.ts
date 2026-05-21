@@ -32,8 +32,6 @@ import { PrescriptionInventoryInterface } from '../../../../models/inventory/pre
 export class SaleDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<SaleDialogComponent>);
   private fb = inject(FormBuilder);
-  private restService = inject(RestApiService);
-  private alertService = inject(AlertService);
 
   title = signal('Detalles de Venta');
   mode: 'create' | 'view' = 'view';
@@ -43,7 +41,11 @@ export class SaleDialogComponent implements OnInit {
   suppliers: ThirdPartyInterface[] = [];
   authorizedProducts: PrescriptionInventoryInterface[] = [];
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { mode: string, type: string, data?: any }) {
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: { mode: string, type: string, data?: any },
+    private alertService: AlertService,
+    private restService: RestApiService
+  ) {
     this.mode = this.data.mode as any;
     this.isPublicHealth = this.data.type === 'public';
     if (this.mode === 'create') {
@@ -197,6 +199,17 @@ export class SaleDialogComponent implements OnInit {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
+  }
+
+  onPrint(row: any) {
+    console.log('print', row);
+    this.alertService.infoMixin.fire({
+      icon: 'info',
+      title: 'Funcionalidad en desarrollo'
+    });
   }
 }

@@ -153,12 +153,18 @@ export class ResolutionsComponent {
 
     dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
-        this.getData(
-          this.dataValue.pageable.pageNumber,
-          this.dataValue.pageable.pageSize,
-          this.searchValue
-        );
+        this.alertService.infoMixin.fire({
+          icon: result.success ? 'success' : 'warning',
+          title: result.message
+        });
       }
+      
+      this.getData(
+        this.dataValue.pageable.pageNumber,
+        this.dataValue.pageable.pageSize,
+        this.searchValue
+      );
+      
     });
   }
 

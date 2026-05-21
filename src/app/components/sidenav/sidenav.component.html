@@ -1,4 +1,6 @@
-@if (isSessionActive()) {
+@if (isResetPasswordRoute()) {
+  <router-outlet />
+} @else if (isSessionActive()) {
 <mat-drawer-container class="example-container" [hasBackdrop]="true">
   <mat-drawer #drawer [mode]="'over'" class="drawer-content">
     <div class="drawer-header">

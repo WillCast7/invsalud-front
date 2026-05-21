@@ -1,9 +1,10 @@
 import { PurchasingItemInterface } from "./purchasing-item-interface";
+import { PurchasingRecipeInterface } from "./purchasing-recipe-interface";
 import { ThirdPartyExample, ThirdPartyInterface } from "./thirdparty-interface";
 
 export interface PurchaseTableInterface {
     id: number,
-    thirdParty: string,
+    thirdParty: ThirdPartyInterface,
     total: number,
     type: string,
     createdAt: string,
@@ -11,11 +12,12 @@ export interface PurchaseTableInterface {
     purchasedCode: string,
     isActive: boolean,
     purchasingItems?: PurchasingItemInterface[],
+    purchasingRecipe?: PurchasingRecipeInterface
 }
 
 export const PurchaseTableExample: PurchaseTableInterface = {
     id: 0,
-    thirdParty: '',
+    thirdParty: ThirdPartyExample,
     total: 0,
     type: '',
     createdAt: '',

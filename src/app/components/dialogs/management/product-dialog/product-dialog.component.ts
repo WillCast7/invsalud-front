@@ -131,11 +131,10 @@ export class ProductDialogComponent {
     if (this.productForm.valid) {
       this.restService.postRequest('/products', this.productForm.value).subscribe({
         next: (objData) => {
-          this.alertService.infoMixin.fire({
-            icon: 'success',
-            title: this.productSearched ? 'Medicamento actualizado exitosamente' : 'Medicamento registrado exitosamente',
+          this.dialogRef.close({
+            success: true,
+            message: this.productSearched ? 'Medicamento actualizado exitosamente' : 'Medicamento registrado exitosamente'
           });
-          this.dialogRef.close(true);
         },
         error: (error) => {
           this.alertService.infoMixin.fire({
@@ -154,6 +153,9 @@ export class ProductDialogComponent {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
   }
 }

@@ -11,7 +11,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
-import { ProductInterface } from '../../../../models/inventory/product-interface';
 import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-interface';
 import { PrescriptionInventoryInterface } from '../../../../models/inventory/prescription-inventory';
 
@@ -47,7 +46,9 @@ export class OrderDialogComponent implements OnInit {
 
   mainForm!: FormGroup;
   suppliers: ThirdPartyInterface[] = [];
+  suppliersFinded: ThirdPartyInterface[] = [];
   authorizedProducts: PrescriptionInventoryInterface[] = [];
+  filteredProducts: { [key: number]: PrescriptionInventoryInterface[] } = {};
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { mode: string, type: string, data?: any }) {
     this.isPublicHealth = this.data.type === 'public';
@@ -111,7 +112,7 @@ export class OrderDialogComponent implements OnInit {
   setupThirdPartyListener() {
     // Al cambiar el tercero, cargamos sus productos permitidos y borramos la tabla
     this.mainForm.get('thirdParty')?.valueChanges.subscribe(supplier => {
-      if (!supplier) {
+      if (!supplier || typeof supplier === 'string') {
         this.authorizedProducts = [];
         this.details.clear();
         return;
@@ -134,8 +135,12 @@ export class OrderDialogComponent implements OnInit {
     // LLamada al backend para obtener productos autorizados por resolución
     this.restService.getRequest('/products/byresolution/' + thirdPartyId).subscribe({
       next: (res) => {
-        console.log("res");
-        console.log(res);
+        if (res.data.length === 0) {
+          this.alertService.infoMixin.fire({
+            icon: 'warning',
+            title: 'El tercero no tiene productos autorizados o vigentes.'
+          });
+        }
         // Asumiendo que la respuesta es un array de productos o contiene 'data' con el array
         let products: PrescriptionInventoryInterface[] = res.data || res;
         if (!Array.isArray(products)) products = [];
@@ -163,7 +168,7 @@ export class OrderDialogComponent implements OnInit {
 
     // Listener para actualizar el precio unitario cuando cambia el producto
     group.get('product')?.valueChanges.subscribe((product: PrescriptionInventoryInterface) => {
-      if (product) {
+      if (product && typeof product === 'object') {
         if (!this.isPublicHealth) {
           group.get('priceUnit')?.setValue(product.salePrice || 0);
         }
@@ -192,6 +197,16 @@ export class OrderDialogComponent implements OnInit {
 
   removeDetail(index: number) {
     this.details.removeAt(index);
+
+    const newFilteredProducts: { [key: number]: PrescriptionInventoryInterface[] } = {};
+    Object.keys(this.filteredProducts).map(Number).sort((a, b) => a - b).forEach(k => {
+      if (k < index) {
+        newFilteredProducts[k] = this.filteredProducts[k];
+      } else if (k > index) {
+        newFilteredProducts[k - 1] = this.filteredProducts[k];
+      }
+    });
+    this.filteredProducts = newFilteredProducts;
   }
 
   setupTotalCalculation() {
@@ -216,6 +231,49 @@ export class OrderDialogComponent implements OnInit {
     return this.details.controls.reduce((sum, control) => {
       return sum + (control.get('total')?.value || 0);
     }, 0);
+  }
+
+  displaySupplier(supplier: ThirdPartyInterface): string {
+    return supplier ? `${supplier.fullName} - ${supplier.documentNumber}` : '';
+  }
+
+  findSuppliers(event: any) {
+    const value = typeof event === 'string' ? event : event?.target?.value;
+    if (!value || value.length < 3) {
+      this.suppliersFinded = [];
+      return;
+    }
+    this.restService.getRequest('/thirdparty/' + value).subscribe({
+      next: (res) => {
+        this.suppliersFinded = res.data || [];
+      },
+      error: () => {
+        this.suppliersFinded = this.suppliers.filter(s =>
+          s.documentNumber?.includes(value) || s.fullName?.toLowerCase().includes(value.toLowerCase())
+        );
+      }
+    });
+  }
+
+  displayProduct(product: PrescriptionInventoryInterface): string {
+    return product && product.product ? `${product.product.name} (${product.product.code}) - Lote: ${product.batch?.code}` : '';
+  }
+
+  filterProducts(index: number) {
+    const control = this.details.at(index).get('product');
+    const value = control?.value;
+    const search = typeof value === 'string' ? value.toLowerCase() : '';
+
+    if (!search) {
+      this.filteredProducts[index] = [...this.authorizedProducts];
+      return;
+    }
+
+    this.filteredProducts[index] = this.authorizedProducts.filter(p =>
+      p.product.name.toLowerCase().includes(search) ||
+      p.product.code.toLowerCase().includes(search) ||
+      p.batch.code.toLowerCase().includes(search)
+    );
   }
 
   loadSuppliers() {
@@ -330,6 +388,19 @@ export class OrderDialogComponent implements OnInit {
   }
 
   onSubmit() {
+    // Validar que se haya seleccionado un producto de la lista en cada fila (no dejar solo texto)
+    const detailsArray = this.details.controls;
+    for (let i = 0; i < detailsArray.length; i++) {
+      const product = detailsArray[i].get('product')?.value;
+      if (!product || typeof product === 'string') {
+        this.alertService.infoMixin.fire({
+          icon: 'warning',
+          title: `Debe seleccionar un medicamento de la lista en la fila ${i + 1}.`
+        });
+        return;
+      }
+    }
+
     if (this.mainForm.invalid || this.details.length === 0) {
       this.mainForm.markAllAsTouched();
       if (this.details.length === 0) {
@@ -373,6 +444,17 @@ export class OrderDialogComponent implements OnInit {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
+  }
+
+  onPrint(row: any) {
+    console.log('print', row);
+    this.alertService.infoMixin.fire({
+      icon: 'info',
+      title: 'Funcionalidad en desarrollo'
+    });
   }
 }

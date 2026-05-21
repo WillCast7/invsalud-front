@@ -86,7 +86,10 @@ private passwordMatchValidator = (g: AbstractControl): ValidationErrors | null =
           icon: 'success',
           title: "Contraseña actualizada exitosamente.",
         });
-        this.dialogRef.close();
+        this.dialogRef.close({
+            success: true,
+            message: "Contraseña actualizada exitosamente"
+          });
       },
       error: (error) => {
         this.alertService.infoMixin.fire({
@@ -101,6 +104,13 @@ private passwordMatchValidator = (g: AbstractControl): ValidationErrors | null =
     } else {
       this.passwordForm.markAllAsTouched();
     }
+  }
+
+  onCancel() {
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
   }
 
   constructor(

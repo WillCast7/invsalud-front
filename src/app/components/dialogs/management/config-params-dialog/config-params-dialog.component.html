@@ -48,7 +48,6 @@
 </div>
 }@else{
 <h2 mat-dialog-title class="p-3 d-flex align-items-center gap-2 m-0 bg-light border-bottom">
-    <mat-icon color="primary">{{ data.mode === 'edit' ? 'edit' : 'add_box' }}</mat-icon>
     {{ title() }}
 </h2>
 
@@ -122,7 +121,7 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="p-3 border-top bg-light">
-    <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+    <button mat-button (click)="onCancel()" class="cancel-button">Cancelar</button>
     <button mat-flat-button color="primary" class="save-button" (click)="onSave()" [disabled]="configParamForm.invalid">
         {{ configParamSearched ? 'Actualizar' : 'Guardar' }}
     </button>

@@ -65,11 +65,7 @@ export class ConfigParamsDialogComponent {
   setForm() {
     if (this.data.data) {
       if (this.data.data.shortname === "Resultado de contacto") {
-        this.alertService.infoMixin.fire({
-          icon: "error",
-          title: "No se puede modificar estos parametros, por sus dependencias"
-        });
-        this.dialogRef.close();
+        this.dialogRef.close({ success: false, message: 'No se puede modificar estos parametros, por sus dependencias' });
         return;
       }
       this.configParamForm.patchValue({
@@ -86,7 +82,7 @@ export class ConfigParamsDialogComponent {
 
   onEdit() {
     this.data.mode = 'edit';
-    this.title.set('Editar Parámetro');
+    this.title.set('Editar Parámetro de configuracion');
     this.setForm();
     this.configParamSearched = this.data.data;
   }
@@ -100,11 +96,10 @@ export class ConfigParamsDialogComponent {
 
       request.subscribe({
         next: (objData) => {
-          this.alertService.infoMixin.fire({
-            icon: 'success',
-            title: this.configParamSearched ? 'Parámetro actualizado exitosamente' : 'Parámetro registrado exitosamente',
+          this.dialogRef.close({
+            success: true,
+            message: this.configParamSearched ? 'Parámetro actualizado exitosamente' : 'Parámetro registrado exitosamente'
           });
-          this.dialogRef.close(true);
         },
         error: (error) => {
           this.alertService.infoMixin.fire({
@@ -123,6 +118,6 @@ export class ConfigParamsDialogComponent {
   }
 
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({ success: false, message: 'Operación cancelada' });
   }
 }

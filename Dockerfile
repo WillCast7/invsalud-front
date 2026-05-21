@@ -12,7 +12,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Exponemos el puerto de ng serve
-EXPOSE 4200
+EXPOSE 8000
 
 # Arrancamos con host 0.0.0.0 para que sea accesible desde fuera del contenedor
-CMD ["npx", "ng", "serve", "--host", "0.0.0.0"]
+CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--port", "8000", "--disable-host-check"]

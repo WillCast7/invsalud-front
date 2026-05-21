@@ -39,6 +39,8 @@ export class OrderRecipeDialogComponent implements OnInit {
   mode: 'create' | 'edit' | 'view' = 'create';
 
   mainForm!: FormGroup;
+  sellForm!: FormGroup;
+  showSellDiv = false;
   suppliers: ThirdPartyInterface[] = [];
   salePrice: number = 2000;
 
@@ -55,15 +57,17 @@ export class OrderRecipeDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.data.mode);
     this.initForm();
-    this.loadSuppliers();
-    this.fetchRecipePrice();
 
     if ((this.mode === 'edit' || this.mode === 'view') && this.data.data) {
-      this.loadDataForEditAndView(this.data.data);
       if (this.mode === 'view') {
+        this.fetchOrderData();
         this.mainForm.disable();
       }
+    } else {
+      this.loadSuppliers();
+      this.fetchRecipePrice();
     }
   }
 
@@ -71,6 +75,11 @@ export class OrderRecipeDialogComponent implements OnInit {
     this.mainForm = this.fb.group({
       thirdParty: [null, Validators.required],
       units: [1, [Validators.required, Validators.min(1)]]
+    });
+
+    this.sellForm = this.fb.group({
+      initialSerial: ['', Validators.required],
+      finalSerial: ['', Validators.required]
     });
   }
 
@@ -100,6 +109,17 @@ export class OrderRecipeDialogComponent implements OnInit {
     });
   }
 
+  fetchOrderData() {
+    this.restService.getRequest('/orders/' + this.data.data.id).subscribe({
+      next: (objData) => {
+        this.data.data = objData?.data || objData;
+      },
+      error: (err) => {
+        console.warn('Could not fetch order data', err);
+      }
+    });
+  }
+
   loadSuppliers() {
     this.restService.getRequest('/thirdparty', { page: 0, size: 1000 }).subscribe({
       next: (res) => {
@@ -117,19 +137,6 @@ export class OrderRecipeDialogComponent implements OnInit {
     });
   }
 
-  loadDataForEditAndView(order: any) {
-    let parsedUnits = order.units || 1;
-
-    if (order.observations) {
-      // Regex to extract basic text from "Serial Inicial: 10, Serial Final: 10, Unidades: 1"
-      const unitsMatch = order.observations.match(/Unidades:\s*(\d+)/);
-      if (unitsMatch) parsedUnits = parseInt(unitsMatch[1], 10);
-    }
-
-    this.mainForm.patchValue({
-      units: parsedUnits
-    });
-  }
 
   compareWithId(o1: any, o2: any): boolean {
     return o1 && o2 ? o1.id === o2.id : o1 === o2;
@@ -170,7 +177,87 @@ export class OrderRecipeDialogComponent implements OnInit {
     });
   }
 
+  toggleSellDiv() {
+    this.showSellDiv = !this.showSellDiv;
+  }
+
+  onSell() {
+    if (this.sellForm.invalid) {
+      this.sellForm.markAllAsTouched();
+      this.alertService.infoMixin.fire({
+        icon: 'warning',
+        title: 'Por favor complete todos los campos requeridos correctamente.'
+      });
+      return;
+    }
+
+    this.alertService.modal.fire({
+      title: '¿Vender esta cotización?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3d5a80',
+      cancelButtonColor: '#ac0505',
+      confirmButtonText: 'Sí, vender',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const payload = this.sellForm.value;
+        this.restService.postRequest('/orders/sell/recipe/' + this.data.data?.id, payload).subscribe({
+          next: (res) => {
+            this.dialogRef.close({ success: true, message: 'Venta realizada con éxito' });
+          },
+          error: (err) => {
+            this.alertService.infoMixin.fire({
+              icon: 'error',
+              title: err.error?.message || 'Error al vender la cotización'
+            });
+          }
+        });
+      }
+    });
+
+  }
+
+  onPrint(row: any) {
+    console.log('print', row);
+    this.alertService.infoMixin.fire({
+      icon: 'info',
+      title: 'Funcionalidad en desarrollo'
+    });
+  }
+
+  onAbort() {
+    this.alertService.modal.fire({
+      title: '¿Está seguro que desea anular esta cotización?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3d5a80',
+      cancelButtonColor: '#ac0505',
+      confirmButtonText: 'Sí, anular',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.restService.putRequest('/orders/abort/' + this.data.data?.id, {}).subscribe({
+          next: (res) => {
+            this.dialogRef.close({ success: true, message: 'Cotización anulada con éxito' });
+          },
+          error: (err) => {
+            this.alertService.infoMixin.fire({
+              icon: 'error',
+              title: err.error?.message || 'Error al anular la cotización'
+            });
+          }
+        });
+      }
+    });
+  }
+
   onCancel() {
-    this.dialogRef.close();
+    this.dialogRef.close({
+            success: false,
+            message: 'Operación cancelada'
+          });
   }
 }

@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>¿Olvidaste tu contraseña?</h2>
+<mat-dialog-content>
+  <p>Ingrese su nombre de usuario y número de cédula para validar sus datos. Si son correctos, se le enviará un enlace al correo electrónico para restablecer su contraseña.</p>
+  <form [formGroup]="recoveryForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <mat-form-field appearance="outline" class="col-12 mt-2">
+        <mat-label>Nombre de Usuario</mat-label>
+        <input matInput formControlName="userName" required placeholder="EjemploUsuario">
+        @if (recoveryForm.get('userName')?.hasError('required')) {
+          <mat-error>El usuario es requerido</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col-12 mt-2">
+        <mat-label>Número de Cédula</mat-label>
+        <input matInput formControlName="documentNumber" required placeholder="1234567890">
+        @if (recoveryForm.get('documentNumber')?.hasError('required')) {
+          <mat-error>La cédula es requerida</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" type="button">Cancelar</button>
+  <button mat-button class="save-button" (click)="onSubmit()" color="primary" [disabled]="recoveryForm.invalid">Validar y Enviar</button>
+</mat-dialog-actions>

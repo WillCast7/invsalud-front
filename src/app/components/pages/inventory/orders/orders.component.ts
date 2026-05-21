@@ -62,6 +62,10 @@ export class OrdersComponent {
     { key: 'status', label: 'Estado', isSortable: true }
   ];
 
+  tableOptions: TableOption[] = [
+    { icon: 'print', label: 'Imprimir', identifier: 'print' }
+  ];
+
   buttonsList = signal<TableOption[]>([
     { icon: 'add', label: 'Crear Cotización', identifier: 'createOrder', color: 'primary' }
   ]);
@@ -99,13 +103,24 @@ export class OrdersComponent {
   tableAction(event: { type: string, row: OrderInterface }) {
     switch (event.type) {
       case 'edit':
-        this.openModalOrder(event.type, event.row);
+        if (this.pageMode() !== 'recipe') {
+          this.openModalOrder('edit', event.row);
+        } else {
+          this.openModalOrderRecetario('edit', event.row);
+        }
         break;
       case 'view':
-        this.openModalOrder(event.type, event.row);
+        if (this.pageMode() !== 'recipe') {
+          this.openModalOrder('view', event.row);
+        } else {
+          this.openModalOrderRecetario('view', event.row);
+        }
         break;
       case 'changeStatus':
         this.changeStatus(event.row);
+        break;
+      case 'print':
+        this.onPrint(event.row);
         break;
     }
   }
@@ -170,44 +185,42 @@ export class OrdersComponent {
       data: { mode: type, type: this.pageMode(), data: row }
     });
 
-    dialogRef.afterClosed().subscribe((result: any) => {
+    dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        if (result.message) {
-          this.alertService.infoMixin.fire({
-            icon: 'success',
-            title: result.message
-          });
-        }
-        this.getData(
-          this.dataValue.pageable.pageNumber,
-          this.dataValue.pageable.pageSize,
-          this.searchValue
-        );
+        this.alertService.infoMixin.fire({
+          icon: result.success ? 'success' : 'warning',
+          title: result.message
+        });
       }
+      this.getData(
+        this.dataValue.pageable.pageNumber,
+        this.dataValue.pageable.pageSize,
+        this.searchValue
+      );
+      
     });
   }
 
   openModalOrderRecetario(type: string, row: OrderInterface | undefined = undefined) {
     const dialogRef = this.dialog.open(OrderRecipeDialogComponent, {
       ...SizemodalInitializer,
-      width: '500px',
       data: { mode: type, type: this.pageMode(), data: row }
     });
 
-    dialogRef.afterClosed().subscribe((result: any) => {
+    dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        if (result.message) {
-          this.alertService.infoMixin.fire({
-            icon: 'success',
-            title: result.message
-          });
-        }
-        this.getData(
-          this.dataValue.pageable.pageNumber,
-          this.dataValue.pageable.pageSize,
-          this.searchValue
-        );
+        this.alertService.infoMixin.fire({
+          icon: result.success ? 'success' : 'warning',
+          title: result.message
+        });
       }
+      
+      this.getData(
+        this.dataValue.pageable.pageNumber,
+        this.dataValue.pageable.pageSize,
+        this.searchValue
+      );
+    
     });
   }
 
@@ -229,4 +242,13 @@ export class OrdersComponent {
     this.searchValue = searchValue;
     this.getData(0, 10, this.searchValue);
   }
+
+  onPrint(row: any) {
+    console.log('print', row);
+    this.alertService.infoMixin.fire({
+      icon: 'info',
+      title: 'Funcionalidad en desarrollo'
+    });
+  }
+
 }

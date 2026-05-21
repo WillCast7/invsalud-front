@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './components/pages/dashboard/dashboard.component';
-
+import { PublicChangePasswordComponent } from './components/pages/configuration/public-change-password/public-change-password.component';
 import { AccountComponent } from './components/pages/configuration/account/account.component';
 import { ConfigParamsComponent } from './components/pages/management/config-params/config-params.component';
 import { UserComponent } from './components/pages/management/user/user.component';
@@ -15,6 +15,7 @@ import { PurchasingComponent } from './components/pages/inventory/purchasing/pur
 
 export const routes: Routes = [
     { path: '', component: DashboardComponent, title: "Dashboard" },
+    { path: 'reset-password', component: PublicChangePasswordComponent, title: "Restablecer contraseña" },
     { path: 'configuracion/micuenta', component: AccountComponent, title: "Mi cuenta" },
     { path: 'configuracion/parametrosconfiguracion', component: ConfigParamsComponent, title: "Parametros de configuracion" },
     { path: 'administracion/terceros', component: ThirdPartyComponent, title: "Terceros" },
