@@ -16,7 +16,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ColumnTableInterface } from '../../../../models/table/column-table-interface';
 import { TableOption } from '../../../../models/table/table-options-interface';
 import { TableComponent } from '../../../../shared/table/table.component';
-import { TableHeaderControlsComponentComponent } from '../../../../shared/table-header-controls-component/table-header-controls-component.component';
+import { TableHeaderControlsComponent } from '../../../../shared/table-header-controls-component/table-header-controls-component';
 import { SizemodalInitializer } from '../../../../models/modal/sizemodal-interface';
 import { ConfigParamsDialogComponent } from '../../../dialogs/management/config-params-dialog/config-params-dialog.component';
 
@@ -34,7 +34,7 @@ import { ConfigParamsDialogComponent } from '../../../dialogs/management/config-
     MatButtonToggleModule,
     ReactiveFormsModule,
     MatPaginatorModule,
-    TableHeaderControlsComponentComponent,
+    TableHeaderControlsComponent,
     TableComponent
   ],
   templateUrl: './config-params.component.html',

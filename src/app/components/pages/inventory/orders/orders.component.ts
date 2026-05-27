@@ -14,7 +14,7 @@ import { AlertService } from '../../../../services/alerts.service';
 import { PageableInitializer, PageableInterface } from '../../../../models/table/pageable-interface';
 import { A11yModule } from "@angular/cdk/a11y";
 import { MatCardModule } from '@angular/material/card';
-import { TableHeaderControlsComponentComponent } from "../../../../shared/table-header-controls-component/table-header-controls-component.component";
+import { TableHeaderControlsComponent } from "../../../../shared/table-header-controls-component/table-header-controls-component";
 import { TableComponent } from "../../../../shared/table/table.component";
 import { ColumnTableInterface } from '../../../../models/table/column-table-interface';
 import { TableOption } from '../../../../models/table/table-options-interface';
@@ -39,7 +39,7 @@ import { OrderRecipeDialogComponent } from '../../../dialogs/inventory/order-rec
     MatPaginatorModule,
     A11yModule,
     MatCardModule,
-    TableHeaderControlsComponentComponent,
+    TableHeaderControlsComponent,
     TableComponent
   ],
   templateUrl: './orders.component.html',
@@ -244,10 +244,19 @@ export class OrdersComponent {
   }
 
   onPrint(row: any) {
-    console.log('print', row);
-    this.alertService.infoMixin.fire({
-      icon: 'info',
-      title: 'Funcionalidad en desarrollo'
+    this.restService.getRequest("/report/order/" + row.id).subscribe({
+      next: (objData) => {
+       this.alertService.infoMixin.fire({
+        icon: 'info',
+        title: 'Funcionalidad en desarrollo'
+      });
+      },
+      error: (error) => {
+        this.alertService.infoMixin.fire({
+          icon: 'error',
+          title: error.error?.message || 'Error al obtener datos',
+        });
+      }
     });
   }
 

@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="row">
+        <app-table-header-controls-component 
+            [buttonsList]="buttonsList()"
+            (action)="buttonAction($event)" />
+            
+        <app-table 
+            [columns]="tableColumns" 
+            [options]="tableOptions" 
+            [pageable]="dataValue"
+            (action)="tableAction($event)" />
+    </div>
+</div>

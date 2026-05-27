@@ -139,7 +139,7 @@ export class PurchasingDialogComponent implements OnInit {
         documentType: ['NIT', Validators.required],
         documentNumber: ['', Validators.required],
         fullName: ['', Validators.required],
-        phoneNumber: [''],
+        phoneNumber: ['', Validators.maxLength(10)],
         email: [''],
         address: ['']
       }),
@@ -157,14 +157,14 @@ export class PurchasingDialogComponent implements OnInit {
       product: [null, Validators.required],
       batch: [null, Validators.required],
       observations: [null],
-      priceUnit: [this.isPublicHealth ? 0 : '', this.isPublicHealth ? [] : [Validators.required, Validators.min(0)]],
+      priceUnit: [0, this.isPublicHealth ? [] : [Validators.required, Validators.min(0)]],
       units: [1, [Validators.required, Validators.min(1)]],
-      sellPrice: [this.isPublicHealth ? 0 : '', this.isPublicHealth ? [] : [Validators.required, Validators.min(0)]],
+      sellPrice: [0, this.isPublicHealth ? [] : [Validators.required, Validators.min(0)]],
       expirationDate: [null, Validators.required],
       priceTotal: [0]
     }, {
       // Aquí lo aplicas de forma generalizada
-      validators: [greaterThanValidator('priceUnit', 'sellPrice', 'priceLow')]
+      validators: this.isPublicHealth ? [] : [greaterThanValidator('priceUnit', 'sellPrice', 'priceLow')]
     });
     this.details.push(detailGroup);
   }
@@ -326,7 +326,7 @@ export class PurchasingDialogComponent implements OnInit {
       if (isProductString || isBatchString) {
         this.alertService.reCallMixin.fire({
           title: 'Atención',
-          text: `No se ha seleccionado un ${isProductString ? 'medicamento' : 'lote'} en la fila ${i + 1}, deben estar los dos. ¿Desea crear uno nuevo?`,
+          text: `No se ha seleccionado un ${isProductString ? 'medicamento' : 'lote'} en la fila ${i + 1}. ¿Desea crear uno nuevo ${isProductString ? 'medicamento' : 'lote'}?`,
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Sí, crear',
@@ -348,7 +348,39 @@ export class PurchasingDialogComponent implements OnInit {
         });
         return;
       }
+
+      console.log("Entro aqui")
+
+      console.log(this.isPublicHealth)
+
+      if (!this.isPublicHealth) {
+        if(detailsArray[i].get('priceUnit')?.value < 0 || detailsArray[i].get('sellPrice')?.value < 0) {
+          this.alertService.reCallMixin.fire({
+            title: 'Atención',
+            text: `El precio de compra o venta en la fila ${i + 1} no puede ser negativo.`,
+            icon: 'warning'
+          });
+          return;
+        }
+
+        if(detailsArray[i].get('sellPrice')?.value < detailsArray[i].get('priceUnit')?.value) {
+          this.alertService.reCallMixin.fire({
+            title: 'Atención',
+            text: `El precio de venta debe superar el costo de compra en la fila ${i + 1}.`,
+            icon: 'warning'
+          });
+          return;
+        }
+      }
+
     }
+          
+    console.log("Entro aqui 3")
+
+    console.log(this.mainForm.invalid)
+    console.log(this.mainForm.get('providerData')?.invalid)
+    console.log(this.mainForm.get('details')?.invalid)
+
 
     if (this.mainForm.invalid || this.details.length === 0) {
       this.mainForm.markAllAsTouched();
@@ -357,7 +389,12 @@ export class PurchasingDialogComponent implements OnInit {
           icon: 'warning',
           title: 'Debe agregar al menos un producto a la compra.',
         });
-      } else {
+      } 
+
+      console.log("Entro aqui 4")
+      console.log(this.mainForm.getError)
+      console.log(this.mainForm)
+      if (this.mainForm.get('providerData')?.invalid) {
         this.alertService.infoMixin.fire({
           icon: 'warning',
           title: 'Por favor complete todos los campos requeridos correctamente.',
@@ -366,39 +403,30 @@ export class PurchasingDialogComponent implements OnInit {
 
       return;
     }
+     
+    console.log("Entro aqui 5")
 
     const value = this.mainForm.value;
 
-    if (!value.providerData.id) {
-      // Create supplier first
-      const newSupplier = {
-        ...value.providerData,
-        rolesIds: [2] // Assuming 2 is Provider, we should ideally fetch or know it, but setting fallback
-      };
+    const newSupplier: ThirdPartyInterface = {
+      ...value.providerData,
+      rolesIds: [2] // Assuming 2 is Provider, we should ideally fetch or know it, but setting fallback
+    };
 
-      this.restService.postRequest('/thirdparty', newSupplier).subscribe({
-        next: (res: any) => {
-          const createdSupplierId = res.data?.id || res.id;
-          this.savePurchase(createdSupplierId);
-        },
-        error: (err) => {
-          this.alertService.infoMixin.fire({
-            icon: 'error',
-            title: err.error?.message || 'Error al crear el proveedor'
-          });
-        }
-      });
-    } else {
-      this.savePurchase(value.providerData.id);
-    }
+    console.log("Entro aqui 6")
+    
+    this.savePurchase(newSupplier);
+
   }
 
-  savePurchase(supplierId: any) {
+  savePurchase(newSupplier: ThirdPartyInterface) {
     const value = this.mainForm.value;
     const typeLabel = this.isPublicHealth ? 'public' : 'special';
 
+      console.log("Entro aqui 2")
+
     const payload = {
-      thirdParty: supplierId?.toString(),
+      thirdParty: newSupplier,
       type: typeLabel,
       total: this.grandTotal,
       observations: value.observations,

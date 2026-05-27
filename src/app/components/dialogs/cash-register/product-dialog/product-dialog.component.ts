@@ -42,11 +42,11 @@ interface Food {
     MatOption,
     NgxMaskDirective,
     MatButtonToggleModule,
+    MatSlideToggleModule, 
     MatCheckboxModule,
     MatDividerModule,
     MatChipsModule,
     CommonModule,
-    MatSlideToggleModule, 
     MatSelectModule
   ],
   providers: [provideNgxMask()],

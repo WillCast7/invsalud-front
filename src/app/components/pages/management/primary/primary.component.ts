@@ -15,7 +15,7 @@ import { AlertService } from '../../../../services/alerts.service';
 import { PageableInitializer, PageableInterface } from '../../../../models/table/pageable-interface';
 import { A11yModule } from "@angular/cdk/a11y";
 import { MatCardModule } from '@angular/material/card';
-import { TableHeaderControlsComponentComponent } from "../../../../shared/table-header-controls-component/table-header-controls-component.component";
+import { TableHeaderControlsComponent } from "../../../../shared/table-header-controls-component/table-header-controls-component";
 import { TableComponent } from "../../../../shared/table/table.component";
 import { ColumnTableInterface } from '../../../../models/table/column-table-interface';
 import { TableOption } from '../../../../models/table/table-options-interface';
@@ -43,7 +43,7 @@ import { SizemodalInitializer } from '../../../../models/modal/sizemodal-interfa
     
     A11yModule,
     MatCardModule,
-    TableHeaderControlsComponentComponent,
+    TableHeaderControlsComponent,
     TableComponent
   ],
 

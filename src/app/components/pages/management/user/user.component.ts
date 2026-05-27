@@ -16,7 +16,7 @@ import { PageableInitializer, PageableInterface } from '../../../../models/table
 import { A11yModule } from "@angular/cdk/a11y";
 import { MatCardModule } from '@angular/material/card';
 import { SizemodalInitializer } from '../../../../models/modal/sizemodal-interface';
-import { TableHeaderControlsComponentComponent } from "../../../../shared/table-header-controls-component/table-header-controls-component.component";
+import { TableHeaderControlsComponent } from "../../../../shared/table-header-controls-component/table-header-controls-component";
 import { TableComponent } from "../../../../shared/table/table.component";
 import { ColumnTableInterface } from '../../../../models/table/column-table-interface';
 import { TableOption } from '../../../../models/table/table-options-interface';
@@ -40,7 +40,7 @@ import { UserDialogComponent } from '../../../dialogs/user-dialog/user-dialog.co
     MatButtonToggleModule,
     A11yModule,
     MatCardModule,
-    TableHeaderControlsComponentComponent,
+    TableHeaderControlsComponent,
     TableComponent
 ],
 

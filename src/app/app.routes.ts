@@ -12,12 +12,14 @@ import { InventoryExpiredComponent } from './components/pages/inventory/inventor
 import { OrdersComponent } from './components/pages/inventory/orders/orders.component';
 import { SalesComponent } from './components/pages/inventory/sales/sales.component';
 import { PurchasingComponent } from './components/pages/inventory/purchasing/purchasing.component';
+import { BillTemplatesComponent } from './components/pages/configuration/bill-templates/bill-templates.component';
 
 export const routes: Routes = [
     { path: '', component: DashboardComponent, title: "Dashboard" },
     { path: 'reset-password', component: PublicChangePasswordComponent, title: "Restablecer contraseña" },
     { path: 'configuracion/micuenta', component: AccountComponent, title: "Mi cuenta" },
     { path: 'configuracion/parametrosconfiguracion', component: ConfigParamsComponent, title: "Parametros de configuracion" },
+    { path: 'configuracion/plantillafacturas', component: BillTemplatesComponent, title: "Plantillas de Facturas" },
     { path: 'administracion/terceros', component: ThirdPartyComponent, title: "Terceros" },
     { path: 'administracion/usuarios', component: UserComponent, title: "Usuarios" },
     { path: 'administracion/primarios', component: PrimaryComponent, title: "Primarios" },

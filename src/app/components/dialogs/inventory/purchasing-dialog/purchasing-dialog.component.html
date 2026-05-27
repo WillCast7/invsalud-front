@@ -1,10 +1,15 @@
-<h2 mat-dialog-title>
-  <mat-icon color="primary" class="vertical-align-middle me-2">inventory_2</mat-icon>
-  {{title()}}
-  @if (!isPublicHealth && grandTotal > 0 ) {
-  <span class="fs-5 fw-bold text-success">Total: {{ grandTotal | currency }}</span>
-  }
-</h2>
+<div class="col-12 d-flex">
+  <div class="col-6">
+    <h2 mat-dialog-title>
+      {{title()}}
+    </h2>
+  </div>
+  <div class="col-6 d-flex justify-content-end pr-3">
+    @if (!isPublicHealth && grandTotal > 0 ) {
+    <span class="fs-5 fw-bold text-success me-5 my-3">Total: {{ grandTotal | currency:'$':'symbol':'1.0-0' }}</span>
+    }
+  </div>
+</div>
 
 @if (data.mode === "view") {
 
@@ -73,7 +78,7 @@
           class="d-flex align-items-center gap-2 p-3 rounded bg-success bg-opacity-10 border border-success border-opacity-25">
           <mat-icon class="text-success">payments</mat-icon>
           <span class="text-muted small">Total de la compra:</span>
-          <span class="fs-5 fw-bold text-success">{{ objData.total | currency }}</span>
+          <span class="fs-5 fw-bold text-success">{{ objData.total | currency:'$':'symbol':'1.0-0' }}</span>
         </div>
       </div>
     </div>
@@ -201,7 +206,8 @@
 
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Número documento</mat-label>
-            <input matInput formControlName="documentNumber" [matAutocomplete]="auto" (keyup)="findSuppliers()">
+            <input matInput formControlName="documentNumber" [matAutocomplete]="auto" (keyup)="findSuppliers()"
+              maxlength="10">
             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSupplierSelected($event)">
               @for (option of suppliersFinded; track option.id) {
               <mat-option [value]="option.documentNumber">
@@ -212,7 +218,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-4">
-            <mat-label>Nombres</mat-label>
+            <mat-label>Nombre o razón social</mat-label>
             <input matInput formControlName="fullName" style="text-transform: uppercase;">
           </mat-form-field>
 
@@ -321,7 +327,8 @@
               <div class="col-md-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Precio de Venta</mat-label>
-                  <input matInput type="number" min="0" formControlName="sellPrice" [errorStateMatcher]="parentErrorMatcher">
+                  <input matInput type="number" min="0" formControlName="sellPrice"
+                    [errorStateMatcher]="parentErrorMatcher">
                   <span matTextPrefix>$&nbsp;</span>
                   @if (detailCtrl.hasError('priceLow')) {
                   <mat-error>El precio de venta debe superar el costo de compra.</mat-error>

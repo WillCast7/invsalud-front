@@ -11,6 +11,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-interface';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-order-recipe-dialog',
@@ -24,6 +25,7 @@ import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-int
     MatInputModule,
     MatSelectModule,
     MatDividerModule,
+    MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule
   ],
@@ -42,6 +44,7 @@ export class OrderRecipeDialogComponent implements OnInit {
   sellForm!: FormGroup;
   showSellDiv = false;
   suppliers: ThirdPartyInterface[] = [];
+  suppliersFinded: ThirdPartyInterface[] = [];
   salePrice: number = 2000;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { mode: string, type: string, data?: any }) {
@@ -140,6 +143,37 @@ export class OrderRecipeDialogComponent implements OnInit {
 
   compareWithId(o1: any, o2: any): boolean {
     return o1 && o2 ? o1.id === o2.id : o1 === o2;
+  }
+
+  displaySupplier(supplier: ThirdPartyInterface): string {
+    return supplier ? `${supplier.documentNumber} - ${supplier.fullName}` : '';
+  }
+
+  findSuppliers() {
+    let searchValue = this.mainForm.get('thirdParty')?.value;
+    if (typeof searchValue !== 'string') {
+      searchValue = searchValue?.documentNumber || searchValue?.fullName || '';
+    }
+
+    if (!searchValue || searchValue.length < 3) {
+      this.suppliersFinded = [];
+      return;
+    }
+
+    this.restService.getRequest('/thirdparty/' + searchValue).subscribe({
+      next: (res) => {
+        this.suppliersFinded = res.data || [];
+      },
+      error: () => {
+        this.suppliersFinded = this.suppliers.filter(s =>
+          s.documentNumber?.includes(searchValue) || s.fullName?.toLowerCase().includes(searchValue.toLowerCase())
+        );
+      }
+    });
+  }
+
+  onSupplierSelected(event: any) {
+    // Selection handled by formControlName="thirdParty"
   }
 
   onSubmit() {

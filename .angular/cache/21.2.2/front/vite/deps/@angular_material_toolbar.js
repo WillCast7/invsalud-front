@@ -3,11 +3,11 @@ import "./chunk-VON75VBJ.js";
 import "./chunk-XA6252L2.js";
 import "./chunk-GUGIMSVJ.js";
 import {
-  BidiModule
-} from "./chunk-JLBUACPJ.js";
-import {
   Platform
 } from "./chunk-RODSRFG6.js";
+import {
+  BidiModule
+} from "./chunk-JLBUACPJ.js";
 import "./chunk-XJC6SEPO.js";
 import "./chunk-B66IRT2Z.js";
 import {
@@ -36,8 +36,8 @@ import {
   inject,
   ɵɵdefineInjector
 } from "./chunk-2A52RMPU.js";
-import "./chunk-HWYXSU2G.js";
 import "./chunk-JRFR6BLO.js";
+import "./chunk-HWYXSU2G.js";
 import "./chunk-MARUHEWW.js";
 import "./chunk-3OV72XIM.js";
 

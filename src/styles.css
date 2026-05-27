@@ -55,3 +55,21 @@ body {
 .swal2-container {
   z-index: 10000 !important;
 }
+
+.full-screen-dialog .mdc-dialog__surface {
+  padding: 0 !important;
+  border-radius: 0 !important;
+  max-width: 100vw !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+.full-screen-dialog .mat-mdc-dialog-surface {
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.full-screen-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+}

@@ -14,7 +14,7 @@ import { AlertService } from '../../../../services/alerts.service';
 import { PageableInitializer, PageableInterface } from '../../../../models/table/pageable-interface';
 import { A11yModule } from "@angular/cdk/a11y";
 import { MatCardModule } from '@angular/material/card';
-import { TableHeaderControlsComponentComponent } from "../../../../shared/table-header-controls-component/table-header-controls-component.component";
+import { TableHeaderControlsComponent } from "../../../../shared/table-header-controls-component/table-header-controls-component";
 import { TableComponent } from "../../../../shared/table/table.component";
 import { ColumnTableInterface } from '../../../../models/table/column-table-interface';
 import { TableOption } from '../../../../models/table/table-options-interface';
@@ -39,7 +39,7 @@ import { PurchasingRecipeDialogComponent } from '../../../dialogs/inventory/purc
     MatPaginatorModule,
     A11yModule,
     MatCardModule,
-    TableHeaderControlsComponentComponent,
+    TableHeaderControlsComponent,
     TableComponent
   ],
   templateUrl: './purchasing.component.html',
@@ -58,6 +58,13 @@ export class PurchasingComponent {
     { key: 'purchasedCode', label: 'Cod. Entrada', isSortable: true },
     { key: 'thirdParty', label: 'Tercero', isSortable: true },
     { key: 'total', label: 'Total', isSortable: true },
+    { key: 'isActive', label: 'Estado', isSortable: false, pipe: 'status' }
+  ];
+
+  purchaseColumnsPublic: ColumnTableInterface[] = [
+    { key: 'id', label: 'ID', isSortable: true },
+    { key: 'purchasedCode', label: 'Cod. Entrada', isSortable: true },
+    { key: 'thirdParty', label: 'Tercero', isSortable: true },
     { key: 'isActive', label: 'Estado', isSortable: false, pipe: 'status' }
   ];
 
@@ -245,7 +252,7 @@ export class PurchasingComponent {
         this.dataValue.pageable.pageSize,
         this.searchValue
       );
-      
+
     });
   }
 

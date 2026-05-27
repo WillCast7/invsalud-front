@@ -12,6 +12,7 @@ import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-interface';
 import { PurchaseTableInterface } from '../../../../models/inventory/purchase-interface';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-purchasing-recipe-dialog',
@@ -25,6 +26,7 @@ import { PurchaseTableInterface } from '../../../../models/inventory/purchase-in
     MatInputModule,
     MatSelectModule,
     MatDividerModule,
+    MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule
   ],
@@ -41,6 +43,7 @@ export class PurchasingRecipeDialogComponent implements OnInit {
 
   mainForm!: FormGroup;
   suppliers: ThirdPartyInterface[] = [];
+  suppliersFinded: ThirdPartyInterface[] = [];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { mode: string, data?: PurchaseTableInterface }) {
     if (this.data && this.data.mode) {
@@ -83,8 +86,8 @@ export class PurchasingRecipeDialogComponent implements OnInit {
       thirdParty: [null, Validators.required],
       units: [1, [Validators.required, Validators.min(1)]],
       priceUnit: ['', [Validators.required, Validators.min(0)]],
-      initialSerial: [0, [Validators.required, Validators.min(1)]],
-      finalSerial: [0, [Validators.required, Validators.min(1)]],
+      initialSerial: ['', [Validators.required, Validators.minLength(1)]],
+      finalSerial: ['', [Validators.required, Validators.minLength(1)]],
       total: [0]
     });
   }
@@ -122,6 +125,49 @@ export class PurchasingRecipeDialogComponent implements OnInit {
     return o1 && o2 ? o1.id === o2.id : o1 === o2;
   }
 
+  displaySupplier(supplier: ThirdPartyInterface): string {
+    return supplier ? `${supplier.documentNumber} - ${supplier.fullName}` : '';
+  }
+
+  findSuppliers() {
+    let searchValue = this.mainForm.get('thirdParty')?.value;
+    if (typeof searchValue !== 'string') {
+      searchValue = searchValue?.documentNumber || searchValue?.fullName || '';
+    }
+
+    if (!searchValue || searchValue.length < 3) {
+      this.suppliersFinded = [];
+      return;
+    }
+
+    this.restService.getRequest('/thirdparty/' + searchValue).subscribe({
+      next: (res) => {
+        this.suppliersFinded = res.data || [];
+      },
+      error: () => {
+        this.suppliersFinded = this.suppliers.filter(s =>
+          s.documentNumber?.includes(searchValue) || s.fullName?.toLowerCase().includes(searchValue.toLowerCase())
+        );
+      }
+    });
+  }
+
+  onSupplierSelected(event: any) {
+    const selectedDoc = event.option.value;
+    const supplier = this.suppliersFinded.find(s => s.documentNumber === selectedDoc);
+    if (supplier) {
+      this.mainForm.get('thirdParty')?.setValue({
+        id: supplier.id,
+        documentType: supplier.documentType,
+        documentNumber: supplier.documentNumber,
+        fullName: supplier.fullName,
+        phoneNumber: supplier.phoneNumber,
+        email: supplier.email,
+        address: supplier.address
+      });
+    }
+  }
+
 
   onSubmit() {
     if (this.mainForm.invalid) {
@@ -135,7 +181,7 @@ export class PurchasingRecipeDialogComponent implements OnInit {
 
     const value = this.mainForm.value;
     const payload = {
-      thirdParty: value.thirdParty?.id?.toString() || value.thirdParty,
+      thirdParty: value.thirdParty,
       type: 'recipe',
       total: value.total,
       recipe: {
@@ -150,9 +196,9 @@ export class PurchasingRecipeDialogComponent implements OnInit {
     this.restService.postRequest('/purchasing', payload).subscribe({
       next: (res) => {
         this.dialogRef.close({
-            success: true,
-            message: 'Registrado exitosamente'
-          });
+          success: true,
+          message: 'Registrado exitosamente'
+        });
       },
       error: (err) => {
         this.alertService.infoMixin.fire({
@@ -165,9 +211,9 @@ export class PurchasingRecipeDialogComponent implements OnInit {
 
   onCancel() {
     this.dialogRef.close({
-            success: false,
-            message: 'Operación cancelada'
-          });
+      success: false,
+      message: 'Operación cancelada'
+    });
   }
 
   onPrint(row: any) {

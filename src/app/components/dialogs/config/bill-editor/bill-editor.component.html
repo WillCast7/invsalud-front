@@ -1,0 +1,170 @@
+<div class="dialog-container d-flex flex-column" style="height: 100%;">
+  <div class="d-flex justify-content-between align-items-center p-2 header-dialog border-bottom">
+    <div class="col-6">
+      <h2 mat-dialog-title class="m-0 title-dialog">{{ title() }}</h2>
+    </div>
+    <div class="col-6 d-flex justify-content-end align-items-center gap-2">
+      <button mat-flat-button color="accent" *ngIf="isViewMode" (click)="enableEditMode()">
+        <mat-icon>edit</mat-icon> Editar Plantilla
+      </button>
+      <button mat-button class="cancel-button" (click)="onCancel()">Cancelar</button>
+      <button mat-flat-button class="save-button" color="primary" *ngIf="!isViewMode" (click)="onSubmit()">
+        <mat-icon>save</mat-icon> Guardar
+      </button>
+    </div>
+  </div>
+
+<div class="px-4 pt-3 pb-0" *ngIf="mainForm" [formGroup]="mainForm">
+  <div class="row mx-0 align-items-center justify-content-between g-3">
+    
+    <div class="col-md-3">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Nombre de la Plantilla</mat-label>
+        <input matInput formControlName="name" placeholder="Ej. Receta General">
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-3">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Categoría</mat-label>
+        <mat-select formControlName="category">
+          <mat-option *ngFor="let cat of availableCategories" [value]="cat">
+            {{ cat }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-3">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Tipo de Documento</mat-label>
+        <mat-select formControlName="documentType">
+          <mat-option *ngFor="let t of availableDocumentTypes" [value]="t">
+            {{ t }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-3 d-flex justify-content-md-end mb-3">
+      <mat-slide-toggle formControlName="isDefault" color="primary">
+        <span class="fw-medium text-secondary">Usar esta plantilla</span>
+      </mat-slide-toggle>
+    </div>
+
+  </div>
+</div>
+
+  <div class="flex-grow-1 p-3 pt-0 content-dialog row m-0 overflow-hidden">
+    
+    <!-- Left Panel: A4 Preview -->
+    <div class="col-12 col-lg-8 preview-panel d-flex justify-content-center overflow-auto h-100 py-4 px-2">
+      
+      <!-- A4 Page Simulation -->
+      <div class="a4-page bg-white shadow-sm position-relative">
+        
+        <!-- Render parsed sections directly as HTML -->
+        <div *ngFor="let section of templateData.sections" 
+             class="a4-section" 
+             [class.active]="selectedSection?.id === section.id"
+             (click)="selectSection(section)">
+             
+          <!-- Safe HTML binding to render the template block -->
+          <div [innerHTML]="getSafeHtml(section.html_template)"></div>
+          
+          <div class="section-overlay d-flex align-items-center justify-content-center" *ngIf="!isViewMode">
+             <span class="badge bg-primary fs-6">{{ section.name }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="templateData.sections.length === 0" class="text-center p-5 text-muted">
+          <p>No hay secciones cargadas en este documento.</p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Right Panel: Setup / Editor -->
+    <div class="col-12 col-lg-4 config-panel bg-light border-start overflow-auto h-100 p-4">
+      
+      <div *ngIf="!selectedSection">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+          <h4 class="m-0 text-muted">Secciones del Documento</h4>
+          <button mat-icon-button color="primary" (click)="addNewSection()" *ngIf="!isViewMode" matTooltip="Agregar nueva sección">
+            <mat-icon>add_circle</mat-icon>
+          </button>
+        </div>
+        
+        <ul class="list-group">
+          <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center cursor-pointer"
+              *ngFor="let section of templateData.sections"
+              (click)="selectSection(section)">
+            <span>{{ section.name }}</span>
+            <div>
+              <button mat-icon-button class="text-muted p-0" style="width: 24px; height: 24px; line-height: 24px;" *ngIf="!isViewMode" (click)="removeSection(section, $event)" matTooltip="Eliminar sección">
+                <mat-icon style="font-size: 18px; width: 18px; height: 18px; color: #dc3545;">delete</mat-icon>
+              </button>
+              <mat-icon class="text-muted ms-2" style="font-size: 18px; width: 18px; height: 18px;">edit</mat-icon>
+            </div>
+          </li>
+        </ul>
+        <p class="text-muted mt-3 small text-center" *ngIf="!isViewMode">
+          Haz clic en una sección aquí o en la hoja para editarla.
+        </p>
+      </div>
+
+      <div *ngIf="selectedSection">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+          <h4 class="m-0 text-primary fw-bold">Editando: {{ selectedSection.name }}</h4>
+          <button mat-icon-button (click)="selectedSection = null" matTooltip="Volver a la lista">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        </div>
+
+        <div *ngIf="!isViewMode">
+          <mat-form-field appearance="outline" class="w-100 mb-3">
+            <mat-label>Nombre Interno</mat-label>
+            <input matInput [(ngModel)]="selectedSection.name">
+          </mat-form-field>
+
+          <!-- Here we leave a placeholder for a WYSIWYG editor like Jodit or Quill -->
+          <div class="editor-placeholder mt-2">
+            <label class="form-label text-muted fw-bold">Código HTML (o WYSIWYG futuro)</label>
+            <textarea class="form-control font-monospace" rows="18" 
+                      [(ngModel)]="selectedSection.html_template" 
+                      style="font-size: 13px;"></textarea>
+          </div>
+          
+          <div class="alert alert-info mt-3 small">
+            Los cambios en este código se reflejarán inmediatamente en la previsualización de la izquierda.
+          </div>
+          
+          <div class="variables-section mt-4 border-top pt-3">
+            <div class="d-flex justify-content-between align-items-center cursor-pointer" (click)="showVariables = !showVariables">
+              <h5 class="m-0 text-muted fs-6"><mat-icon style="font-size: 16px; width: 16px; height: 16px; vertical-align: text-bottom;">data_object</mat-icon> Diccionario de Variables</h5>
+              <mat-icon>{{ showVariables ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </div>
+            
+            <div *ngIf="showVariables" class="mt-3">
+              <p class="small text-muted mb-2">Copia y pega estas variables en tu código HTML. Spring Boot las reemplazará automáticamente con datos reales al imprimir el PDF.</p>
+              
+              <div *ngFor="let group of getAvailableVariables()" class="mb-3">
+                <span class="fw-bold small text-primary">{{ group.label }}</span>
+                <div class="d-flex flex-wrap gap-1 mt-1">
+                  <span class="badge bg-secondary cursor-pointer" *ngFor="let v of group.vars" matTooltip="Copiar" (click)="selectedSection.html_template = selectedSection.html_template + v">{{ v }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isViewMode">
+          <p class="text-muted">El documento está en modo de solo lectura.</p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>

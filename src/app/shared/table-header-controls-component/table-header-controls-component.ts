@@ -17,10 +17,10 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     MatButtonModule,
     MatButtonToggleModule,
   ],
-  templateUrl: './table-header-controls-component.component.html',
-  styleUrl: './table-header-controls-component.component.css',
+  templateUrl: './table-header-controls-component.html',
+  styleUrl: './table-header-controls-component.css',
 })
-export class TableHeaderControlsComponentComponent {
+export class TableHeaderControlsComponent {
 
   buttons = signal<TableOption[]>([]);
   toggles = signal<TableOption[]>([]);
