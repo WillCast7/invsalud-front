@@ -1,8 +1,8 @@
 // api configuration Here!
 export const config = {
   apiVersion: 'v1',
-  urlBackend: 'http://76.13.30.238:80',
-  urlMedia: 'http://76.13.30.238:9091',
+  urlBackend: 'http://76.13.30.238:9091',
+  urlMedia: 'http://76.13.30.238:80',
   //urlMedia: 'http://localhost:4200',
   //urlBackend: 'http://localhost:9091',
 
