@@ -19,7 +19,7 @@
             "polyfills": [
               "zone.js"
             ],
-             "define": {
+            "define": {
               "global": "globalThis"
             },
             "tsConfig": "tsconfig.app.json",
@@ -65,6 +65,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "front:build:production"
