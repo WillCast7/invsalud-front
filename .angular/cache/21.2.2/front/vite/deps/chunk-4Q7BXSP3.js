@@ -1,9 +1,6 @@
 import {
-  _getEventTarget,
-  _getFocusedElementPierceShadowDom,
-  _getShadowRoot,
   normalizePassiveListenerOptions
-} from "./chunk-XA6252L2.js";
+} from "./chunk-3EQIYMO2.js";
 import {
   _VisuallyHiddenLoader,
   _setInnerHtml
@@ -11,6 +8,15 @@ import {
 import {
   DomSanitizer
 } from "./chunk-AYGN46MO.js";
+import {
+  isFakeMousedownFromScreenReader,
+  isFakeTouchstartFromScreenReader
+} from "./chunk-G3QK3M7F.js";
+import {
+  _getEventTarget,
+  _getFocusedElementPierceShadowDom,
+  _getShadowRoot
+} from "./chunk-EE4Q3I4S.js";
 import {
   coerceArray
 } from "./chunk-N4DOILP3.js";
@@ -80,15 +86,6 @@ import {
   __spreadProps,
   __spreadValues
 } from "./chunk-3OV72XIM.js";
-
-// node_modules/@angular/cdk/fesm2022/_fake-event-detection-chunk.mjs
-function isFakeMousedownFromScreenReader(event) {
-  return event.buttons === 0 || event.detail === 0;
-}
-function isFakeTouchstartFromScreenReader(event) {
-  const touch = event.touches && event.touches[0] || event.changedTouches && event.changedTouches[0];
-  return !!touch && touch.identifier === -1 && (touch.radiusX == null || touch.radiusX === 1) && (touch.radiusY == null || touch.radiusY === 1);
-}
 
 // node_modules/@angular/cdk/fesm2022/_keycodes-chunk.mjs
 var BACKSPACE = 8;
@@ -1588,38 +1585,6 @@ var A11yModule = class _A11yModule {
   }], () => [], null);
 })();
 
-// node_modules/@angular/cdk/fesm2022/_id-generator-chunk.mjs
-var counters = {};
-var _IdGenerator = class __IdGenerator {
-  _appId = inject(APP_ID);
-  static _infix = `a${Math.floor(Math.random() * 1e5).toString()}`;
-  getId(prefix, randomize = false) {
-    if (this._appId !== "ng") {
-      prefix += this._appId;
-    }
-    if (!counters.hasOwnProperty(prefix)) {
-      counters[prefix] = 0;
-    }
-    return `${prefix}${randomize ? __IdGenerator._infix + "-" : ""}${counters[prefix]++}`;
-  }
-  static ɵfac = function _IdGenerator_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || __IdGenerator)();
-  };
-  static ɵprov = ɵɵdefineInjectable({
-    token: __IdGenerator,
-    factory: __IdGenerator.ɵfac,
-    providedIn: "root"
-  });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(_IdGenerator, [{
-    type: Injectable,
-    args: [{
-      providedIn: "root"
-    }]
-  }], null, null);
-})();
-
 // node_modules/@angular/cdk/fesm2022/_typeahead-chunk.mjs
 var DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL_MS = 200;
 var Typeahead = class {
@@ -2599,8 +2564,6 @@ var ConfigurableFocusTrapFactory = class _ConfigurableFocusTrapFactory {
 })();
 
 export {
-  isFakeMousedownFromScreenReader,
-  isFakeTouchstartFromScreenReader,
   BACKSPACE,
   TAB,
   ENTER,
@@ -2639,7 +2602,6 @@ export {
   HighContrastMode,
   HighContrastModeDetector,
   A11yModule,
-  _IdGenerator,
   hasModifierKey,
   ListKeyManager,
   ActiveDescendantKeyManager,
@@ -2660,4 +2622,4 @@ export {
   FOCUS_TRAP_INERT_STRATEGY,
   ConfigurableFocusTrapFactory
 };
-//# sourceMappingURL=chunk-UV4YKNHU.js.map
+//# sourceMappingURL=chunk-4Q7BXSP3.js.map

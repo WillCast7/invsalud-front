@@ -244,17 +244,15 @@ export class OrdersComponent {
   }
 
   onPrint(row: any) {
-    this.restService.getRequest("/report/order/" + row.id).subscribe({
-      next: (objData) => {
-       this.alertService.infoMixin.fire({
-        icon: 'info',
-        title: 'Funcionalidad en desarrollo'
-      });
+    this.restService.fileGetRequest("/report/order/" + row.id).subscribe({
+      next: (blob) => {
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL, '_blank');
       },
       error: (error) => {
         this.alertService.infoMixin.fire({
           icon: 'error',
-          title: error.error?.message || 'Error al obtener datos',
+          title: error.error?.message || 'Error al descargar la cotización en PDF',
         });
       }
     });

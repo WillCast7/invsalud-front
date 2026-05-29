@@ -1,10 +1,10 @@
 // api configuration Here!
 export const config = {
   apiVersion: 'v1',
-  urlMedia: 'http://auealab.com',
-  urlBackend: 'http://auealab.com/api',
-  //urlMedia: 'http://localhost:4200',
-  //urlBackend: 'http://localhost:9091',
+  //urlMedia: 'http://auealab.com',
+  //urlBackend: 'http://auealab.com/api',
+  urlMedia: 'http://localhost:4200',
+  urlBackend: 'http://localhost:9091',
 
 
   // masks
