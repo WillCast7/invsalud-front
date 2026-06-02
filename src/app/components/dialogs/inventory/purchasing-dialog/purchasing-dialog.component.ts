@@ -227,7 +227,7 @@ export class PurchasingDialogComponent implements OnInit {
 
   findSuppliers() {
     const documentNumber = this.mainForm.get('providerData.documentNumber')?.value;
-    if (!documentNumber || documentNumber.length < 3) {
+    if (!documentNumber || String(documentNumber).length < 3) {
       this.suppliersFinded = [];
       return;
     }
@@ -238,7 +238,7 @@ export class PurchasingDialogComponent implements OnInit {
       error: () => {
         // Fallback to local filter if search endpoint is not available
         this.suppliersFinded = this.suppliers.filter(s =>
-          s.documentNumber?.includes(documentNumber) || s.fullName?.toLowerCase().includes(documentNumber.toLowerCase())
+          String(s.documentNumber).includes(String(documentNumber)) || s.fullName?.toLowerCase().includes(String(documentNumber).toLowerCase())
         );
       }
     });
@@ -246,7 +246,7 @@ export class PurchasingDialogComponent implements OnInit {
 
   onSupplierSelected(event: any) {
     const selectedDoc = event.option.value;
-    const supplier = this.suppliersFinded.find(s => s.documentNumber === selectedDoc);
+    const supplier = this.suppliersFinded.find(s => String(s.documentNumber) === String(selectedDoc));
     if (supplier) {
       this.mainForm.get('providerData')?.patchValue({
         id: supplier.id,
@@ -354,7 +354,7 @@ export class PurchasingDialogComponent implements OnInit {
       console.log(this.isPublicHealth)
 
       if (!this.isPublicHealth) {
-        if(detailsArray[i].get('priceUnit')?.value < 0 || detailsArray[i].get('sellPrice')?.value < 0) {
+        if (detailsArray[i].get('priceUnit')?.value < 0 || detailsArray[i].get('sellPrice')?.value < 0) {
           this.alertService.reCallMixin.fire({
             title: 'Atención',
             text: `El precio de compra o venta en la fila ${i + 1} no puede ser negativo.`,
@@ -363,7 +363,7 @@ export class PurchasingDialogComponent implements OnInit {
           return;
         }
 
-        if(detailsArray[i].get('sellPrice')?.value < detailsArray[i].get('priceUnit')?.value) {
+        if (detailsArray[i].get('sellPrice')?.value < detailsArray[i].get('priceUnit')?.value) {
           this.alertService.reCallMixin.fire({
             title: 'Atención',
             text: `El precio de venta debe superar el costo de compra en la fila ${i + 1}.`,
@@ -374,12 +374,6 @@ export class PurchasingDialogComponent implements OnInit {
       }
 
     }
-          
-    console.log("Entro aqui 3")
-
-    console.log(this.mainForm.invalid)
-    console.log(this.mainForm.get('providerData')?.invalid)
-    console.log(this.mainForm.get('details')?.invalid)
 
 
     if (this.mainForm.invalid || this.details.length === 0) {
@@ -389,7 +383,7 @@ export class PurchasingDialogComponent implements OnInit {
           icon: 'warning',
           title: 'Debe agregar al menos un producto a la compra.',
         });
-      } 
+      }
 
       console.log("Entro aqui 4")
       console.log(this.mainForm.getError)
@@ -403,8 +397,6 @@ export class PurchasingDialogComponent implements OnInit {
 
       return;
     }
-     
-    console.log("Entro aqui 5")
 
     const value = this.mainForm.value;
 
@@ -413,8 +405,6 @@ export class PurchasingDialogComponent implements OnInit {
       rolesIds: [2] // Assuming 2 is Provider, we should ideally fetch or know it, but setting fallback
     };
 
-    console.log("Entro aqui 6")
-    
     this.savePurchase(newSupplier);
 
   }
@@ -423,7 +413,7 @@ export class PurchasingDialogComponent implements OnInit {
     const value = this.mainForm.value;
     const typeLabel = this.isPublicHealth ? 'public' : 'special';
 
-      console.log("Entro aqui 2")
+    console.log("Entro aqui 2")
 
     const payload = {
       thirdParty: newSupplier,
@@ -447,9 +437,9 @@ export class PurchasingDialogComponent implements OnInit {
     method.subscribe({
       next: (res) => {
         this.dialogRef.close({
-            success: true,
-            message: 'Guardado correctamente'
-          });
+          success: true,
+          message: 'Guardado correctamente'
+        });
       },
       error: (err) => {
         this.alertService.infoMixin.fire({
@@ -462,9 +452,9 @@ export class PurchasingDialogComponent implements OnInit {
 
   onCancel() {
     this.dialogRef.close({
-            success: false,
-            message: 'Operación cancelada'
-          });
+      success: false,
+      message: 'Operación cancelada'
+    });
   }
 
   onPrint(row: any) {

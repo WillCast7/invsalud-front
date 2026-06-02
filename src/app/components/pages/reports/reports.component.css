@@ -1,0 +1,83 @@
+.reports-container {
+  background-color: #f8fafc;
+  min-height: calc(100vh - 64px - 4rem);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.filter-card, .table-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.btn-search {
+  background-color: #3d5a80 !important; /* Kayros blue */
+  color: #ffffff !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-search:hover {
+  background-color: #293e58 !important;
+  transform: translateY(-1px);
+}
+
+.btn-clear {
+  transition: all 0.3s ease !important;
+}
+
+.btn-clear:hover {
+  background-color: #fce8e6 !important;
+  color: #a80505 !important;
+  transform: translateY(-1px);
+}
+
+/* Custom Table Design */
+.custom-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 10px;
+}
+
+.custom-table th {
+  color: #4a5568;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 14px 16px !important;
+  border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.custom-table td {
+  padding: 14px 16px !important;
+  border-bottom: 1px solid #edf2f7 !important;
+  font-size: 0.9rem;
+}
+
+.custom-row {
+  transition: background-color 0.2s ease;
+}
+
+.custom-row:hover {
+  background-color: #f8fafc !important;
+  cursor: pointer;
+}
+
+/* Badges for Report Types */
+.badge {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-block;
+}
+
+/* responsive table container */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}

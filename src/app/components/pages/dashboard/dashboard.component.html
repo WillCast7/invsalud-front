@@ -1,16 +1,25 @@
-<div class="menu-container col-12 p-3">
-  <h3 class="text-muted small fw-bold mb-3 text-uppercase">Navegación</h3>
+<div class="dashboard-wrapper">
+  <div class="menu-container">
 
-  <div class="d-flex flex-wrap col-12">
-    @for (item of menu; track item.id) {
-    <button mat-button class="menu-item-btn col-1" [routerLink]="item.route" routerLinkActive="active-route">
-      <div class="d-flex flex-column align-items-center justify-content-center gap-2">
-        <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
-        <span class="menu-label">{{ item.name }}</span>
-      </div>
-    </button>
-    } @empty {
-    <p class="text-center text-muted">No hay opciones de menú disponibles.</p>
-    }
+    <div class="menu-grid col-12">
+      @for (item of menu; track item.father) {
+      <button type="button" class="menu-item-btn" [matMenuTriggerFor]="subMenu">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100 gap-2">
+          <mat-icon class="menu-icon">{{ item.children[0]?.icon }}</mat-icon>
+          <span class="menu-label">{{ item.nameFather }}</span>
+        </div>
+      </button>
+
+      <mat-menu #subMenu="matMenu">
+        @for (child of item.children; track child.id) {
+        <button mat-menu-item [routerLink]="child.route">
+          <span>{{ child.name }}</span>
+        </button>
+        }
+      </mat-menu>
+      } @empty {
+      <p class="text-center text-muted col-span-2">No hay opciones de menú disponibles.</p>
+      }
+    </div>
   </div>
 </div>

@@ -164,3 +164,9 @@
   letter-spacing: 1px;
   font-size: 1.1rem;
 }
+
+/* Eliminar padding y centering solo para el dashboard */
+.router-container:has(app-dashboard) {
+  padding: 0 !important;
+  display: block !important;
+}

@@ -207,7 +207,7 @@
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Número documento</mat-label>
             <input matInput formControlName="documentNumber" [matAutocomplete]="auto" (keyup)="findSuppliers()"
-              maxlength="10">
+              maxlength="20">
             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSupplierSelected($event)">
               @for (option of suppliersFinded; track option.id) {
               <mat-option [value]="option.documentNumber">

@@ -13,6 +13,7 @@ import { OrdersComponent } from './components/pages/inventory/orders/orders.comp
 import { SalesComponent } from './components/pages/inventory/sales/sales.component';
 import { PurchasingComponent } from './components/pages/inventory/purchasing/purchasing.component';
 import { BillTemplatesComponent } from './components/pages/configuration/bill-templates/bill-templates.component';
+import { ReportsComponent } from './components/pages/reports/reports.component';
 
 export const routes: Routes = [
     { path: '', component: DashboardComponent, title: "Dashboard" },
@@ -29,5 +30,6 @@ export const routes: Routes = [
     { path: 'inventario/gestion/cotizaciones', component: OrdersComponent, title: "Cotizaciones" },
     { path: 'inventario/gestion/salidas', component: SalesComponent, title: "Salidas" },
     { path: 'inventario/gestion/ingresos', component: PurchasingComponent, title: "Ingresos" },
+    { path: 'administracion/reportes', component: ReportsComponent, title: "Reportes" },
     { path: '**', redirectTo: '', pathMatch: 'full', title: "Dashboard" }
 ];

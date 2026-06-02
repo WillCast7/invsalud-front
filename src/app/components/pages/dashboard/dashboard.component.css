@@ -1,38 +1,112 @@
-.nav-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 1rem;
+:host {
+  display: block;
+  width: 100%;
+}
+
+.dashboard-wrapper {
+  min-height: calc(100vh - 64px);
+  background-image: url('/assets/background.png');
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 3rem;
+  box-sizing: border-box;
+}
+
+.menu-container {
+  background: rgba(255, 255, 255, 0.396);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 20px !important;
+  padding: 1rem !important;
+  width: 100%;
+  max-width: 50%;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.menu-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 1.5rem;
+  margin-top: 1rem;
 }
 
 .menu-item-btn {
-  height: auto !important;
-  border-radius: 12px !important;
+  width: 140px;
+  height: 140px;
+  border-radius: 16px !important;
   background-color: #ffffff;
-  border: 1px solid #e9ecef !important;
-  transition: all 0.3s ease;
+  border: 1px solid #e2e8f0 !important;
+  cursor: pointer;
+  outline: none;
+  padding: 1rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.367), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 .menu-item-btn:hover {
   background-color: #f8f9fa !important;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  border-color: #3d5a80 !important; /* Usando tu color azul de Kayros */
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(61, 90, 128, 0.15), 0 4px 6px -2px rgba(61, 90, 128, 0.05);
+  border-color: #3d5a80 !important;
 }
 
 .menu-icon {
-  font-size: 28px;
-  width: 28px;
-  height: 28px;
+  font-size: 38px;
+  width: 38px;
+  height: 38px;
   color: #3d5a80;
+  margin-bottom: 0.5rem;
 }
 
 .menu-label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #495057;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2d3748;
 }
 
-.active-route {
-  background-color: #e3f2fd !important;
-  border-color: #3d5a80 !important;
+@media (max-width: 768px) {
+  .dashboard-wrapper {
+    justify-content: center;
+    padding: 1.5rem;
+    background-position: center;
+  }
+
+  .menu-container {
+    max-width: 100%;
+  }
+}
+
+/* Custom styles for Mat-Menu dropdown panels and items */
+::ng-deep .mat-mdc-menu-panel {
+  border-radius: 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+  background-color: #ffffff !important;
+  padding: 6px !important;
+  min-width: 160px !important;
+}
+
+::ng-deep .mat-mdc-menu-item {
+  border-radius: 8px !important;
+  margin: 2px 0 !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  color: #4a5568 !important;
+  transition: all 0.2s ease !important;
+}
+
+::ng-deep .mat-mdc-menu-item:hover {
+  background-color: #3d5a80 !important;
+  color: #ffffff !important;
 }

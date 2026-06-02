@@ -1,0 +1,14 @@
+<mat-dialog-content class="pt-3" style="overflow-x: hidden;">
+    <h2 mat-dialog-title>
+        {{title()}}
+    </h2>
+    <app-table [columns]="inventoryColumns" [pageable]="dataValue" (pageChange)="onPageChange($event)" />
+</mat-dialog-content>
+<mat-dialog-actions align="end" class="p-3">
+    <div class="container-fluid py-2">
+        <button mat-flat-button class="save-button" (click)="onPrintReport()">
+            Generar Reporte
+        </button>
+        <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+    </div>
+</mat-dialog-actions>

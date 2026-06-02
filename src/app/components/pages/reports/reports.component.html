@@ -1,0 +1,113 @@
+<div class="reports-container p-4">
+    <!-- Filtros Card -->
+    <mat-card class="filter-card p-4 mb-0 border border-light-subtle rounded-3 shadow-sm">
+        <mat-card-header class="mb-3 px-0">
+            <mat-card-title class="fs-5 fw-semibold text-dark">Filtros de Búsqueda</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="px-0">
+            <form [formGroup]="mainForm">
+                <div class="row g-3">
+                    <!-- Tipo Reporte -->
+                    <div class="col-md-4 col-sm-6 col-12">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Tipo de Reporte</mat-label>
+                            <mat-select formControlName="type">
+                                <mat-option value="">Todos</mat-option>
+                                <mat-option value="Cotizacion">Cotización</mat-option>
+                                <mat-option value="Ingresos">Ingresos</mat-option>
+                                <mat-option value="Salidas">Salidas</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Categorías -->
+                    <div class="col-md-4 col-sm-6 col-12">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Categorías</mat-label>
+                            <mat-select formControlName="category">
+                                <mat-option value="">Todas</mat-option>
+                                <mat-option value="Recetarios">Recetarios</mat-option>
+                                <mat-option value="Medicamentos">Medicamentos</mat-option>
+                                <mat-option value="Medicamentos sp">Medicamentos de salud publica</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Rango de Fechas -->
+                    <div class="col-md-4 col-sm-12 col-12">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Rango de Fechas</mat-label>
+                            <mat-date-range-input [rangePicker]="picker">
+                                <input matStartDate placeholder="Desde" formControlName="startDate">
+                                <input matEndDate placeholder="Hasta" formControlName="endDate">
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-date-range-picker #picker></mat-date-range-picker>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Cliente -->
+                    <div class="col-md-4 col-12">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Número documento</mat-label>
+                            <input matInput formControlName="documentNumber" [matAutocomplete]="auto"
+                                (keyup)="findSuppliers()" maxlength="20">
+                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSupplierSelected($event)">
+                                @for (option of suppliersFinded; track option.id) {
+                                <mat-option [value]="option.documentNumber">
+                                    <span class="fw-medium">{{option.documentNumber}}</span> -
+                                    <small>{{option.fullName}}</small>
+                                </mat-option>
+                                }
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Medicamentos -->
+                    <div class="col-md-4 col-12">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Medicamento / Producto</mat-label>
+                            <input matInput formControlName="product" [matAutocomplete]="autoProduct"
+                                (keyup)="findProducts()">
+                            <mat-autocomplete #autoProduct="matAutocomplete" [displayWith]="displayProduct"
+                                (optionSelected)="onProductSelected($event)">
+                                @for (product of productsFinded; track product.id) {
+                                <mat-option [value]="product">
+                                    <span class="fw-medium">{{product.name}}</span> ({{product.code}})
+                                </mat-option>
+                                }
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-md-4 col-12">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Lote Asignado</mat-label>
+                            <input matInput formControlName="batch" [matAutocomplete]="autoBatch"
+                                (keyup)="findBatches()">
+                            <mat-autocomplete #autoBatch="matAutocomplete" [displayWith]="displayBatch"
+                                (optionSelected)="onBatchSelected($event)">
+                                @for (batch of batchesFinded; track batch.id) {
+                                <mat-option [value]="batch">
+                                    <span class="fw-medium">{{batch.code}}</span>
+                                    @if (batch.details) { <small>- {{batch.details}}</small> }
+                                </mat-option>
+                                }
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </form>
+        </mat-card-content>
+
+        <mat-card-actions class="d-flex justify-content-end gap-2 px-0 pt-3 border-top border-light-subtle">
+            <button mat-stroked-button color="warn" class="btn-clear px-4 rounded-3" (click)="onClear()">
+                Limpiar
+            </button>
+            <button mat-flat-button class="btn-search px-4 rounded-3" (click)="onSearch()">
+                Buscar
+            </button>
+        </mat-card-actions>
+    </mat-card>
+</div>

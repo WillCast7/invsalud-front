@@ -13,9 +13,12 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { RouterModule } from '@angular/router';
 import { MenuInterface } from '../../../models/menu-interface';
+import { MenuItemInterface } from '../../../models/menuItem-interface';
+import { MenuService } from '../../../services/menu.service';
 import { BillEditorComponent } from '../../dialogs/config/bill-editor/bill-editor.component';
 import { DocumentTemplate } from '../../../models/config/document-template.interface';
 import { MatDialog } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { SizemodalInitializer } from '../../../models/modal/sizemodal-interface';
 
 
@@ -33,21 +36,21 @@ import { SizemodalInitializer } from '../../../models/modal/sizemodal-interface'
     MatSelectModule,
     RouterModule,
     MatNativeDateModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatMenuModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent {
   readonly dialog = inject(MatDialog);
-  menu : MenuInterface[] = [];
+  private readonly menuService = inject(MenuService);
+  private readonly restService = inject(RestApiService);
+  private readonly alertService = inject(AlertService);
 
+  menu: MenuItemInterface[] = [];
 
-
-  constructor(
-    private readonly restService: RestApiService,
-    private readonly alertService: AlertService
-  ) {
+  constructor() {
     this.getData();
   }
 
@@ -55,7 +58,7 @@ export class DashboardComponent {
     this.restService.getRequest("/dashboard").subscribe({
       next: (objData) => {
         console.log(objData);
-        this.menu = objData.data;
+        this.menu = this.menuService.groupByFather(objData.data);
       },
       error: (error) => {
         this.alertService.infoMixin.fire({
