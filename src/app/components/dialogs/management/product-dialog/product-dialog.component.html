@@ -6,9 +6,9 @@
       <span class="text-muted small">CÓDIGO: {{ data.data?.code }} | ID: {{ data.data?.id }}</span>
     </div>
     <span class="badge rounded-pill"
-      [ngClass]="data.data?.active ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'">
-      <mat-icon inline class="align-middle me-1">{{ data.data?.active ? 'check_circle' : 'cancel' }}</mat-icon>
-      {{ data.data?.active ? 'ACTIVO' : 'INACTIVO' }}
+      [ngClass]="data.data?.isActive ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'">
+      <mat-icon inline class="align-middle me-1">{{ data.data?.isActive ? 'check_circle' : 'cancel' }}</mat-icon>
+      {{ data.data?.isActive ? 'ACTIVO' : 'INACTIVO' }}
     </span>
   </div>
 
@@ -96,6 +96,69 @@
         </mat-form-field>
       </div>
 
+      @if (data.mode === 'create') {
+      <!-- Concentración del Medicamento -->
+      <div class="col-12 mb-3 justify-content-center">
+        <label class="form-section-label d-block mb-1 text-muted fw-semibold">CONCENTRACIÓN DEL MEDICAMENTO*</label>
+        <div class="d-flex align-items-center gap-2 col-12">
+          <mat-form-field appearance="outline" class="col-3" subscriptSizing="dynamic">
+            <input matInput type="text" formControlName="concNumber1" placeholder="Número" class="text-uppercase">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-2" subscriptSizing="dynamic">
+            <mat-select formControlName="concUnit1" placeholder="concentración">
+              @for (unit of concentrationUnits; track unit) {
+              <mat-option [value]="unit">{{ unit }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-3" subscriptSizing="dynamic">
+            <input matInput type="text" formControlName="concNumber2" placeholder="Número" class="text-uppercase">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-2" subscriptSizing="dynamic">
+            <mat-select formControlName="concUnit2" placeholder="concentración">
+              <mat-option [value]="''">Ninguno</mat-option>
+              @for (unit of concentrationUnits; track unit) {
+              <mat-option [value]="unit">{{ unit }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Presentación del Medicamento -->
+      <div class="col-12 mb-3">
+        <label class="form-section-label d-block mb-1 text-muted fw-semibold">PRESENTACIÓN DEL MEDICAMENTO*</label>
+        <div class="d-flex align-items-center gap-2">
+          <mat-form-field appearance="outline" class="flex-grow-1" subscriptSizing="dynamic">
+            <mat-select formControlName="presType" placeholder="presentación">
+              <mat-option [value]="''">Ninguna</mat-option>
+              @for (type of presentationTypes; track type) {
+              <mat-option [value]="type">{{ type }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <span class="fs-5 fw-bold text-muted px-1">X</span>
+
+          <mat-form-field appearance="outline" style="width: 100px;" subscriptSizing="dynamic">
+            <input matInput type="number" formControlName="presQuantity" placeholder="Número" min="1">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="flex-grow-1" subscriptSizing="dynamic">
+            <mat-select formControlName="presForm" placeholder="forma">
+              <mat-option [value]="''">Ninguna</mat-option>
+              @for (form of pharmaceuticalForms; track form.id) {
+              <mat-option [value]="form.name">{{ form.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      } @else {
+      <!-- Edit Mode: Traditional single inputs -->
       <div class="col-md-4 mb-3">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Concentración</mat-label>
@@ -120,6 +183,7 @@
           </mat-select>
         </mat-form-field>
       </div>
+      }
 
       <div class="col-12 mb-2">
         <mat-form-field appearance="outline" class="w-100">

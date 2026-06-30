@@ -22,6 +22,7 @@ import { PurchaseExample, PurchaseInterface } from '../../../../models/inventory
 import { greaterThanValidator } from '../../../../shared/validators/custom-validators';
 import { ProductDialogComponent } from '../../management/product-dialog/product-dialog.component';
 import { BatchDialogComponent } from '../../management/batch-dialog/batch-dialog.component';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export class ParentErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -458,10 +459,38 @@ export class PurchasingDialogComponent implements OnInit {
   }
 
   onPrint(row: any) {
-    console.log('print', row);
-    this.alertService.infoMixin.fire({
-      icon: 'info',
-      title: 'Funcionalidad en desarrollo'
+    this.restService.fileGetRequest("/report/purchase/" + row.id).subscribe({
+      next: (blob) => {
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL, '_blank');
+      },
+      error: async (error: HttpErrorResponse) => {
+        console.log(error);
+
+        let mensajeMostrar = "Ocurrió un error inesperado";
+
+        // Verificamos si el error viene dentro de un Blob
+        if (error.error instanceof Blob) {
+          try {
+            // Convertimos el Blob a texto plano
+            const text = await error.error.text();
+            // Parseamos el texto a JSON
+            const errorJson = JSON.parse(text);
+            // Extraemos el mensaje
+            mensajeMostrar = errorJson.message || mensajeMostrar;
+          } catch (e) {
+            console.error("No se pudo parsear el error del Blob", e);
+          }
+        } else if (error.error?.message) {
+          // Si por alguna razón ya viene parseado
+          mensajeMostrar = error.error.message;
+        }
+
+        this.alertService.infoMixin.fire({
+          icon: 'error',
+          title: mensajeMostrar,
+        });
+      }
     });
   }
 }

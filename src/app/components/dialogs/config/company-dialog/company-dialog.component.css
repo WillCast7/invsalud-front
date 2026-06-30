@@ -1,0 +1,36 @@
+.dialog-title {
+  background: linear-gradient(135deg, #3d5a80 0%, #102239 100%) !important;
+  color: white !important;
+}
+
+.section-subtitle {
+  color: #3d5a80;
+  border-left: 4px solid #3d5a80;
+  padding-left: 10px;
+}
+
+.logo-upload-container {
+  background-color: #fafbfc;
+  transition: all 0.2s ease-in-out;
+}
+
+.logo-upload-container:hover {
+  background-color: #f1f3f5;
+  border-color: #3d5a80 !important;
+}
+
+.preview-box {
+  width: 100%;
+  height: 120px;
+  background-color: #ffffff;
+  border-style: dashed !important;
+  border-color: #dee2e6 !important;
+  overflow: hidden;
+}
+
+.img-preview {
+  max-height: 100px;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}

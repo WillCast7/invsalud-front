@@ -209,9 +209,15 @@
               <p class="small text-muted mb-2">Haz clic sobre cualquier variable para copiarla al portapapeles y pégala en los campos de texto.</p>
               
               <div *ngFor="let group of getAvailableVariables()" class="mb-3">
-                <span class="fw-bold small text-primary">{{ group.label }}</span>
-                <div class="d-flex flex-wrap gap-1 mt-1">
-                  <span class="badge bg-secondary cursor-pointer" *ngFor="let v of group.vars" matTooltip="Copiar" (click)="copyToClipboard(v)">{{ v }}</span>
+                <span class="fw-bold small text-primary border-bottom d-block pb-1 mb-2">{{ group.label }}</span>
+                <div class="var-list-container">
+                  <div class="var-item" *ngFor="let v of group.vars" matTooltip="Haga clic para copiar" (click)="copyToClipboard(v.name)">
+                    <div class="var-item-header">
+                      <span class="var-badge">{{ v.name }}</span>
+                      <mat-icon style="font-size: 14px; width: 14px; height: 14px; color: #9ca3af;">content_copy</mat-icon>
+                    </div>
+                    <span class="var-desc">{{ v.desc }}</span>
+                  </div>
                 </div>
               </div>
             </div>

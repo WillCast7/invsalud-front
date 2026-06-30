@@ -1,0 +1,188 @@
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12">
+
+      <!-- Header Band -->
+      <div
+        class="d-flex align-items-center justify-content-between mb-4 bg-white p-4 rounded shadow-sm border-start border-5"
+        style="border-left-color: #3d5a80 !important;">
+        <div class="d-flex align-items-center gap-3">
+          <div>
+            <h1 class="h3 mb-0 fw-bold text-dark">{{ company().name || 'Nombre de Empresa' }}</h1>
+            <span class="badge rounded-pill text-white px-3 mt-1" style="background-color: #3d5a80;">NIT: {{
+              company().nit || 'Sin Registrar' }}</span>
+          </div>
+        </div>
+        <button mat-button extended class="save-button px-4 py-2" (click)="openEditModal()">
+          <mat-icon class="me-1">edit</mat-icon>Editar
+        </button>
+      </div>
+
+      <div class="row g-4">
+        <!-- Left Column -->
+        <div class="col-lg-6 d-flex flex-column gap-4">
+          <!-- General Company Information Card -->
+          <mat-card class="shadow-sm border-0 flex-grow-1">
+            <mat-card-header class="pb-2 border-bottom">
+              <mat-card-title class="d-flex align-items-center gap-2" style="color: #3d5a80;">
+                <mat-icon>business</mat-icon>
+                Información de la Empresa
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="pt-3">
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Razón Social</label>
+                  <p class="fs-6 fw-semibold mb-0 text-dark">{{ company().legalName || 'No registrada' }}</p>
+                </div>
+                <div class="col-sm-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">ID Tributario (Tax ID)</label>
+                  <p class="fs-6 mb-0 text-dark">{{ company().taxId || 'No registrado' }}</p>
+                </div>
+                <div class="col-sm-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Tipo de Empresa</label>
+                  <p class="fs-6 mb-0 text-dark">{{ company().type || 'No especificado' }}</p>
+                </div>
+                <div class="col-sm-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Sitio Web</label>
+                  <p class="fs-6 mb-0 text-dark">
+                    @if (company().website) {
+                    <a [href]="company().website" target="_blank" class="text-decoration-none fw-medium text-primary">
+                      {{ company().website }}
+                    </a>
+                    } @else {
+                    No registrado
+                    }
+                  </p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Branding Card -->
+          <mat-card class="shadow-sm border-0">
+            <mat-card-header class="pb-2 border-bottom">
+              <mat-card-title class="d-flex align-items-center gap-2" style="color: #3d5a80;">
+                <mat-icon>palette</mat-icon>
+                Aplicación y Personalización
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="pt-3">
+              <div class="mb-2">
+                <label class="text-muted small d-block text-uppercase fw-bold">Nombre del Portal / Aplicación</label>
+                <p class="fs-5 fw-bold mb-0 text-dark">{{ company().nameApp || 'INVSALUD' }}</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-6 d-flex flex-column gap-4">
+          <!-- Contact Details Card -->
+          <mat-card class="shadow-sm border-0">
+            <mat-card-header class="pb-2 border-bottom">
+              <mat-card-title class="d-flex align-items-center gap-2" style="color: #3d5a80;">
+                <mat-icon>contact_mail</mat-icon>
+                Información de Contacto
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="pt-3">
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Correo Electrónico</label>
+                  <p class="fs-6 mb-0 text-dark text-break">{{ company().email || 'No registrado' }}</p>
+                </div>
+                <div class="col-sm-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Teléfono</label>
+                  <p class="fs-6 mb-0 text-dark">{{ company().phone || 'No registrado' }}</p>
+                </div>
+                <div class="col-12">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Dirección Física</label>
+                  <p class="fs-6 mb-0 text-dark">{{ company().address || 'No registrada' }}</p>
+                </div>
+                <div class="col-sm-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Ciudad</label>
+                  <p class="fs-6 mb-0 text-dark">{{ company().city || 'No registrada' }}</p>
+                </div>
+                <div class="col-sm-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">País</label>
+                  <p class="fs-6 mb-0 text-dark">{{ company().country || 'No registrado' }}</p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Logos Display Card -->
+          <mat-card class="shadow-sm border-0 flex-grow-1">
+            <mat-card-header class="pb-2 border-bottom">
+              <mat-card-title class="d-flex align-items-center gap-2" style="color: #3d5a80;">
+                <mat-icon>image</mat-icon>
+                Logotipos Cargados
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="pt-3">
+              <div class="row g-3">
+                <!-- Logo Url -->
+                <div class="col-6 text-center">
+                  <div class="logo-box border rounded p-2 d-flex flex-column align-items-center justify-content-center">
+                    <span class="text-muted small fw-semibold mb-2">Logo Principal</span>
+                    <div class="logo-preview-wrapper d-flex align-items-center justify-content-center">
+                      @if (company().logoUrl) {
+                      <img [src]="company().logoUrl" alt="Logo Url" class="logo-img" />
+                      } @else {
+                      <span class="text-muted small italic">Sin Imagen</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Logo Order -->
+                <div class="col-6 text-center">
+                  <div class="logo-box border rounded p-2 d-flex flex-column align-items-center justify-content-center">
+                    <span class="text-muted small fw-semibold mb-2">Logo Pedidos</span>
+                    <div class="logo-preview-wrapper d-flex align-items-center justify-content-center">
+                      @if (company().logoOrder) {
+                      <img [src]="company().logoOrder" alt="Logo Order" class="logo-img" />
+                      } @else {
+                      <span class="text-muted small italic">Sin Imagen</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Logo Sold -->
+                <div class="col-6 text-center">
+                  <div class="logo-box border rounded p-2 d-flex flex-column align-items-center justify-content-center">
+                    <span class="text-muted small fw-semibold mb-2">Logo Ventas</span>
+                    <div class="logo-preview-wrapper d-flex align-items-center justify-content-center">
+                      @if (company().logoSold) {
+                      <img [src]="company().logoSold" alt="Logo Sold" class="logo-img" />
+                      } @else {
+                      <span class="text-muted small italic">Sin Imagen</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Logo Purchasing -->
+                <div class="col-6 text-center">
+                  <div class="logo-box border rounded p-2 d-flex flex-column align-items-center justify-content-center">
+                    <span class="text-muted small fw-semibold mb-2">Logo Compras</span>
+                    <div class="logo-preview-wrapper d-flex align-items-center justify-content-center">
+                      @if (company().logoPurchasing) {
+                      <img [src]="company().logoPurchasing" alt="Logo Purchasing" class="logo-img" />
+                      } @else {
+                      <span class="text-muted small italic">Sin Imagen</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

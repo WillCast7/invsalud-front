@@ -20,6 +20,18 @@ export class AlertService {
     }
   });
 
+  constructor() {
+    const originalFire = this.infoMixin.fire.bind(this.infoMixin);
+    (this.infoMixin as any).fire = (options: any) => {
+      const hasDialog = !!document.querySelector('mat-dialog-container');
+      const mergedOptions = {
+        target: hasDialog ? 'mat-dialog-container' : 'body',
+        ...options
+      };
+      return originalFire(mergedOptions);
+    };
+  }
+
   reCallMixin = Swal.mixin({
     toast: true,
     showConfirmButton: true,

@@ -1,0 +1,33 @@
+<h2 mat-dialog-title class="dialog-title d-flex align-items-center gap-2 m-0 p-3 fs-5 fw-bold">
+  <span class="material-icons text-warning align-middle">warning</span>
+  <span>¿Vender esta cotización?</span>
+</h2>
+
+<mat-dialog-content class="dialog-content px-3 py-2">
+  <p class="text-secondary mb-3" style="font-size: 0.9rem;">
+    Esta acción no se puede deshacer. Por favor, seleccione el método de pago para registrar la transacción.
+  </p>
+
+  <form [formGroup]="paymentForm" class="payment-form">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Método de Pago*</mat-label>
+      <mat-select formControlName="paymentMethod" placeholder="Seleccione un método de pago">
+        @for (method of methods; track method.value) {
+          <mat-option [value]="method.value">{{ method.label }}</mat-option>
+        }
+      </mat-select>
+      @if (paymentForm.get('paymentMethod')?.hasError('required')) {
+        <mat-error>El método de pago es requerido</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions d-flex justify-content-end gap-2 px-3 pb-3">
+  <button mat-button class="cancel-button" (click)="onCancel()">
+    Cancelar
+  </button>
+  <button mat-button class="save-button" [disabled]="paymentForm.invalid" (click)="onConfirm()">
+    Sí, vender
+  </button>
+</mat-dialog-actions>

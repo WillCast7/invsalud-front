@@ -46,6 +46,9 @@ export class ProductDialogComponent {
     { value: 'RECETARIO', label: 'Recetario' }
   ];
 
+  concentrationUnits = ['mg', 'g', 'mcg', 'ml', 'UI', '%', 'mg/ml', 'g/ml'];
+  presentationTypes = ['Caja', 'Frasco', 'Blíster', 'Ampolla', 'Tubo', 'Bolsa', 'Sobre', 'Pote', 'Jeringa', 'Unidad'];
+
   productForm: FormGroup = new FormGroup({
     id: new FormControl(null),
     name: new FormControl('', Validators.required),
@@ -55,7 +58,17 @@ export class ProductDialogComponent {
     pharmaceuticalForm: new FormControl(''),
     details: new FormControl(''),
     isPublicHealth: new FormControl(false),
-    isActive: new FormControl(true)
+    isActive: new FormControl(true),
+    
+    // Subfields for Create Mode
+    concNumber1: new FormControl(''),
+    concUnit1: new FormControl(''),
+    concNumber2: new FormControl(''),
+    concUnit2: new FormControl(''),
+    
+    presType: new FormControl(''),
+    presQuantity: new FormControl(''),
+    presForm: new FormControl('')
   });
 
   productSearched: ProductInterface | undefined;
@@ -64,6 +77,15 @@ export class ProductDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: { mode: string, data: ProductInterface | undefined }
   ) {
     this.getData();
+    if (this.data.mode === 'create') {
+      this.productForm.get('concNumber1')?.setValidators([Validators.required]);
+      this.productForm.get('concUnit1')?.setValidators([Validators.required]);
+      this.productForm.get('presQuantity')?.setValidators([Validators.required]);
+      
+      this.productForm.get('concNumber1')?.updateValueAndValidity();
+      this.productForm.get('concUnit1')?.updateValueAndValidity();
+      this.productForm.get('presQuantity')?.updateValueAndValidity();
+    }
   }
 
   onEdit() {
@@ -129,7 +151,41 @@ export class ProductDialogComponent {
 
   onSave() {
     if (this.productForm.valid) {
-      this.restService.postRequest('/products', this.productForm.value).subscribe({
+      let payload = { ...this.productForm.value };
+      
+      if (this.data.mode === 'create') {
+        const num1 = this.productForm.get('concNumber1')?.value;
+        const unit1 = this.productForm.get('concUnit1')?.value;
+        const num2 = this.productForm.get('concNumber2')?.value;
+        const unit2 = this.productForm.get('concUnit2')?.value;
+
+        let concentration = `${num1} ${unit1}`;
+        if (num2 && unit2) {
+          concentration += ` / ${num2} ${unit2}`;
+        }
+        payload.concentration = concentration;
+
+        const presType = this.productForm.get('presType')?.value;
+        const presQty = this.productForm.get('presQuantity')?.value;
+        const presForm = this.productForm.get('presForm')?.value;
+
+        let presentation = '';
+        if (presType) {
+          presentation += `${presType} X `;
+        }
+        presentation += `${presQty}`;
+        if (presForm) {
+          presentation += ` ${presForm}`;
+        }
+        payload.presentation = presentation;
+
+        // Also if presForm is selected, populate pharmaceuticalForm
+        if (presForm) {
+          payload.pharmaceuticalForm = presForm;
+        }
+      }
+
+      this.restService.postRequest('/products', payload).subscribe({
         next: (objData) => {
           this.dialogRef.close({
             success: true,

@@ -1,10 +1,331 @@
-.login-container{
-  background-color: rgba(255, 255, 255, 0.1);
-  min-height: 100vh;
-  overflow: hidden; /* Asegura que ocupe todo el ancho */
-  margin: 0; /* Elimina márgenes */
+/* Layout wrapper */
+.login-layout-wrapper {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: 'Roboto', 'Montserrat', sans-serif;
+  background-color: #f0f4f9;
 }
-  
-  .login-row{
-    background-color: rgb(255, 255, 255)
+
+/* Background image panel with gradient mask */
+.login-sidebar-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 75%;
+  /* stretches past 50% under the card */
+  height: 100%;
+  background-image: url('/assets/fondoweb.avif');
+  background-size: cover;
+  background-position: left center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2.5rem;
+  box-sizing: border-box;
+}
+
+.sidebar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 32, 96, 0.9) 0%, rgba(0, 16, 48, 0.95) 100%);
+  z-index: 1;
+}
+
+.sidebar-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.5rem;
+}
+
+.sidebar-logo-bottom {
+  max-width: 500px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.495));
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-logo-bottom:hover {
+  opacity: 1;
+}
+
+/* Right panel - Login form card overlaying the background */
+.login-form-panel {
+  position: relative;
+  z-index: 10;
+  /* on top of the sidebar panel */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  /* Align elements to the right */
+  align-items: center;
+  padding: 1.5rem 8%;
+  /* Add padding on the right to align card nicely */
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.login-scroll-content {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-sizing: border-box;
+}
+
+/* Login white card */
+.login-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.307);
+  padding: 2rem 2.25rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Brand header */
+.card-header-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.brand-logo {
+  max-height: 48px;
+  max-width: 160px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
+.brand-subtitle {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+
+.brand-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #004bce;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.header-divider {
+  border: 0;
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 0.75rem 0;
+}
+
+/* Form heading intro */
+.form-intro {
+  margin-bottom: 1rem;
+}
+
+.form-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+}
+
+.form-subtitle {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Custom form groups and labels */
+.form-group-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.input-label-custom {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.input-icon-custom {
+  color: #64748b;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+}
+
+.password-toggle-btn {
+  color: #64748b !important;
+}
+
+/* Angular Material overrides for MDC form fields to match mockup style */
+::ng-deep .login-form-panel .mat-mdc-text-field-wrapper {
+  background-color: #eef2fa !important;
+  border-radius: 8px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.2s ease-in-out !important;
+  height: 44px !important;
+}
+
+::ng-deep .login-form-panel .mat-mdc-form-field-flex {
+  align-items: center !important;
+  height: 100% !important;
+}
+
+::ng-deep .login-form-panel .mat-mdc-form-field-infix {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  min-height: auto !important;
+}
+
+::ng-deep .login-form-panel .mat-mdc-form-field-focus-indicator {
+  display: none !important;
+}
+
+::ng-deep .login-form-panel .mdc-notched-outline__leading,
+::ng-deep .login-form-panel .mdc-notched-outline__notch,
+::ng-deep .login-form-panel .mdc-notched-outline__trailing {
+  border-color: transparent !important;
+}
+
+::ng-deep .login-form-panel .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+  background-color: #e2e8f5 !important;
+}
+
+::ng-deep .login-form-panel .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  background-color: #ffffff !important;
+  border-color: #0052cc !important;
+  box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.15) !important;
+}
+
+/* Adjust subscript error spacing */
+::ng-deep .login-form-panel .mat-mdc-form-field-subscript-wrapper {
+  font-size: 0.72rem !important;
+  padding: 0 8px !important;
+  margin-top: 1px !important;
+}
+
+/* Forgot Password Link wrapper */
+.forgot-pass-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.25rem;
+  margin-top: -0.25rem;
+}
+
+.forgot-password-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #0052cc;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.forgot-password-link:hover {
+  color: #003da6;
+  text-decoration: underline !important;
+}
+
+/* Submit button */
+.login-submit-btn {
+  background: #023283 !important;
+  color: #ffffff !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  height: 44px !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.25s ease !important;
+  box-shadow: 0 4px 12px rgba(0, 75, 206, 0.2) !important;
+  border: none !important;
+}
+
+.login-submit-btn:hover:not(:disabled) {
+  background: #003da6 !important;
+  box-shadow: 0 6px 16px rgba(0, 75, 206, 0.3) !important;
+  transform: translateY(-1px);
+}
+
+.login-submit-btn:disabled {
+  background: #cbd5e1 !important;
+  color: #94a3b8 !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+}
+
+/* Creator info */
+.creator-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.creator-prefix {
+  color: #64748b;
+}
+
+.creator-link {
+  color: #004bce;
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 4px;
+  transition: color 0.2s ease;
+}
+
+.creator-link:hover {
+  color: #003da6;
+  text-decoration: underline !important;
+}
+
+/* Responsive Rules */
+@media (max-width: 992px) {
+  .login-sidebar-panel {
+    width: 55%;
   }
+
+  .login-form-panel {
+    padding: 1.5rem 4%;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-sidebar-panel {
+    display: none !important;
+  }
+
+  .login-form-panel {
+    justify-content: center;
+    padding: 1rem;
+    overflow-y: auto;
+    /* Allow scroll on small mobile screens */
+  }
+
+  .login-card {
+    padding: 1.75rem 1.5rem;
+  }
+}

@@ -42,7 +42,7 @@ import { UserDialogComponent } from '../../../dialogs/user-dialog/user-dialog.co
     MatCardModule,
     TableHeaderControlsComponent,
     TableComponent
-],
+  ],
 
   templateUrl: './user.component.html',
   styleUrl: './user.component.css'
@@ -53,7 +53,7 @@ export class UserComponent {
   dataValue: PageableInterface<UserTableInterface> = PageableInitializer;
   searchValue = "";
 
-  displayedColumns : ColumnTableInterface [] = [
+  displayedColumns: ColumnTableInterface[] = [
     { key: 'id', label: 'id.', isSortable: true },
     { key: 'documentType', label: 'Tipo', isSortable: true },
     { key: 'documentNumber', label: 'Número', isSortable: true },
@@ -68,7 +68,7 @@ export class UserComponent {
   ];
 
   buttonsList: TableOption[] = [
-    { icon: 'person_add', label: 'Crear Usuario', identifier: 'user'}
+    { icon: 'add', label: 'Crear Usuario', identifier: 'user', color: 'primary', title: 'Crear Usuario' }
   ];
 
   buttonAction(event: { type: string, row: any }) {
@@ -97,28 +97,34 @@ export class UserComponent {
   constructor(
     private readonly restService: RestApiService,
     private readonly alertService: AlertService
-  ) { 
+  ) {
     this.getData(
       this.dataValue.pageable.pageNumber,
       this.dataValue.pageable.pageSize,
       this.searchValue
     );
-  } 
+  }
 
-handlePageEvent(e: PageEvent): void {
-  this.getData(
-    e.pageIndex,
-    e.pageSize,
-    this.searchValue
-  );
-}
+  handlePageEvent(e: PageEvent): void {
+    this.getData(
+      e.pageIndex,
+      e.pageSize,
+      this.searchValue
+    );
+  }
 
-
+  pageChange(event: PageEvent) {
+    this.getData(
+      event.pageIndex,
+      event.pageSize,
+      this.searchValue
+    );
+  }
 
   openModal(mode: string, row: UserTableInterface) {
-     const dialogRef: MatDialogRef<any> = this.dialog.open(UserDialogComponent,
-      {... SizemodalInitializer, data: {data: row, mode: mode}});
-      
+    const dialogRef: MatDialogRef<any> = this.dialog.open(UserDialogComponent,
+      { ...SizemodalInitializer, data: { data: row, mode: mode } });
+
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.alertService.infoMixin.fire({
@@ -126,18 +132,18 @@ handlePageEvent(e: PageEvent): void {
           title: result.message
         });
       }
-      
+
       this.getData(
         this.dataValue.pageable.pageNumber,
         this.dataValue.pageable.pageSize,
         this.searchValue
       );
-    }); 
+    });
   }
 
   getData(page: number, size: number, searchValue: string) {
     this.dataValue = PageableInitializer;
-    this.restService.getRequest("/administration/users", {page: page, size: size, searchValue: searchValue}).subscribe({
+    this.restService.getRequest("/administration/users", { page: page, size: size, searchValue: searchValue }).subscribe({
       next: (objData) => {
         this.dataValue = objData.pageable;
 

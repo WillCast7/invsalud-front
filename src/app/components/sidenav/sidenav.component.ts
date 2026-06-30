@@ -20,6 +20,7 @@ import { LoginComponent } from "../pages/login/login.component";
 import { SessionService } from '../../services/session.service';
 import { MenuItemInterface } from '../../models/menuItem-interface';
 import { NotificationInterface } from '../../models/notifications/notification-interface';
+import { NotificationStoreService } from '../../services/notification-store.service';
 
 @Component({
   selector: 'app-sidenav',
@@ -52,7 +53,7 @@ export class SidenavComponent implements OnInit {
   // --- Signals de Estado de UI ---
   isMobile = signal<boolean>(window.innerWidth < 768);
   drawerValue = signal<MatDrawerMode>('push');
-  
+
   // --- Signals de Datos ---
   namesUser = this.sessionService.currentUserNames; // Ya es signal en el servicio
   menues = signal<MenuItemInterface[]>([]);
@@ -65,21 +66,21 @@ export class SidenavComponent implements OnInit {
   );
 
   // Signal del Título del Navbar
-// 1. Signal del Título del Navbar (Versión ultra-precisa)
-readonly pageTitle = toSignal(
-  this.navEnd$.pipe(
-    map(() => {
-      // Navegamos por el árbol de rutas activas hasta llegar a la hoja final
-      let route = this.router.routerState.snapshot.root;
-      while (route.firstChild) {
-        route = route.firstChild;
-      }
-      // Retornamos el título configurado en la ruta o, si no tiene, el del TitleService
-      return route.title || this.titleService.getTitle();
-    })
-  ),
-  { initialValue: this.titleService.getTitle() }
-);
+  // 1. Signal del Título del Navbar (Versión ultra-precisa)
+  readonly pageTitle = toSignal(
+    this.navEnd$.pipe(
+      map(() => {
+        // Navegamos por el árbol de rutas activas hasta llegar a la hoja final
+        let route = this.router.routerState.snapshot.root;
+        while (route.firstChild) {
+          route = route.firstChild;
+        }
+        // Retornamos el título configurado en la ruta o, si no tiene, el del TitleService
+        return route.title || this.titleService.getTitle();
+      })
+    ),
+    { initialValue: this.titleService.getTitle() }
+  );
 
   // Signal para detectar la ruta pública de restablecimiento de contraseña
   readonly isResetPasswordRoute = toSignal(
@@ -103,9 +104,11 @@ readonly pageTitle = toSignal(
       this.menues.set(this.sessionService.menu);
     });
 
-    // Aquí podrías inicializar tus notificaciones
-    // this.notificationList.set(notifs);
-    // this.notificationsNumber.set(notifs.length);
+    this.notificationService.notifications$.subscribe((notifs: NotificationInterface[]) => {
+      this.notificationList.set(notifs);
+      if (this.notificationList && this.notificationList.length > 0) { }
+      this.notificationsNumber.set(notifs.filter(n => n.recipient.status === 'ENVIADA').length);
+    });
   }
 
   // --- Acciones de Sesión ---
@@ -122,7 +125,7 @@ readonly pageTitle = toSignal(
     if (this.drawer) {
       this.drawer.close();
     }
-    
+
     // Limpieza de acordeones de Bootstrap (necesario por el HTML que usas)
     const accordions = document.querySelectorAll('.accordion-collapse');
     accordions.forEach((accordion) => {
@@ -137,4 +140,9 @@ readonly pageTitle = toSignal(
     // Lógica para marcar como leída si es necesario
     this.router.navigate([notification.route]);
   }
+
+  constructor(
+    private readonly notificationService: NotificationStoreService,
+
+  ) { }
 }

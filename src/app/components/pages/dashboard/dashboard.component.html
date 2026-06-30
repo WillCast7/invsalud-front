@@ -1,12 +1,78 @@
 <div class="dashboard-wrapper">
-  <div class="menu-container">
+  <!-- Left Column: Tenant Logo Sidebar -->
+  <div class="logo-sidebar">
+    <!-- Tenant Logo Container (Clean Header) -->
+    <div class="tenant-logo-container">
+      @if (logoUrl) {
+      <img [src]="logoUrl" alt="Logo" class="tenant-logo-image" />
+      } @else {
+      <div class="tenant-logo-placeholder">
+        <mat-icon class="default-company-icon">storefront</mat-icon>
+        <span class="company-name-fallback">INVSALUD</span>
+      </div>
+      }
+    </div>
 
-    <div class="menu-grid col-12">
+    <!-- Interactive Selectors -->
+    <div class="filters-container d-flex flex-column">
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>Tercero</mat-label>
+        <mat-select [(value)]="selectedThirdParty" (selectionChange)="onFilterChange()">
+          <mat-option [value]="null">Todos</mat-option>
+          @for (tp of thirdParties; track tp.id) {
+          <mat-option [value]="tp.id">{{ tp.fullName }}
+            <br>
+            <span class="text-muted" style="font-size: x-small;">
+              {{tp.documentType}} {{ tp.documentNumber }}
+            </span>
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>Medicamento</mat-label>
+        <mat-select [(value)]="selectedProduct" (selectionChange)="onFilterChange()">
+          <mat-option [value]="null">Todos</mat-option>
+          @for (prod of products; track prod.id) {
+          <mat-option [value]="prod.id">
+            {{ prod.name }} <br>
+            <span class="text-muted" style="font-size: x-small;">
+              {{ prod.concentration }} -
+              {{ prod.pharmaceuticalForm }}
+            </span>
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+        <mat-label>Rango de fechas</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate [(ngModel)]="startDate" placeholder="Inicio" (dateChange)="onFilterChange()">
+          <input matEndDate [(ngModel)]="endDate" placeholder="Fin" (dateChange)="onFilterChange()">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Right Column: Dashboard Core Analytics -->
+  <div class="dashboard-content">
+    <!-- Bottom Row: Dynamic Navigation Action Cards -->
+    <div class="actions-row">
       @for (item of menu; track item.father) {
-      <button type="button" class="menu-item-btn" [matMenuTriggerFor]="subMenu">
-        <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100 gap-2">
-          <mat-icon class="menu-icon">{{ item.children[0]?.icon }}</mat-icon>
-          <span class="menu-label">{{ item.nameFather }}</span>
+      <button type="button" [class]="'shadow-md action-card-btn ' + getIconClass(item.nameFather)"
+        [matMenuTriggerFor]="subMenu">
+        <div class="action-card-content">
+          <div class="action-icon-wrapper" [class]="getIconClass(item.nameFather)">
+            <mat-icon class="action-icon">{{ item.children[0]?.icon || 'dashboard' }}</mat-icon>
+          </div>
+          <div class="action-text-wrapper">
+            <span class="action-card-title">{{ item.nameFather }}</span>
+            <span class="action-card-desc">{{ getMenuDescription(item.nameFather) }}</span>
+          </div>
         </div>
       </button>
 
@@ -18,8 +84,169 @@
         }
       </mat-menu>
       } @empty {
-      <p class="text-center text-muted col-span-2">No hay opciones de menú disponibles.</p>
+      <div class="no-menu-card">
+        <p class="text-center text-muted m-0">No hay opciones de menú disponibles.</p>
+      </div>
       }
     </div>
+
+    <div class="inventory-grid">
+      <!-- Tarjeta de Compras -->
+      <div class="inventory-card purchases-card shadow-sm">
+        <div class="inventory-card-header">
+          <span class="inventory-icon-wrapper purchases-icon">
+            <mat-icon>shopping_cart</mat-icon>
+          </span>
+          <span class="inventory-card-title">Compras</span>
+        </div>
+        <div class="inventory-card-body">
+          <div class="inventory-stat-row">
+            <span class="stat-label">Medicamentos</span>
+            <span class="stat-value">{{ formatCurrency(cashSessionSummary?.purchasesMedicines || 0) }}</span>
+          </div>
+          <div class="inventory-stat-row">
+            <span class="stat-label">Medicamentos SP</span>
+            <span class="stat-value">{{ formatCurrency(cashSessionSummary?.purchasesMedicinesSp || 0) }}</span>
+          </div>
+          <div class="inventory-stat-row">
+            <span class="stat-label">Recetarios</span>
+            <span class="stat-value">{{ formatCurrency(cashSessionSummary?.purchasesRecipes || 0) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjeta de Cotizaciones -->
+      <div class="inventory-card quotes-card shadow-sm">
+        <div class="inventory-card-header">
+          <span class="inventory-icon-wrapper quotes-icon">
+            <mat-icon>description</mat-icon>
+          </span>
+          <span class="inventory-card-title">Cotizaciones</span>
+        </div>
+        <div class="inventory-card-body">
+          <div class="inventory-stat-row">
+            <span class="stat-label">Medicamentos</span>
+            <span class="stat-value">{{ formatCurrency(cashSessionSummary?.quotesMedicines || 0) }}</span>
+          </div>
+          <div class="inventory-stat-row">
+            <span class="stat-label">Medicamentos SP</span>
+            <span class="stat-value">{{ formatCurrency(cashSessionSummary?.quotesMedicinesSp || 0) }}</span>
+          </div>
+          <div class="inventory-stat-row">
+            <span class="stat-label">Recetarios</span>
+            <span class="stat-value">{{ formatCurrency(cashSessionSummary?.quotesRecipes || 0) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjeta de Ventas -->
+      <div class="inventory-card sales-card shadow-sm">
+        <div class="inventory-card-header">
+          <span class="inventory-icon-wrapper sales-icon">
+            <mat-icon>point_of_sale</mat-icon>
+          </span>
+          <span class="inventory-card-title">Ventas</span>
+        </div>
+        <div class="inventory-card-body">
+          <div class="inventory-stat-row">
+            <span class="stat-label">Medicamentos</span>
+            <span class="stat-value">{{ formatCurrency(cashSessionSummary?.salesMedicines || 0) }}</span>
+          </div>
+          <div class="inventory-stat-row">
+            <span class="stat-label">Medicamentos SP</span>
+            <span class="stat-value">{{ formatCurrency(cashSessionSummary?.salesMedicinesSp || 0) }}</span>
+          </div>
+          <div class="inventory-stat-row">
+            <span class="stat-label">Recetarios</span>
+            <span class="stat-value">{{ formatCurrency(cashSessionSummary?.salesRecipes || 0) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="charts-row">
+      <!-- INGRESOS POR MES Bar Chart -->
+      <div class="chart-card">
+        <h4 class="chart-header">INGRESOS POR MES</h4>
+        <div class="chart-container">
+          <svg viewBox="0 0 400 150" width="100%" height="100%" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#38bdf8" />
+                <stop offset="100%" stop-color="#2563eb" />
+              </linearGradient>
+            </defs>
+            <!-- Grid Lines -->
+            <line x1="40" y1="20" x2="380" y2="20" stroke="#f1f5f9" stroke-width="1" />
+            <line x1="40" y1="60" x2="380" y2="60" stroke="#f1f5f9" stroke-width="1" />
+            <line x1="40" y1="100" x2="380" y2="100" stroke="#f1f5f9" stroke-width="1" />
+            <line x1="40" y1="130" x2="380" y2="130" stroke="#cbd5e1" stroke-width="1.5" />
+
+            <!-- Dynamic Bars & Labels -->
+            @for (income of monthlyIncomes; track income.month; let i = $index) {
+            <rect [attr.x]="70 + i * 80" [attr.y]="130 - (income.amount / maxIncome) * 95" width="26"
+              [attr.height]="(income.amount / maxIncome) * 95" rx="3" fill="url(#barGrad)" />
+            <text [attr.x]="83 + i * 80" [attr.y]="130 - (income.amount / maxIncome) * 95 - 6" class="chart-bar-val"
+              text-anchor="middle">
+              {{ formatAmount(income.amount) }}
+            </text>
+            <text [attr.x]="83 + i * 80" y="145" class="chart-axis-label" text-anchor="middle">
+              {{ income.month }}
+            </text>
+            }
+          </svg>
+        </div>
+      </div>
+
+      <!-- Payment Methods Breakdown Donut Chart -->
+      <div class="chart-card donut-chart-card">
+        <h4 class="chart-header">MÉTODOS DE PAGO (HOY)</h4>
+        <div class="donut-chart-wrapper">
+          <!-- Donut SVG Area -->
+          <div class="donut-chart-container">
+            <svg viewBox="0 0 120 120" class="donut-chart-svg">
+              <!-- Background circle segment track -->
+              <circle cx="60" cy="60" r="40" fill="transparent" stroke="#f8fafc" stroke-width="12" />
+
+              <!-- Dynamic Colored Segments -->
+              @for (segment of paymentSegments; track segment.name) {
+              <circle cx="60" cy="60" r="40" fill="transparent" [attr.stroke]="segment.color" stroke-width="12"
+                [attr.stroke-dasharray]="segment.dashArray" [attr.stroke-dashoffset]="segment.dashOffset"
+                [attr.transform]="'rotate(' + segment.rotation + ' 60 60)'" stroke-linecap="butt" />
+              }
+
+              <!-- Inner white circle to shape donut and add shadow -->
+              <circle cx="60" cy="60" r="33" fill="#ffffff" stroke="#f1f5f9" stroke-width="1" />
+            </svg>
+
+            <!-- Absolute center overlay text -->
+            <div class="donut-center-text">
+              <span class="donut-center-label">Total Hoy</span>
+              <span class="donut-center-value">{{ formatCurrency(totalPaymentVolume) }}</span>
+            </div>
+          </div>
+
+          <!-- Vertical Legend Details -->
+          <div class="donut-legend-container">
+            @for (segment of paymentSegments; track segment.name) {
+            <div class="donut-legend-item">
+              <div class="donut-legend-info">
+                <span class="donut-legend-dot-wrapper" [style.background-color]="segment.color + '18'">
+                  <mat-icon class="donut-legend-icon" [style.color]="segment.color">{{ segment.icon }}</mat-icon>
+                </span>
+                <span class="donut-legend-name">{{ segment.name }}</span>
+              </div>
+              <div class="donut-legend-stats">
+                <span class="donut-legend-val">{{ formatCurrency(segment.amount) }}</span>
+                <span class="donut-legend-pct">{{ segment.percentage }}%</span>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

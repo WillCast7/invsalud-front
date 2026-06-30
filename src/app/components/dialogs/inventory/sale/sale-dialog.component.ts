@@ -12,6 +12,7 @@ import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-interface';
 import { PrescriptionInventoryInterface } from '../../../../models/inventory/prescription-inventory';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-sale-dialog',
@@ -200,16 +201,44 @@ export class SaleDialogComponent implements OnInit {
 
   onCancel() {
     this.dialogRef.close({
-            success: false,
-            message: 'Operación cancelada'
-          });
+      success: false,
+      message: 'Operación cancelada'
+    });
   }
 
   onPrint(row: any) {
-    console.log('print', row);
-    this.alertService.infoMixin.fire({
-      icon: 'info',
-      title: 'Funcionalidad en desarrollo'
+    this.restService.fileGetRequest("/report/sale/" + row.id).subscribe({
+      next: (blob) => {
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL, '_blank');
+      },
+      error: async (error: HttpErrorResponse) => {
+        console.log(error);
+
+        let mensajeMostrar = "Ocurrió un error inesperado";
+
+        // Verificamos si el error viene dentro de un Blob
+        if (error.error instanceof Blob) {
+          try {
+            // Convertimos el Blob a texto plano
+            const text = await error.error.text();
+            // Parseamos el texto a JSON
+            const errorJson = JSON.parse(text);
+            // Extraemos el mensaje
+            mensajeMostrar = errorJson.message || mensajeMostrar;
+          } catch (e) {
+            console.error("No se pudo parsear el error del Blob", e);
+          }
+        } else if (error.error?.message) {
+          // Si por alguna razón ya viene parseado
+          mensajeMostrar = error.error.message;
+        }
+
+        this.alertService.infoMixin.fire({
+          icon: 'error',
+          title: mensajeMostrar,
+        });
+      }
     });
   }
 }

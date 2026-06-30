@@ -1,0 +1,242 @@
+<h2 mat-dialog-title class="dialog-title text-center fw-bold py-3 text-white">
+  <mat-icon class="align-middle me-2">business</mat-icon>Editar Empresa
+</h2>
+
+<mat-dialog-content class="mat-typography p-4">
+  <form [formGroup]="companyForm" class="container-fluid">
+    <!-- General information section -->
+    <h3 class="section-subtitle mb-3 fw-semibold">Información General</h3>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>NIT</mat-label>
+          <input matInput formControlName="nit" placeholder="Ej. 900.123.456-7">
+          @if (companyForm.get('nit')?.hasError('required')) {
+            <mat-error>El NIT es obligatorio</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nombre Comercial</mat-label>
+          <input matInput formControlName="name" placeholder="Ej. InvSalud">
+          @if (companyForm.get('name')?.hasError('required')) {
+            <mat-error>El nombre comercial es obligatorio</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Razón Social (Legal Name)</mat-label>
+          <input matInput formControlName="legalName" placeholder="Ej. Inversiones Salud S.A.S.">
+          @if (companyForm.get('legalName')?.hasError('required')) {
+            <mat-error>La razón social es obligatoria</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>ID Tributario (Tax ID)</mat-label>
+          <input matInput formControlName="taxId" placeholder="Ej. Régimen Común">
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Sitio Web</mat-label>
+          <input matInput formControlName="website" placeholder="Ej. https://misitioweb.com">
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nombre de la Aplicación</mat-label>
+          <input matInput formControlName="nameApp" placeholder="Ej. INVSALUD">
+          @if (companyForm.get('nameApp')?.hasError('required')) {
+            <mat-error>El nombre de la aplicación es obligatorio</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-divider class="my-4"></mat-divider>
+
+    <!-- Contact details section -->
+    <h3 class="section-subtitle mb-3 fw-semibold">Información de Contacto</h3>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Correo Electrónico</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="Ej. contacto@empresa.com">
+          @if (companyForm.get('email')?.hasError('required')) {
+            <mat-error>El correo es obligatorio</mat-error>
+          }
+          @if (companyForm.get('email')?.hasError('email')) {
+            <mat-error>Ingrese un correo válido</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="phone" placeholder="Ej. +57 300 123 4567">
+          @if (companyForm.get('phone')?.hasError('required')) {
+            <mat-error>El teléfono es obligatorio</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="address" placeholder="Ej. Calle 10 # 5-20">
+          @if (companyForm.get('address')?.hasError('required')) {
+            <mat-error>La dirección es obligatoria</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Ciudad</mat-label>
+          <input matInput formControlName="city" placeholder="Ej. Cali">
+          @if (companyForm.get('city')?.hasError('required')) {
+            <mat-error>La ciudad es obligatoria</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>País</mat-label>
+          <input matInput formControlName="country" placeholder="Ej. Colombia">
+          @if (companyForm.get('country')?.hasError('required')) {
+            <mat-error>El país es obligatorio</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Tipo de Empresa</mat-label>
+          <input matInput formControlName="type" placeholder="Ej. Salud / IPS">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-divider class="my-4"></mat-divider>
+
+    <!-- Logos and Branding images section -->
+    <h3 class="section-subtitle mb-3 fw-semibold">Imágenes y Logos</h3>
+    <div class="row">
+      <!-- Logo URL (Primary Logo) -->
+      <div class="col-md-6 mb-4">
+        <div class="logo-upload-container border p-3 rounded text-center h-100 d-flex flex-column align-items-center justify-content-between">
+          <span class="fw-semibold text-muted mb-2">Logo Principal (App/Login)</span>
+          <div class="preview-box border rounded mb-3 d-flex align-items-center justify-content-center">
+            @if (companyForm.get('logoUrl')?.value) {
+              <img [src]="companyForm.get('logoUrl')?.value" alt="Preview logoUrl" class="img-preview" />
+            } @else {
+              <span class="text-muted small">Sin imagen</span>
+            }
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" mat-raised-button color="primary" (click)="fileUrl.click()">
+              Subir
+            </button>
+            @if (companyForm.get('logoUrl')?.value) {
+              <button type="button" mat-stroked-button color="warn" (click)="clearImage('logoUrl')">
+                Quitar
+              </button>
+            }
+          </div>
+          <input type="file" #fileUrl (change)="onFileSelected($event, 'logoUrl')" accept="image/*" class="d-none" />
+        </div>
+      </div>
+
+      <!-- Logo Order -->
+      <div class="col-md-6 mb-4">
+        <div class="logo-upload-container border p-3 rounded text-center h-100 d-flex flex-column align-items-center justify-content-between">
+          <span class="fw-semibold text-muted mb-2">Logo para Pedidos (Orders)</span>
+          <div class="preview-box border rounded mb-3 d-flex align-items-center justify-content-center">
+            @if (companyForm.get('logoOrder')?.value) {
+              <img [src]="companyForm.get('logoOrder')?.value" alt="Preview logoOrder" class="img-preview" />
+            } @else {
+              <span class="text-muted small">Sin imagen</span>
+            }
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" mat-raised-button color="primary" (click)="fileOrder.click()">
+              Subir
+            </button>
+            @if (companyForm.get('logoOrder')?.value) {
+              <button type="button" mat-stroked-button color="warn" (click)="clearImage('logoOrder')">
+                Quitar
+              </button>
+            }
+          </div>
+          <input type="file" #fileOrder (change)="onFileSelected($event, 'logoOrder')" accept="image/*" class="d-none" />
+        </div>
+      </div>
+
+      <!-- Logo Sold -->
+      <div class="col-md-6 mb-4">
+        <div class="logo-upload-container border p-3 rounded text-center h-100 d-flex flex-column align-items-center justify-content-between">
+          <span class="fw-semibold text-muted mb-2">Logo para Ventas (Sales)</span>
+          <div class="preview-box border rounded mb-3 d-flex align-items-center justify-content-center">
+            @if (companyForm.get('logoSold')?.value) {
+              <img [src]="companyForm.get('logoSold')?.value" alt="Preview logoSold" class="img-preview" />
+            } @else {
+              <span class="text-muted small">Sin imagen</span>
+            }
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" mat-raised-button color="primary" (click)="fileSold.click()">
+              Subir
+            </button>
+            @if (companyForm.get('logoSold')?.value) {
+              <button type="button" mat-stroked-button color="warn" (click)="clearImage('logoSold')">
+                Quitar
+              </button>
+            }
+          </div>
+          <input type="file" #fileSold (change)="onFileSelected($event, 'logoSold')" accept="image/*" class="d-none" />
+        </div>
+      </div>
+
+      <!-- Logo Purchasing -->
+      <div class="col-md-6 mb-4">
+        <div class="logo-upload-container border p-3 rounded text-center h-100 d-flex flex-column align-items-center justify-content-between">
+          <span class="fw-semibold text-muted mb-2">Logo para Compras (Purchasing)</span>
+          <div class="preview-box border rounded mb-3 d-flex align-items-center justify-content-center">
+            @if (companyForm.get('logoPurchasing')?.value) {
+              <img [src]="companyForm.get('logoPurchasing')?.value" alt="Preview logoPurchasing" class="img-preview" />
+            } @else {
+              <span class="text-muted small">Sin imagen</span>
+            }
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" mat-raised-button color="primary" (click)="filePurchasing.click()">
+              Subir
+            </button>
+            @if (companyForm.get('logoPurchasing')?.value) {
+              <button type="button" mat-stroked-button color="warn" (click)="clearImage('logoPurchasing')">
+                Quitar
+              </button>
+            }
+          </div>
+          <input type="file" #filePurchasing (change)="onFileSelected($event, 'logoPurchasing')" accept="image/*" class="d-none" />
+        </div>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="px-4 py-3 bg-light border-top">
+  <button mat-button class="cancel-button px-4 py-2 me-2" (click)="onCancel()">Cancelar</button>
+  <button mat-raised-button class="save-button px-4 py-2" color="primary" (click)="onSubmit()">Guardar</button>
+</mat-dialog-actions>

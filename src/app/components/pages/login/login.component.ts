@@ -13,6 +13,8 @@ import { AuthInterface } from '../../../models/auth-interface';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { RememberPassDialogComponent } from '../../dialogs/remember-pass-dialog/remember-pass-dialog.component';
+import { CompanyInitializer, CompanyInterface } from '../../../models/company-interface';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +22,8 @@ import { RememberPassDialogComponent } from '../../dialogs/remember-pass-dialog/
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -29,7 +32,8 @@ export class LoginComponent {
   title: string = 'Inicia sesión';
   public loginForm!: FormGroup;
   errorMessage = signal('');
-
+  hidePassword = signal(true);
+  company: CompanyInterface = CompanyInitializer;
   constructor(
     private readonly formBuilder: FormBuilder,
     private readonly encryptService: EncryptService,
@@ -41,6 +45,7 @@ export class LoginComponent {
   ) {
     console.log("session");
     console.log(this.sessionService.isSessionActive());
+    this.getData()
     this.initForm();
   }
 
@@ -63,18 +68,18 @@ export class LoginComponent {
         })
         .subscribe({
           next: (response: ApiInterface<AuthInterface>) => {
-            
+
             if (!response.state) {
               this.apiError({ error: { message: response.message } });
               return;
             }
-  
+
             // Almacenar sesión y menú en localStorage
             this.sessionService.storeSession(response.data);
 
             // Redirigir a la página principal
             this.router.navigate(['/']);
-            
+
           },
           error: (error) => {
             this.apiError(error);
@@ -96,6 +101,19 @@ export class LoginComponent {
     this.dialog.open(RememberPassDialogComponent, {
       width: '400px',
       disableClose: true
+    });
+  }
+
+  getData() {
+
+    this.restService.getRequest("/login").subscribe({
+      next: (response: ApiInterface<any>) => {
+        this.company = response.data;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+      complete: () => console.info('Autenticación completa'),
     });
   }
 }

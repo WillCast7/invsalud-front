@@ -1,60 +1,81 @@
-<div class="login-container d-flex justify-content-center align-items-center h-100 w-100">
-  <div class="container align-items-center">
-    <div class="row align-items-center py-2 login-row rounded-3">
-      <div class="col-md-6 align-items-left">
-        <img src="assets/fondoweb.avif" class="img-fluid rounded-4" srcset=""
-          alt="Fondo de la página de inicio de sesión">
-      </div>
-      <div class="col-md-6 order-2 align-items-center">
-        <div class="col-md-12 mb-5 text-center">
-          <h3 class="fs-2">
-            <strong>INVSALUD</strong>
-          </h3>
+<div class="login-layout-wrapper">
+  <!-- Left Column: Background Image with Blue Tint Overlay -->
+  <div class="login-sidebar-panel">
+    <div class="sidebar-overlay"></div>
+    <div class="sidebar-content">
+      @if (company.logoUrl) {
+      <img [src]="company.logoUrl" alt="Logo" class="sidebar-logo-bottom" />
+      }
+    </div>
+  </div>
+
+  <!-- Right Column: Login Form Content -->
+  <div class="login-form-panel">
+    <div class="login-scroll-content">
+      <!-- Card -->
+      <div class="login-card">
+        <!-- Card Header -->
+        <div class="card-header-brand">
+          <div class="brand-subtitle">PORTAL DE SALUD</div>
+          <h2 class="brand-title">{{company.nameApp}}</h2>
         </div>
-        <div class="col-10 px-4 py-5 offset-md-1 px-md-5 rounded-3 shadow-lg">
-          <form [formGroup]="loginForm" (ngSubmit)="tryAuthenticate()">
 
-            <!-- Title and subtitle -->
-            <div class="col-md-12 mb-5">
-              <h3 class="fs-2">
-                <strong>{{title}} </strong>
-              </h3>
-            </div>
+        <hr class="header-divider" />
 
-            <!-- Form -->
-            <div class="col-md-12 mb-5">
+        <!-- Form Heading -->
+        <div class="form-intro">
+          <h3 class="form-title">Iniciar sesión</h3>
+          <p class="form-subtitle">Ingrese sus credenciales para acceder al sistema.</p>
+        </div>
 
-              <!-- Input User -->
-              <mat-form-field appearance="outline" class="col-12 mb-1" style="display: flex;">
-                <mat-label>Usuario</mat-label>
-                <input matInput formControlName="user" required minlength="4" id="user" placeholder="EjemploUsuario">
-                @if (loginForm.get('user')?.hasError('required')) {
-                <mat-error>el usuario debe tener almenos 4 caracteres</mat-error>
-                }
-              </mat-form-field>
+        <!-- Form -->
+        <form [formGroup]="loginForm" (ngSubmit)="tryAuthenticate()" class="login-form">
+          <!-- User field -->
+          <div class="form-group-custom">
+            <label for="user" class="input-label-custom">Usuario*</label>
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-icon matPrefix class="input-icon-custom">person</mat-icon>
+              <input matInput formControlName="user" required minlength="4" id="user" placeholder="Ingrese su usuario">
+              @if (loginForm.get('user')?.hasError('required')) {
+              <mat-error>El usuario es requerido</mat-error>
+              }
+            </mat-form-field>
+          </div>
 
-              <!-- Input Password -->
-              <mat-form-field appearance="outline" class="col-12" style="display: flex;">
-                <mat-label>Contraseña</mat-label>
-                <input matInput formControlName="password" required id="password" type="password"
-                  placeholder="Contraseña">
-              </mat-form-field>
-
-              <div class="col-12 text-end mb-3">
-                <a href="javascript:void(0)" (click)="openRememberPassDialog()"
-                  class="text-decoration-none small fw-semibold">¿Olvidaste tu contraseña?</a>
-              </div>
-
-            </div>
-
-            <!-- Button submit form -->
-            <div class="col-12 text-center">
-              <button mat-button type="submit" class="col-6 save-button">
-                Iniciar sesión
+          <!-- Password field -->
+          <div class="form-group-custom">
+            <label for="password" class="input-label-custom">Contraseña*</label>
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-icon matPrefix class="input-icon-custom">lock</mat-icon>
+              <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" required
+                id="password" placeholder="••••••••">
+              <button mat-icon-button matSuffix (click)="hidePassword.set(!hidePassword())" type="button"
+                class="password-toggle-btn">
+                <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>
-            </div>
-          </form>
-        </div>
+            </mat-form-field>
+          </div>
+
+          <!-- Forgot Password -->
+          <div class="forgot-pass-wrapper">
+            <a href="javascript:void(0)" (click)="openRememberPassDialog()" class="forgot-password-link">
+              ¿Olvidaste tu contraseña?
+            </a>
+          </div>
+
+          <!-- Submit Button -->
+          <button mat-button type="submit" class="w-100 login-submit-btn" [disabled]="loginForm.invalid">
+            <span>Iniciar sesión</span>
+          </button>
+
+          <!-- Creator -->
+          <div class="creator-wrapper">
+            <span class="creator-prefix">by </span>
+            <a href="https://aurealab.com.co/" target="_blank" class="creator-link">
+              aurealab
+            </a>
+          </div>
+        </form>
       </div>
     </div>
   </div>

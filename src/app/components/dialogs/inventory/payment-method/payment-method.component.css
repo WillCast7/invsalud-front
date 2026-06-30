@@ -1,0 +1,47 @@
+:host {
+  display: block;
+  font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dialog-title {
+  color: #1a2530;
+  border-bottom: 1px solid #f0f2f5;
+  background-color: #fafbfc;
+  padding: 16px 24px !important;
+}
+
+.dialog-content {
+  color: #4a5568;
+  padding: 20px 24px !important;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.dialog-actions {
+  border-top: 1px solid #f0f2f5;
+  background-color: #fafbfc;
+  padding: 16px 24px !important;
+}
+
+.payment-form {
+  margin-top: 16px;
+}
+
+/* Custom styles to match the premium theme */
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+.cancel-button, .save-button {
+  min-height: 40px;
+  border-radius: 6px !important;
+  font-weight: 500;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.cancel-button:active, .save-button:active:not(:disabled) {
+  transform: scale(0.98);
+}

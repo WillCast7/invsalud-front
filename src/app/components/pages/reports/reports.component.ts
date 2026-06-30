@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -69,7 +69,7 @@ export class ReportsComponent implements OnInit {
 
   ngOnInit(): void {
     this.mainForm = this.fb.group({
-      type: [''],
+      type: ['', Validators.required],
       category: [''],
       startDate: [''],
       endDate: [''],
@@ -163,6 +163,14 @@ export class ReportsComponent implements OnInit {
   }
 
   onSearch() {
+    if (this.mainForm.invalid) {
+      this.alertService.infoMixin.fire({
+        icon: 'warning',
+        title: 'Seleccione el tipo de reporte'
+      });
+      return;
+    }
+
     const dialogRef: MatDialogRef<any> = this.dialog.open(ReportDialogComponent,
       { ...SizemodalInitializer, data: { data: this.mainForm.value } });
 

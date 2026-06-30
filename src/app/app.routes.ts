@@ -14,6 +14,7 @@ import { SalesComponent } from './components/pages/inventory/sales/sales.compone
 import { PurchasingComponent } from './components/pages/inventory/purchasing/purchasing.component';
 import { BillTemplatesComponent } from './components/pages/configuration/bill-templates/bill-templates.component';
 import { ReportsComponent } from './components/pages/reports/reports.component';
+import { CompanyComponent } from './components/pages/configuration/company/company.component';
 
 export const routes: Routes = [
     { path: '', component: DashboardComponent, title: "Dashboard" },
@@ -27,9 +28,10 @@ export const routes: Routes = [
     { path: 'administracion/resoluciones', component: ResolutionsComponent, title: "Resoluciones" },
     { path: 'inventario/gestion', component: InventoryComponent, title: "Inventario" },
     { path: 'inventario/gestion/vencidos', component: InventoryExpiredComponent, title: "Inventario Vencido" },
-    { path: 'inventario/gestion/cotizaciones', component: OrdersComponent, title: "Cotizaciones" },
-    { path: 'inventario/gestion/salidas', component: SalesComponent, title: "Salidas" },
-    { path: 'inventario/gestion/ingresos', component: PurchasingComponent, title: "Ingresos" },
+    { path: 'gestion/cotizaciones', component: OrdersComponent, title: "Cotizaciones" },
+    { path: 'gestion/salidas', component: SalesComponent, title: "Salidas" },
+    { path: 'gestion/ingresos', component: PurchasingComponent, title: "Ingresos" },
     { path: 'administracion/reportes', component: ReportsComponent, title: "Reportes" },
+    { path: 'configuracion/empresa', component: CompanyComponent, title: "Empresa" },
     { path: '**', redirectTo: '', pathMatch: 'full', title: "Dashboard" }
 ];

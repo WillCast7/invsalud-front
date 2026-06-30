@@ -180,11 +180,13 @@
                   <div class="col-md-8">
                     <mat-form-field appearance="outline" class="w-100">
                       <mat-label>Medicamento Habilitado en Resolución</mat-label>
-                      <input matInput formControlName="product" [matAutocomplete]="autoProduct" (focus)="filterProducts(i)" (keyup)="filterProducts(i)">
+                      <input matInput formControlName="product" [matAutocomplete]="autoProduct"
+                        (focus)="filterProducts(i)" (keyup)="filterProducts(i)">
                       <mat-autocomplete #autoProduct="matAutocomplete" [displayWith]="displayProduct">
                         @for (product of filteredProducts[i]; track product.id) {
                         <mat-option [value]="product">
-                          <span class="fw-medium">{{product.product.name}} {{product.product.pharmaceuticalForm}} {{product.product.concentration}} {{product.batch.code}}</span>
+                          <span class="fw-medium">{{product.product.name}} {{product.product.pharmaceuticalForm}}
+                            {{product.product.concentration}} {{product.batch.code}}</span>
                         </mat-option>
                         }
                       </mat-autocomplete>
@@ -225,9 +227,10 @@
 
                 <!-- Detalles del Producto (Solo si no es receta y hay producto seleccionado) -->
                 @if (!isRecipe && mainForm.value.details[i].product?.id) {
-                <div class="col-12 mt-3 px-3 py-2 text-muted small border-start border-3 border-primary bg-light rounded">
+                <div
+                  class="col-12 mt-3 px-3 py-2 text-muted small border-start border-3 border-primary bg-light rounded">
                   <div class="row g-2 align-items-start">
-                    
+
                     <!-- Columna 1: Datos del Medicamento -->
                     <div class="col-md-4">
                       <div class="mb-2">
@@ -237,7 +240,7 @@
                       <div>
                         <strong class="text-dark d-block">Forma Farmacéutica:</strong>
                         <span>
-                          {{ mainForm.value.details[i].product.product?.pharmaceuticalForm }} - 
+                          {{ mainForm.value.details[i].product.product?.pharmaceuticalForm }} -
                           {{ mainForm.value.details[i].product.product?.presentation }}
                         </span>
                       </div>
@@ -246,7 +249,7 @@
                     <!-- Columna 2: Inventario / Trazabilidad -->
                     <div class="col-md-4">
                       <div class="mb-2">
-                        <strong class="text-dark d-block">Lote:</strong> 
+                        <strong class="text-dark d-block">Lote:</strong>
                         <span>{{ mainForm.value.details[i].product.batch?.code }}</span>
                       </div>
                       <div>

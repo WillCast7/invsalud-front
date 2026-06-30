@@ -40,7 +40,42 @@ export class ReportDialogComponent {
     { key: 'isActive', label: 'Estado', isSortable: false, pipe: 'status' }
   ];
 
-  onPrintReport() { }
+  onPrintReport() {
+    const rawFilters = this.data?.data || {};
+    const filters: any = {};
+
+    if (rawFilters.type) filters.type = rawFilters.type;
+    if (rawFilters.category) filters.category = rawFilters.category;
+    if (rawFilters.startDate) filters.startDate = this.formatDate(rawFilters.startDate);
+    if (rawFilters.endDate) filters.endDate = this.formatDate(rawFilters.endDate);
+    if (rawFilters.documentNumber) filters.documentNumber = rawFilters.documentNumber;
+
+    if (rawFilters.product) {
+      filters.product = typeof rawFilters.product === 'object' ? rawFilters.product.name : rawFilters.product;
+    }
+    if (rawFilters.batch) {
+      filters.batch = typeof rawFilters.batch === 'object' ? rawFilters.batch.code : rawFilters.batch;
+    }
+
+    this.restService.fileGetRequest("/report", filters).subscribe({
+      next: (blob) => {
+        const fileURL = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = fileURL;
+        a.download = `reporte_${filters.type || 'inventario'}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(fileURL);
+      },
+      error: (error) => {
+        this.alertService.infoMixin.fire({
+          icon: 'error',
+          title: error.error?.message || 'Error al descargar el reporte en Excel',
+        });
+      }
+    });
+  }
 
   getData(page: number = 0, size: number = 10) {
     this.dataValue = PageableInitializer;

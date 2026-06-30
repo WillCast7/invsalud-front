@@ -13,10 +13,9 @@
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Tipo de Reporte</mat-label>
                             <mat-select formControlName="type">
-                                <mat-option value="">Todos</mat-option>
-                                <mat-option value="Cotizacion">Cotización</mat-option>
-                                <mat-option value="Ingresos">Ingresos</mat-option>
-                                <mat-option value="Salidas">Salidas</mat-option>
+                                <mat-option value="order">Cotización</mat-option>
+                                <mat-option value="purchasing">Ingresos</mat-option>
+                                <mat-option value="sold">Salidas</mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
@@ -27,9 +26,9 @@
                             <mat-label>Categorías</mat-label>
                             <mat-select formControlName="category">
                                 <mat-option value="">Todas</mat-option>
-                                <mat-option value="Recetarios">Recetarios</mat-option>
-                                <mat-option value="Medicamentos">Medicamentos</mat-option>
-                                <mat-option value="Medicamentos sp">Medicamentos de salud publica</mat-option>
+                                <mat-option value="recipe">Recetarios</mat-option>
+                                <mat-option value="special">Medicamentos</mat-option>
+                                <mat-option value="public">Medicamentos de salud publica</mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
@@ -105,7 +104,7 @@
             <button mat-stroked-button color="warn" class="btn-clear px-4 rounded-3" (click)="onClear()">
                 Limpiar
             </button>
-            <button mat-flat-button class="btn-search px-4 rounded-3" (click)="onSearch()">
+            <button mat-flat-button class="save-button px-4 rounded-3" (click)="onSearch()">
                 Buscar
             </button>
         </mat-card-actions>

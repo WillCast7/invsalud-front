@@ -103,6 +103,13 @@ export class ConfigParamsComponent {
     this.getData(0, 10, this.searchValue);
   }
 
+  pageChange(event: PageEvent) {
+    this.getData(
+      event.pageIndex,
+      event.pageSize,
+      this.searchValue
+    );
+  }
 
   openModal(mode: string, row: ConfigparamsInterface) {
     row.isActive = row.active ? true : false;

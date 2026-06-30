@@ -1,16 +1,19 @@
-<div mat-dialog-title class="d-flex align-items-center gap-2 border-bottom py-3">
-  <mat-icon>gavel</mat-icon>
-  <h2 class="m-0">{{title()}}</h2>
+<div class="d-flex justify-content-between align-items-start p-4 border-bottom bg-light">
+  <div>
+    <h2 class="mb-0 fw-bold text-dark">{{title()}}</h2>
+    <span class="text-muted small">ID: {{ resolutionSearched.id }}</span>
+  </div>
+  <span class="badge rounded-pill"
+    [ngClass]="resolutionSearched.isActive ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'">
+    <mat-icon inline class="align-middle me-1">{{ resolutionSearched.isActive ? 'check_circle' : 'cancel' }}</mat-icon>
+    {{ resolutionSearched.isActive ? 'ACTIVO' : 'INACTIVO' }}
+  </span>
 </div>
 
 @if(data.mode === "view") {
 <mat-dialog-content class="pt-4">
   <div class="container-fluid">
     <div class="row mb-4">
-      <div class="col-md-2">
-        <label class="text-muted small d-block">ID</label>
-        <span class="fs-5 fw-medium text-dark">{{ resolutionSearched.id }}</span>
-      </div>
       <div class="col-md-5">
         <label class="text-muted small d-block">Código</label>
         <span class="fs-5 fw-medium text-dark">{{ resolutionSearched.code }}</span>
@@ -49,27 +52,7 @@
         </div>
       </div>
     </div>
-
-    <div class="row mb-4">
-      <div class="col-12">
-        <label class="text-muted small d-block">Estado</label>
-        <mat-chip-set>
-          @if (resolutionSearched.isActive) {
-          <mat-chip class="custom-active-chip" style="background-color: #e8f5e9; color: #2e7d32;">
-            <mat-icon matChipAvatar>check_circle</mat-icon>
-            Activa
-          </mat-chip>
-          } @else {
-          <mat-chip class="custom-inactive-chip" style="background-color: #ffebee; color: #c62828;">
-            <mat-icon matChipAvatar>cancel</mat-icon>
-            Inactiva
-          </mat-chip>
-          }
-        </mat-chip-set>
-      </div>
-    </div>
-
-    <mat-divider class="my-3"></mat-divider>
+    <mat-divider class="my-1"></mat-divider>
 
     <div class="row mb-4">
       <div class="col-12 mt-2">
@@ -105,7 +88,8 @@
       <div class="col-md-8">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Tercero (Opcional)</mat-label>
-          <input matInput type="text" placeholder="Escriba para buscar (mín 3 letras)..." formControlName="thirdParty" [matAutocomplete]="autoTp">
+          <input matInput type="text" placeholder="Escriba para buscar (mín 3 letras)..." formControlName="thirdParty"
+            [matAutocomplete]="autoTp">
           <mat-autocomplete #autoTp="matAutocomplete" [displayWith]="displayThirdParty">
             @for (tp of thirdPartiesList; track tp.id) {
             <mat-option [value]="tp">{{ tp.fullName }} - {{ tp.documentNumber }}</mat-option>
@@ -125,7 +109,8 @@
       <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Fecha de Vencimiento</mat-label>
-          <input matInput [matDatepicker]="endPicker" formControlName="expirationDate" [min]="form.get('startDate')?.value">
+          <input matInput [matDatepicker]="endPicker" formControlName="expirationDate"
+            [min]="form.get('startDate')?.value">
           <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
           <mat-datepicker #endPicker></mat-datepicker>
         </mat-form-field>
@@ -143,24 +128,21 @@
           <mat-label>Productos Autorizados</mat-label>
           <mat-chip-grid #chipGrid aria-label="Selección de productos">
             @for (prod of selectedProducts; track prod.id) {
-              <mat-chip-row (removed)="removeProduct(prod)">
-                {{prod.name}} ({{prod.code}})
-                <button matChipRemove [attr.aria-label]="'Quitar ' + prod.name">
-                  <mat-icon>cancel</mat-icon>
-                </button>
-              </mat-chip-row>
+            <mat-chip-row (removed)="removeProduct(prod)">
+              {{prod.name}} ({{prod.code}})
+              <button matChipRemove [attr.aria-label]="'Quitar ' + prod.name">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
             }
           </mat-chip-grid>
-          <input placeholder="Escriba para buscar productos..." #productInput
-                 [formControl]="productSearchCtrl"
-                 [matChipInputFor]="chipGrid"
-                 [matAutocomplete]="autoProducts" 
-                 (keydown.enter)="$event.preventDefault()" />
+          <input placeholder="Escriba para buscar productos..." #productInput [formControl]="productSearchCtrl"
+            [matChipInputFor]="chipGrid" [matAutocomplete]="autoProducts" (keydown.enter)="$event.preventDefault()" />
           <mat-autocomplete #autoProducts="matAutocomplete" (optionSelected)="addProduct($event)">
             @for (prod of productsList; track prod.id) {
-              <mat-option [value]="prod">
-                {{prod.name}} ({{prod.code}})
-              </mat-option>
+            <mat-option [value]="prod">
+              {{prod.name}} ({{prod.code}})
+            </mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>

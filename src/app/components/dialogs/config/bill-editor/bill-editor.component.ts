@@ -490,21 +490,78 @@ export class BillEditorComponent implements OnInit {
   getAvailableVariables() {
     const docType = this.mainForm?.get('documentType')?.value;
     const globalVars = [
-      { label: 'Empresa', vars: ['{{ company.name }}', '{{ company.nit }}', '{{ company.address }}', '{{ company.phone }}', '{{ company.logoUrl }}'] }
+      {
+        label: 'Empresa',
+        vars: [
+          { name: '{{ company.name }}', desc: 'Nombre de la empresa' },
+          { name: '{{ company.nit }}', desc: 'NIT o identificación tributaria de la empresa' },
+          { name: '{{ company.address }}', desc: 'Dirección física de la empresa' },
+          { name: '{{ company.phone }}', desc: 'Teléfono de contacto de la empresa' },
+          { name: '{{ company.logoUrl }}', desc: 'URL del logo de la empresa' }
+        ]
+      }
     ];
 
     if (docType === 'COMPRA') {
       return [...globalVars, 
-        { label: 'Compra (Purchasing)', vars: ['{{ purchasing.purchasedCode }}', '{{ purchasing.createdAt }}', '{{ purchasing.total }}', '{{ purchasing.observations }}'] },
-        { label: 'Proveedor (ThirdParty)', vars: ['{{ thirdParty.fullName }}', '{{ thirdParty.documentNumber }}', '{{ thirdParty.address }}'] },
-        { label: 'Tabla de Items (Iterar)', vars: ['{{ item.product.name }}', '{{ item.product.code }}', '{{ item.units }}', '{{ item.priceUnit }}', '{{ item.priceTotal }}'] }
+        {
+          label: 'Compra (Purchasing)',
+          vars: [
+            { name: '{{ purchasing.purchasedCode }}', desc: 'Código o número del documento de compra' },
+            { name: '{{ purchasing.createdAt }}', desc: 'Fecha y hora de registro de la compra' },
+            { name: '{{ purchasing.total }}', desc: 'Valor total de la compra' },
+            { name: '{{ purchasing.observations }}', desc: 'Comentarios u observaciones del documento de compra' }
+          ]
+        },
+        {
+          label: 'Proveedor (ThirdParty)',
+          vars: [
+            { name: '{{ thirdParty.fullName }}', desc: 'Nombre completo o razón social del proveedor' },
+            { name: '{{ thirdParty.documentNumber }}', desc: 'Número de documento (NIT/Cédula) del proveedor' },
+            { name: '{{ thirdParty.address }}', desc: 'Dirección del proveedor' }
+          ]
+        },
+        {
+          label: 'Tabla de Items (Iterar)',
+          vars: [
+            { name: '{{ item.product.name }}', desc: 'Nombre del producto o servicio' },
+            { name: '{{ item.product.code }}', desc: 'Código único o SKU del producto' },
+            { name: '{{ item.units }}', desc: 'Cantidad de unidades de la fila' },
+            { name: '{{ item.priceUnit }}', desc: 'Precio unitario de compra' },
+            { name: '{{ item.priceTotal }}', desc: 'Total de la fila (unidades x precio unitario)' }
+          ]
+        }
       ];
     } else {
       // VENTA o COTIZACION
       return [...globalVars,
-        { label: 'Orden (Order)', vars: ['{{ order.orderCode }}', '{{ order.createdAt }}', '{{ order.total }}', '{{ order.observations }}'] },
-        { label: 'Cliente (ThirdParty)', vars: ['{{ thirdParty.fullName }}', '{{ thirdParty.documentNumber }}', '{{ thirdParty.email }}', '{{ thirdParty.phone }}'] },
-        { label: 'Tabla de Items (Iterar)', vars: ['{{ item.inventory.product.name }}', '{{ item.units }}', '{{ item.priceUnit }}', '{{ item.priceTotal }}'] }
+        {
+          label: 'Orden (Order)',
+          vars: [
+            { name: '{{ order.orderCode }}', desc: 'Código o número de la venta o cotización' },
+            { name: '{{ order.createdAt }}', desc: 'Fecha y hora de registro de la orden' },
+            { name: '{{ order.total }}', desc: 'Valor total de la venta o cotización' },
+            { name: '{{ order.observations }}', desc: 'Observaciones o notas adicionales del documento' }
+          ]
+        },
+        {
+          label: 'Cliente (ThirdParty)',
+          vars: [
+            { name: '{{ thirdParty.fullName }}', desc: 'Nombre completo o razón social del cliente' },
+            { name: '{{ thirdParty.documentNumber }}', desc: 'Número de documento (NIT/Cédula) del cliente' },
+            { name: '{{ thirdParty.email }}', desc: 'Correo electrónico del cliente' },
+            { name: '{{ thirdParty.phone }}', desc: 'Teléfono de contacto del cliente' }
+          ]
+        },
+        {
+          label: 'Tabla de Items (Iterar)',
+          vars: [
+            { name: '{{ item.inventory.product.name }}', desc: 'Nombre del producto del inventario' },
+            { name: '{{ item.units }}', desc: 'Cantidad de unidades en la fila' },
+            { name: '{{ item.priceUnit }}', desc: 'Precio unitario de venta' },
+            { name: '{{ item.priceTotal }}', desc: 'Total de la fila (unidades x precio unitario)' }
+          ]
+        }
       ];
     }
   }

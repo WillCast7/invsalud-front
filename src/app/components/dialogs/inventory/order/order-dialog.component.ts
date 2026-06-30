@@ -1,6 +1,7 @@
 import { Component, inject, Inject, signal, type OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { PaymentMethodComponent } from '../payment-method/payment-method.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,6 +14,7 @@ import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-interface';
 import { PrescriptionInventoryInterface } from '../../../../models/inventory/prescription-inventory';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-order-dialog',
@@ -37,6 +39,7 @@ export class OrderDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<OrderDialogComponent>);
   private restService = inject(RestApiService);
   private alertService = inject(AlertService);
+  private dialog = inject(MatDialog);
 
   title = signal('Crear Cotización');
   isPublicHealth = false;
@@ -333,17 +336,13 @@ export class OrderDialogComponent implements OnInit {
   }
 
   onSell() {
-    this.alertService.modal.fire({
-      title: '¿Vender esta cotización?',
-      text: 'Esta acción no se puede deshacer.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3d5a80',
-      cancelButtonColor: '#ac0505',
-      confirmButtonText: 'Sí, vender',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
+    const dialogRef = this.dialog.open(PaymentMethodComponent, {
+      width: '400px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result && result.isConfirmed) {
         this.restService.postRequest('/orders/sell/' + this.data.data?.id, {}).subscribe({
           next: (res) => {
             this.dialogRef.close({ success: true, message: 'Venta realizada con éxito' });
@@ -357,7 +356,6 @@ export class OrderDialogComponent implements OnInit {
         });
       }
     });
-
   }
 
   onAbort() {
@@ -445,16 +443,44 @@ export class OrderDialogComponent implements OnInit {
 
   onCancel() {
     this.dialogRef.close({
-            success: false,
-            message: 'Operación cancelada'
-          });
+      success: false,
+      message: 'Operación cancelada'
+    });
   }
 
   onPrint(row: any) {
-    console.log('print', row);
-    this.alertService.infoMixin.fire({
-      icon: 'info',
-      title: 'Funcionalidad en desarrollo'
+    this.restService.fileGetRequest("/report/order/" + row.id).subscribe({
+      next: (blob) => {
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL, '_blank');
+      },
+      error: async (error: HttpErrorResponse) => {
+        console.log(error);
+
+        let mensajeMostrar = "Ocurrió un error inesperado";
+
+        // Verificamos si el error viene dentro de un Blob
+        if (error.error instanceof Blob) {
+          try {
+            // Convertimos el Blob a texto plano
+            const text = await error.error.text();
+            // Parseamos el texto a JSON
+            const errorJson = JSON.parse(text);
+            // Extraemos el mensaje
+            mensajeMostrar = errorJson.message || mensajeMostrar;
+          } catch (e) {
+            console.error("No se pudo parsear el error del Blob", e);
+          }
+        } else if (error.error?.message) {
+          // Si por alguna razón ya viene parseado
+          mensajeMostrar = error.error.message;
+        }
+
+        this.alertService.infoMixin.fire({
+          icon: 'error',
+          title: mensajeMostrar,
+        });
+      }
     });
   }
 }

@@ -149,7 +149,11 @@ export class ResolutionsComponent {
 
   openModalResolution(type: string, row: ResolutionInterface | undefined = undefined) {
     const dialogRef: MatDialogRef<any> = this.dialog.open(ResolutionDialogComponent,
-      { ...SizemodalInitializer, data: { mode: type, data: row } });
+      {
+        width: '60%',
+        disableClose: true
+        , data: { mode: type, data: row }
+      });
 
     dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
@@ -158,13 +162,13 @@ export class ResolutionsComponent {
           title: result.message
         });
       }
-      
+
       this.getData(
         this.dataValue.pageable.pageNumber,
         this.dataValue.pageable.pageSize,
         this.searchValue
       );
-      
+
     });
   }
 

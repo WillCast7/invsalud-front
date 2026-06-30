@@ -1,5 +1,5 @@
 @if (isResetPasswordRoute()) {
-  <router-outlet />
+<router-outlet />
 } @else if (isSessionActive()) {
 <mat-drawer-container class="example-container" [hasBackdrop]="true">
   <mat-drawer #drawer [mode]="'over'" class="drawer-content">
@@ -54,6 +54,31 @@
         <span class="mx-1 fw-light greeting-message font-colored">Hola,</span>
         <span class="fw-medium greeting-name font-colored">{{namesUser()}}</span>
       </button>
+
+      <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon favorite-icon font-colored"
+        title="Notificaciones" aria-label="Example icon-button with heart icon">
+        <mat-icon [matBadge]="notificationsNumber()"
+          [matBadgeHidden]="notificationsNumber() === 0">notifications_none</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" class="notifications-menu">
+        @for (notification of notificationList(); track $index) {
+        <button mat-menu-item (click)="processNotification(notification)" [ngClass]="{
+                'btn-enviada': notification.recipient.status === 'ENVIADA',
+                'btn-visto': notification.recipient.status === 'VISTO'
+              }">
+          <div class="d-flex flex-column justify-content-around">
+            <span class="fw-bold">{{notification.title}} </span>
+            <small class="text-muted"> {{notification.message}}</small>
+          </div>
+        </button>
+        }
+
+        <button mat-menu-item (click)="router.navigate(['/configuracion/notificaciones'])">
+          <div class="d-flex flex-row justify-content-around ">
+            <small class="text-muted">Ver historial de notificaciones</small>
+          </div>
+        </button>
+      </mat-menu>
 
       <button mat-icon-button class="example-icon font-colored" (click)="logOut()" title="Cerrar Sesión">
         <mat-icon aria-hidden="false">exit_to_app</mat-icon>
