@@ -7,5 +7,6 @@ export interface AuthInterface {
     names: string;
     menus: MenuInterface[];
     notifications: NotificationInterface[];
+    rid: number;
 }
 

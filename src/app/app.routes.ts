@@ -15,6 +15,7 @@ import { PurchasingComponent } from './components/pages/inventory/purchasing/pur
 import { BillTemplatesComponent } from './components/pages/configuration/bill-templates/bill-templates.component';
 import { ReportsComponent } from './components/pages/reports/reports.component';
 import { CompanyComponent } from './components/pages/configuration/company/company.component';
+import { AuditLogsComponent } from './components/pages/audit-logs/audit-logs.component';
 
 export const routes: Routes = [
     { path: '', component: DashboardComponent, title: "Dashboard" },
@@ -26,6 +27,8 @@ export const routes: Routes = [
     { path: 'administracion/usuarios', component: UserComponent, title: "Usuarios" },
     { path: 'administracion/primarios', component: PrimaryComponent, title: "Primarios" },
     { path: 'administracion/resoluciones', component: ResolutionsComponent, title: "Resoluciones" },
+    { path: 'administracion/audits-logs', component: AuditLogsComponent, title: "Logs de Auditoría" },
+    { path: 'audit-logs', component: AuditLogsComponent, title: "Logs de Auditoría" },
     { path: 'inventario/gestion', component: InventoryComponent, title: "Inventario" },
     { path: 'inventario/gestion/vencidos', component: InventoryExpiredComponent, title: "Inventario Vencido" },
     { path: 'gestion/cotizaciones', component: OrdersComponent, title: "Cotizaciones" },

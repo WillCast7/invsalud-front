@@ -19,6 +19,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { CashSessionSummaryInterface } from '../../../models/cash-session-summary-interface';
 import { ThirdPartyInterface } from '../../../models/inventory/thirdparty-interface';
 import { ProductInterface } from '../../../models/inventory/product-interface';
+import { SessionService } from '../../../services/session.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -45,6 +46,7 @@ export class DashboardComponent {
   private readonly menuService = inject(MenuService);
   private readonly restService = inject(RestApiService);
   private readonly alertService = inject(AlertService);
+  private readonly sessionService = inject(SessionService);
 
   menu: MenuItemInterface[] = [];
   logoUrl: string = '';
@@ -142,9 +144,16 @@ export class DashboardComponent {
     return '$' + value.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
+  get showFullDashboard(): boolean {
+    const rId = this.sessionService.roleId;
+    return rId === 1 || rId === 2 || rId === 3;
+  }
+
   constructor() {
     this.getData();
-    this.loadFiltersData();
+    if (this.showFullDashboard) {
+      this.loadFiltersData();
+    }
   }
 
   loadFiltersData() {

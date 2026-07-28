@@ -76,7 +76,44 @@ export class ReportsComponent implements OnInit {
       documentNumber: [''],
       product: [''],
       batch: [''],
+      status: [''],
+      units: ['all']
     });
+
+    this.mainForm.get('type')?.valueChanges.subscribe(() => {
+      this.mainForm.patchValue({
+        category: '',
+        startDate: '',
+        endDate: '',
+        documentNumber: '',
+        product: '',
+        batch: '',
+        status: '',
+        units: 'all'
+      }, { emitEvent: false });
+      this.suppliersFinded = [];
+      this.productsFinded = [];
+      this.batchesFinded = [];
+    });
+
+    this.mainForm.get('category')?.valueChanges.subscribe((val) => {
+      if (val === 'recipe') {
+        this.mainForm.patchValue({
+          product: '',
+          batch: ''
+        }, { emitEvent: false });
+        this.productsFinded = [];
+        this.batchesFinded = [];
+      }
+    });
+  }
+
+  get selectedType(): string {
+    return this.mainForm.get('type')?.value || '';
+  }
+
+  get selectedCategory(): string {
+    return this.mainForm.get('category')?.value || '';
   }
 
   findSuppliers() {

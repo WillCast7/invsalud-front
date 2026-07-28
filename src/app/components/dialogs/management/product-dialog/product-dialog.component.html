@@ -74,7 +74,7 @@
 <mat-dialog-content class="pt-4 d-flex justify-content-center">
   <form [formGroup]="productForm">
     <div class="row justify-content-center">
-      <div class="col-md-8 mb-3">
+      <div class="col-md-7">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Nombre del Medicamento</mat-label>
           <input matInput formControlName="name" class="text-uppercase">
@@ -84,17 +84,23 @@
           }
         </mat-form-field>
       </div>
-
-      <div class="col-md-4 mb-3">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Código</mat-label>
-          <input matInput formControlName="code" class="text-uppercase">
-          <mat-icon matSuffix>tag</mat-icon>
-          @if (productForm.get('code')?.hasError('required')) {
-          <mat-error>Requerido</mat-error>
-          }
-        </mat-form-field>
+      <div class="col-5 d-flex justify-content-around">
+        <div class="col-md-6 mb-3 d-flex align-items-center">
+          <mat-slide-toggle formControlName="isActive" color="primary">
+            <span class="text-muted small">
+              El producto esta Activo?
+            </span>
+          </mat-slide-toggle>
+        </div>
+        <div class="col-md-6 mb-3 d-flex align-items-center">
+          <mat-slide-toggle formControlName="isPublicHealth" color="primary">
+            <span class="text-muted small">
+              ¿Es de salud publica?
+            </span>
+          </mat-slide-toggle>
+        </div>
       </div>
+
 
       @if (data.mode === 'create') {
       <!-- Concentración del Medicamento -->
@@ -190,23 +196,6 @@
           <mat-label>Detalles / Descripción</mat-label>
           <textarea matInput formControlName="details" rows="3"></textarea>
         </mat-form-field>
-      </div>
-
-      <div class="col-12 py-2 row d-flex justify-content-around">
-        <div class="col-md-5 mb-3 d-flex align-items-center gap-3 bg-light p-3 rounded border">
-          <mat-slide-toggle formControlName="isActive" color="primary">
-            <span class="text-muted small">
-              El producto esta Activo?
-            </span>
-          </mat-slide-toggle>
-        </div>
-        <div class="col-md-5 mb-3 d-flex align-items-center gap-3 bg-light p-3 rounded border">
-          <mat-slide-toggle formControlName="isPublicHealth" color="primary">
-            <span class="text-muted small">
-              ¿Es de salud publica?
-            </span>
-          </mat-slide-toggle>
-        </div>
       </div>
     </div>
   </form>

@@ -16,25 +16,36 @@
                                 <mat-option value="order">Cotización</mat-option>
                                 <mat-option value="purchasing">Ingresos</mat-option>
                                 <mat-option value="sold">Salidas</mat-option>
+                                <mat-option value="inventory">Inventario</mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
 
-                    <!-- Categorías -->
-                    <div class="col-md-4 col-sm-6 col-12">
+                    @if (selectedType === 'order' || selectedType === 'purchasing' || selectedType === 'sold') {
+                    <!-- Categorías (Label Dinámico) -->
+                    <div class="col-md-4 col-sm-6 col-12 animate-fade-in">
                         <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>Categorías</mat-label>
+                            <mat-label>
+                                {{ selectedType === 'order' ? 'Tipo de Cotización' : (selectedType === 'purchasing' ?
+                                'Tipo de Ingreso' : 'Tipo de Salida') }}
+                            </mat-label>
                             <mat-select formControlName="category">
+                                @if (selectedType === 'order') {
                                 <mat-option value="">Todas</mat-option>
-                                <mat-option value="recipe">Recetarios</mat-option>
                                 <mat-option value="special">Medicamentos</mat-option>
-                                <mat-option value="public">Medicamentos de salud publica</mat-option>
+                                <mat-option value="recipe">Recetarios</mat-option>
+                                } @else {
+                                <mat-option value="">Todas</mat-option>
+                                <mat-option value="special">Medicamentos</mat-option>
+                                <mat-option value="public">Medicamentos de salud pública</mat-option>
+                                <mat-option value="recipe">Recetarios</mat-option>
+                                }
                             </mat-select>
                         </mat-form-field>
                     </div>
 
                     <!-- Rango de Fechas -->
-                    <div class="col-md-4 col-sm-12 col-12">
+                    <div class="col-md-4 col-sm-12 col-12 animate-fade-in">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Rango de Fechas</mat-label>
                             <mat-date-range-input [rangePicker]="picker">
@@ -46,10 +57,10 @@
                         </mat-form-field>
                     </div>
 
-                    <!-- Cliente -->
-                    <div class="col-md-4 col-12">
+                    <!-- Tercero (Cliente / Proveedor) -->
+                    <div class="col-md-4 col-12 animate-fade-in">
                         <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>Número documento</mat-label>
+                            <mat-label>Número documento (Tercero)</mat-label>
                             <input matInput formControlName="documentNumber" [matAutocomplete]="auto"
                                 (keyup)="findSuppliers()" maxlength="20">
                             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSupplierSelected($event)">
@@ -63,8 +74,9 @@
                         </mat-form-field>
                     </div>
 
+                    @if (selectedCategory !== 'recipe') {
                     <!-- Medicamentos -->
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-4 col-12 animate-fade-in">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Medicamento / Producto</mat-label>
                             <input matInput formControlName="product" [matAutocomplete]="autoProduct"
@@ -80,7 +92,8 @@
                         </mat-form-field>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <!-- Lotes -->
+                    <div class="col-md-4 col-12 animate-fade-in">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Lote Asignado</mat-label>
                             <input matInput formControlName="batch" [matAutocomplete]="autoBatch"
@@ -96,6 +109,89 @@
                             </mat-autocomplete>
                         </mat-form-field>
                     </div>
+                    }
+                    }
+
+                    @if (selectedType === 'inventory') {
+                    <!-- Estado del Medicamento -->
+                    <div class="col-md-4 col-sm-6 col-12 animate-fade-in">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Estado del Medicamento</mat-label>
+                            <mat-select formControlName="status">
+                                <mat-option value="">Todos</mat-option>
+                                <mat-option value="vigente">Vigente</mat-option>
+                                <mat-option value="vencido">Vencido</mat-option>
+                                <mat-option value="retirado">Retirado</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Unidades -->
+                    <div class="col-md-4 col-sm-6 col-12 animate-fade-in">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Unidades</mat-label>
+                            <mat-select formControlName="units">
+                                <mat-option value="all">Todo</mat-option>
+                                <mat-option value="available">Con unidades disponibles</mat-option>
+                                <mat-option value="unavailable">Sin unidades disponibles</mat-option>
+                                <mat-option value="some_but_not_available">Con unidades pero sin
+                                    disponibles</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Medicamentos -->
+                    <div class="col-md-4 col-12 animate-fade-in">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Medicamento / Producto</mat-label>
+                            <input matInput formControlName="product" [matAutocomplete]="autoProduct"
+                                (keyup)="findProducts()">
+                            <mat-autocomplete #autoProduct="matAutocomplete" [displayWith]="displayProduct"
+                                (optionSelected)="onProductSelected($event)">
+                                @for (product of productsFinded; track product.id) {
+                                <mat-option [value]="product">
+                                    <span class="fw-medium">{{product.name}}</span> ({{product.code}})
+                                </mat-option>
+                                }
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Lotes -->
+                    <div class="col-md-4 col-12 animate-fade-in">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Lote Asignado</mat-label>
+                            <input matInput formControlName="batch" [matAutocomplete]="autoBatch"
+                                (keyup)="findBatches()">
+                            <mat-autocomplete #autoBatch="matAutocomplete" [displayWith]="displayBatch"
+                                (optionSelected)="onBatchSelected($event)">
+                                @for (batch of batchesFinded; track batch.id) {
+                                <mat-option [value]="batch">
+                                    <span class="fw-medium">{{batch.code}}</span>
+                                    @if (batch.details) { <small>- {{batch.details}}</small> }
+                                </mat-option>
+                                }
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Tercero (quien hizo el ingreso) -->
+                    <div class="col-md-4 col-12 animate-fade-in">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Tercero (Ingreso)</mat-label>
+                            <input matInput formControlName="documentNumber" [matAutocomplete]="auto"
+                                (keyup)="findSuppliers()" maxlength="20">
+                            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSupplierSelected($event)">
+                                @for (option of suppliersFinded; track option.id) {
+                                <mat-option [value]="option.documentNumber">
+                                    <span class="fw-medium">{{option.documentNumber}}</span> -
+                                    <small>{{option.fullName}}</small>
+                                </mat-option>
+                                }
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    }
                 </div>
             </form>
         </mat-card-content>

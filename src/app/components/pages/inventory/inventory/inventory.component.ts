@@ -54,7 +54,7 @@ export class InventoryComponent {
   searchValue = "";
   url = '/prescription-inventory';
   pageMode = signal<string>('special');
-
+  rId: number = Number.parseInt(localStorage.getItem('rId') || '0');
   inventoryColumns: ColumnTableInterface[] = [
     { key: 'id', label: 'ID', isSortable: true },
     { key: 'product', label: 'Producto', isSortable: true },
@@ -96,6 +96,60 @@ export class InventoryComponent {
     }
   }
 
+  remove(row: PrescriptionInventoryTableInterface) {
+    this.alertService.modalWithInput.fire({
+      icon: "warning",
+      title: '¿Retirar medicamento?',
+      text: 'Esta acción no se puede deshacer. Escriba una observación:',
+      input: 'textarea',
+      inputPlaceholder: 'Escriba una observación...',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      confirmButtonColor: '#3d5a80',
+      cancelButtonColor: '#ac0505',
+      cancelButtonText: 'No',
+      inputValidator: (value) => {
+        if (!value) {
+          return '¡Debes escribir una observación!';
+        }
+        return null;
+      }
+    }).then((result: any) => {
+      if (result.isConfirmed) {
+        this.restService.putRequest(this.url + "/expired/drawal/" + row.id, { observation: result.value }).subscribe({
+          next: () => {
+            this.alertService.infoMixin.fire({
+              icon: 'success',
+              title: "Retirado correctamente",
+            });
+            this.getData(
+              this.dataValue.pageable.pageNumber,
+              this.dataValue.pageable.pageSize,
+              this.searchValue,
+              this.pageMode()
+            );
+          },
+          error: (error) => {
+            this.alertService.infoMixin.fire({
+              icon: 'error',
+              title: error.error.message,
+            });
+          }
+        });
+      } else {
+        this.alertService.infoMixin.fire({
+          icon: 'info',
+          title: "Operación cancelada",
+        });
+      }
+    });
+  }
+
+  tableOptions: TableOption[] = [
+    { icon: 'delete', label: 'Retirar este medicamento', identifier: 'remove' }
+  ];
+
+
   tableAction(event: { type: string, row: any }) {
     switch (event.type) {
       case 'edit':
@@ -106,6 +160,9 @@ export class InventoryComponent {
         break;
       case 'changeStatus':
         this.changeStatus(event.row);
+        break;
+      case 'remove':
+        this.remove(event.row);
         break;
     }
   }

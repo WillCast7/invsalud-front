@@ -17,7 +17,8 @@ export interface PrescriptionInventoryInterface {
     withdrawalBy: number,
     withdrawnAt: Date,
     withdrawalCode: string,
-    withdrawalType: string
+    withdrawalType: string,
+    withdrawalObservation: string
 }
 
 export const PrescriptionInventoryExample: PrescriptionInventoryInterface = {
@@ -35,5 +36,6 @@ export const PrescriptionInventoryExample: PrescriptionInventoryInterface = {
     withdrawalBy: 0,
     withdrawnAt: new Date(),
     withdrawalCode: '',
-    withdrawalType: ''
+    withdrawalType: '',
+    withdrawalObservation: ''
 }

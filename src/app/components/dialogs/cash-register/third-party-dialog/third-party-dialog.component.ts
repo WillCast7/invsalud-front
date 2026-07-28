@@ -120,7 +120,7 @@ export class ThirdPartyDialogComponent {
 
       this.restService.postRequest("/thirdparty", this.form.value).subscribe({
         next: (objData) => {
-           this.dialogRef.close({
+          this.dialogRef.close({
             success: true,
             message: 'Tercero registrado exitosamente'
           });
@@ -143,9 +143,9 @@ export class ThirdPartyDialogComponent {
 
   onCancel() {
     this.dialogRef.close({
-            success: false,
-            message: 'Operación cancelada'
-          });
+      success: false,
+      message: 'Operación cancelada'
+    });
   }
 
   getData() {
@@ -221,7 +221,7 @@ export class ThirdPartyDialogComponent {
   }
 
   getAllProducts() {
-    this.restService.getRequest('/products', { page: 0, size: 1000 }).subscribe({
+    this.restService.getRequest('/products', { page: 0, size: 1000, searchValue: "", isPublicHealth: false }).subscribe({
       next: (res) => {
         if (res.pageable && res.pageable.content) {
           this.productsList = res.pageable.content;

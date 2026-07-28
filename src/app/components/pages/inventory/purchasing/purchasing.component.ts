@@ -58,7 +58,7 @@ export class PurchasingComponent {
     { key: 'id', label: 'ID', isSortable: true },
     { key: 'purchasedCode', label: 'Cod. Entrada', isSortable: true },
     { key: 'thirdParty', label: 'Tercero', isSortable: true },
-    { key: 'total', label: 'Total', isSortable: true },
+    { key: 'total', label: 'Total', isSortable: true, pipe: 'currency' },
     { key: 'isActive', label: 'Estado', isSortable: false, pipe: 'status' }
   ];
 
@@ -66,6 +66,7 @@ export class PurchasingComponent {
     { key: 'id', label: 'ID', isSortable: true },
     { key: 'purchasedCode', label: 'Cod. Entrada', isSortable: true },
     { key: 'thirdParty', label: 'Tercero', isSortable: true },
+    { key: 'total', label: 'Total', isSortable: true, pipe: 'currency' },
     { key: 'isActive', label: 'Estado', isSortable: false, pipe: 'status' }
   ];
 
@@ -73,7 +74,7 @@ export class PurchasingComponent {
     { key: 'id', label: 'ID', isSortable: true },
     { key: 'purchasedCode', label: 'Cod. Entrada', isSortable: true },
     { key: 'thirdParty', label: 'Tercero', isSortable: true },
-    { key: 'total', label: 'Total', isSortable: true },
+    { key: 'total', label: 'Total', isSortable: true, pipe: 'currency' },
     { key: 'createdAt', label: 'Fecha', isSortable: true, pipe: 'date' },
     { key: 'isActive', label: 'Estado', isSortable: false, pipe: 'status' }
   ];

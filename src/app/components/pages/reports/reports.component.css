@@ -1,3 +1,8 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
 .reports-container {
   background-color: #f8fafc;
   min-height: calc(100vh - 64px - 4rem);
@@ -5,4 +10,23 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.filter-card {
+  width: 100%;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

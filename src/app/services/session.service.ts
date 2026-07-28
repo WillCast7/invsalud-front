@@ -19,29 +19,32 @@ export class SessionService {
     //private readonly webSocket: WebSocketService,
     //private readonly notificationStoreService: NotificationStoreService
   ) { }
- 
+
   public menuSubject: BehaviorSubject<MenuItemInterface[]> = new BehaviorSubject<MenuItemInterface[]>([]);
 
-    // Almacenar sesión, incluyendo el JWT, nombre de usuario y menú en localStorage
-    storeSession(authBody: AuthInterface) {
-      const newMenu = this.menuService.groupByFather(authBody.menus);  // Agrupar menú por padre
-      localStorage.setItem('isLogged', 'true');
-      localStorage.setItem('currentUser', authBody.username);
-      localStorage.setItem('namesUser', authBody.names);
-      localStorage.setItem('menu', JSON.stringify(newMenu));
-      localStorage.setItem('jwt', authBody.jwt);  // Almacenar JWT token en localStorage
+  // Almacenar sesión, incluyendo el JWT, nombre de usuario y menú en localStorage
+  storeSession(authBody: AuthInterface) {
+    console.log("authBody");
+    console.log(authBody);
+    const newMenu = this.menuService.groupByFather(authBody.menus);  // Agrupar menú por padre
+    localStorage.setItem('isLogged', 'true');
+    localStorage.setItem('currentUser', authBody.username);
+    localStorage.setItem('namesUser', authBody.names);
+    localStorage.setItem('menu', JSON.stringify(newMenu));
+    localStorage.setItem('jwt', authBody.jwt);  // Almacenar JWT token en localStorage
+    localStorage.setItem('rId', authBody.rid.toString());
 
-      this.currentUserNames.set(authBody.names);
-      
-      //TODO notificacionesthis.notificationStoreService.setInitialNotifications(authBody.notifications);
+    this.currentUserNames.set(authBody.names);
 
-      // localStorage.setItem('notifications', JSON.stringify(authBody.notifications));  // Almacenar notificaciones token en localStorage
+    //TODO notificacionesthis.notificationStoreService.setInitialNotifications(authBody.notifications);
 
-      //this.webSocket.connect(authBody.jwt);
-      
-      // Guardar el menú también en el menúSubject para que esté disponible globalmente
-      this.menuSubject.next(newMenu);
-    }
+    // localStorage.setItem('notifications', JSON.stringify(authBody.notifications));  // Almacenar notificaciones token en localStorage
+
+    //this.webSocket.connect(authBody.jwt);
+
+    // Guardar el menú también en el menúSubject para que esté disponible globalmente
+    this.menuSubject.next(newMenu);
+  }
 
   // Getter para obtener el menú
   get menu(): MenuItemInterface[] {
@@ -49,7 +52,7 @@ export class SessionService {
       // Si el menú no está cargado, lo obtenemos del localStorage
       const storedMenu = localStorage.getItem('menu');
       if (storedMenu) {
-        this.menuSubject.next(JSON.parse(storedMenu)); 
+        this.menuSubject.next(JSON.parse(storedMenu));
       }
 
     }
@@ -117,6 +120,10 @@ export class SessionService {
     if (!token) return false;
     const decoded: any = this.decodeJwt(token);
     return decoded.roles.includes(role);
+  }
+
+  get roleId(): number {
+    return Number(localStorage.getItem('rId') || '0');
   }
 
 }

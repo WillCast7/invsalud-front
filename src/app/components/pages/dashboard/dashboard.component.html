@@ -1,3 +1,4 @@
+@if (showFullDashboard) {
 <div class="dashboard-wrapper">
   <!-- Left Column: Tenant Logo Sidebar -->
   <div class="logo-sidebar">
@@ -250,3 +251,57 @@
 
   </div>
 </div>
+} @else {
+<div class="dashboard-wrapper role-restricted">
+  <div class="image-half">
+    <img src="assets/background.png" alt="Medicos" class="doctors-bg" />
+  </div>
+  <div class="menu-half">
+    <div class="restricted-container">
+      <!-- Tenant Logo Container (Clean Header) -->
+      <div class="tenant-logo-container restricted-logo">
+        @if (logoUrl) {
+        <img [src]="logoUrl" alt="Logo" class="tenant-logo-image" />
+        } @else {
+        <div class="tenant-logo-placeholder">
+          <mat-icon class="default-company-icon">storefront</mat-icon>
+          <span class="company-name-fallback">INVSALUD</span>
+        </div>
+        }
+      </div>
+
+      <h2 class="welcome-title">Bienvenido</h2>
+      <p class="welcome-subtitle">Seleccione un módulo para comenzar</p>
+
+      <div class="actions-row restricted-actions">
+        @for (item of menu; track item.father) {
+        <button type="button" [class]="'shadow-md action-card-btn ' + getIconClass(item.nameFather)"
+          [matMenuTriggerFor]="subMenu">
+          <div class="action-card-content">
+            <div class="action-icon-wrapper" [class]="getIconClass(item.nameFather)">
+              <mat-icon class="action-icon">{{ item.children[0]?.icon || 'dashboard' }}</mat-icon>
+            </div>
+            <div class="action-text-wrapper">
+              <span class="action-card-title">{{ item.nameFather }}</span>
+              <span class="action-card-desc">{{ getMenuDescription(item.nameFather) }}</span>
+            </div>
+          </div>
+        </button>
+
+        <mat-menu #subMenu="matMenu">
+          @for (child of item.children; track child.id) {
+          <button mat-menu-item [routerLink]="child.route">
+            <span>{{ child.name }}</span>
+          </button>
+          }
+        </mat-menu>
+        } @empty {
+        <div class="no-menu-card">
+          <p class="text-center text-muted m-0">No hay opciones de menú disponibles.</p>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+}

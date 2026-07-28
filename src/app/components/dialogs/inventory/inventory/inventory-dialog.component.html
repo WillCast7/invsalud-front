@@ -11,6 +11,15 @@
         <mat-divider></mat-divider>
       </div>
 
+      @if (inventory.id) {
+      <div class="col-md-6 mb-3">
+        <div class="detail-item">
+          <label>ID</label>
+          <p>{{ inventory.id }}</p>
+        </div>
+      </div>
+      }
+
       <div class="col-md-6 mb-3">
         <div class="detail-item">
           <label>Producto</label>
@@ -59,6 +68,58 @@
           <p>{{ inventory.expirationDate | date:'shortDate' }}</p>
         </div>
       </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="detail-item">
+          <label>Estado</label>
+          <p>{{ inventory.isActive ? 'Activo' : 'Inactivo' }}</p>
+        </div>
+      </div>
+
+      @if (inventory.createdAt) {
+      <div class="col-md-6 mb-3">
+        <div class="detail-item">
+          <label>Fecha de Creación</label>
+          <p>{{ inventory.createdAt | date:'short' }}</p>
+        </div>
+      </div>
+      }
+
+      @if (inventory.withdrawnAt) {
+      <div class="col-md-6 mb-3">
+        <div class="detail-item">
+          <label>Fecha de Retiro</label>
+          <p>{{ inventory.withdrawnAt | date:'short' }}</p>
+        </div>
+      </div>
+      }
+
+      @if (inventory.withdrawalCode) {
+      <div class="col-md-6 mb-3">
+        <div class="detail-item">
+          <label>Código de Retiro</label>
+          <p>{{ inventory.withdrawalCode }}</p>
+        </div>
+      </div>
+      }
+
+      @if (inventory.withdrawalType) {
+      <div class="col-md-6 mb-3">
+        <div class="detail-item">
+          <label>Tipo de Retiro</label>
+          <p>{{ inventory.withdrawalType }}</p>
+        </div>
+      </div>
+      }
+
+      @if (inventory.withdrawalObservation) {
+      <div class="col-12 mb-3">
+        <div class="detail-item">
+          <label>Observación de Retiro</label>
+          <p>{{ inventory.withdrawalObservation }}</p>
+        </div>
+      </div>
+      }
     </div>
   </div>
 </mat-dialog-content>

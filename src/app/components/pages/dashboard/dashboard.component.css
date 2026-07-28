@@ -769,3 +769,117 @@
 .dashboard-content::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Role restricted layout styles */
+.dashboard-wrapper.role-restricted {
+  height: calc(100vh - 64px);
+  max-height: calc(100vh - 64px);
+  background: #f8fafc;
+  display: flex;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  gap: 0;
+}
+
+.image-half {
+  flex: 0 0 50%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.doctors-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left center;
+  display: block;
+}
+
+.menu-half {
+  flex: 0 0 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  box-sizing: border-box;
+  background: #ffffff;
+  overflow-y: auto;
+}
+
+.restricted-container {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+}
+
+.restricted-logo {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 1rem !important;
+}
+
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.welcome-subtitle {
+  font-size: 1rem;
+  color: #64748b;
+  margin: -0.5rem 0 1rem 0;
+}
+
+.restricted-actions {
+  grid-template-columns: repeat(2, 1fr) !important;
+  width: 100%;
+  gap: 1.25rem;
+}
+
+.restricted-actions .action-card-btn {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+}
+
+.restricted-actions .action-card-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 900px) {
+  .dashboard-wrapper.role-restricted {
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: none;
+  }
+
+  .image-half {
+    flex: 0 0 40vh;
+    width: 100%;
+  }
+
+  .menu-half {
+    flex: none;
+    width: 100%;
+    padding: 2rem 1.5rem;
+  }
+
+  .welcome-title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .restricted-actions {
+    grid-template-columns: 1fr !important;
+  }
+}

@@ -5,7 +5,7 @@
     </h2>
   </div>
   <div class="col-6 d-flex justify-content-end pr-3">
-    @if (!isPublicHealth && grandTotal > 0 ) {
+    @if (grandTotal > 0 ) {
     <span class="fs-5 fw-bold text-success me-5 my-3">Total: {{ grandTotal | currency:'$':'symbol':'1.0-0' }}</span>
     }
   </div>
@@ -71,7 +71,7 @@
       </div>
     </div>
 
-    @if (!isPublicHealth && objData.total > 0) {
+    @if (objData.total > 0) {
     <div class="row mb-3">
       <div class="col-12">
         <div
@@ -134,24 +134,24 @@
             </div>
 
             <!-- Precios (solo para Control Especial) -->
-            @if (!isPublicHealth) {
             <div class="col-md-3">
               <div class="d-flex flex-column gap-1">
                 <div>
                   <label class="text-muted small d-block">Precio Compra</label>
                   <span class="fw-medium">{{ item.priceUnit | currency }}</span>
                 </div>
+                @if (!isPublicHealth) {
                 <div>
                   <label class="text-muted small d-block">Precio Venta</label>
                   <span class="fw-medium">{{ item.sellPrice | currency }}</span>
                 </div>
+                }
                 <div>
                   <label class="text-muted small d-block">Subtotal</label>
                   <span class="fw-bold text-success">{{ item.priceTotal | currency }}</span>
                 </div>
               </div>
             </div>
-            }
 
             <!-- Fecha vencimiento -->
             <div class="col-12 mt-2">
@@ -315,7 +315,6 @@
               </div>
 
               <!-- Precios y Subtotal: Solo si NO es Salud Publica -->
-              @if (!isPublicHealth) {
               <div class="col-md-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Precio Unidad (Compra)</mat-label>
@@ -324,6 +323,7 @@
                 </mat-form-field>
               </div>
 
+              @if (!isPublicHealth) {
               <div class="col-md-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Precio de Venta</mat-label>
@@ -335,6 +335,7 @@
                   }
                 </mat-form-field>
               </div>
+              }
 
               <div class="col-md-3">
                 <mat-form-field appearance="outline" class="w-100 bg-light rounded">
@@ -343,7 +344,6 @@
                   <span matTextPrefix>$&nbsp;</span>
                 </mat-form-field>
               </div>
-              }
 
               <!-- Fecha Expiracion -->
               <div [class]="isPublicHealth ? 'col-md-6' : 'col-md-4'">
@@ -380,16 +380,13 @@
               <span class="fw-medium text-truncate me-2" [title]="d.product?.name">
                 {{ d.units || 1 }}x {{ d.product?.name || 'Sin seleccionar' }}
               </span>
-              @if (!isPublicHealth) {
               <span class="text-nowrap">{{ (d.priceTotal || 0) | currency:'$':'symbol':'1.0-0' }}</span>
-              }
             </div>
             } @empty {
             <span class="fw-medium">Sin seleccionar</span>
             }
           </div>
 
-          @if (!isPublicHealth) {
           <mat-divider class="my-3"></mat-divider>
 
           <div class="row mx-0 mb-2">
@@ -398,7 +395,7 @@
               <span class="fs-5 fw-bold text-success">{{ grandTotal | currency:'$ ':'symbol':'1.0-0' }}</span>
             </div>
           </div>
-          }
+
         </div>
       </div>
     </div>

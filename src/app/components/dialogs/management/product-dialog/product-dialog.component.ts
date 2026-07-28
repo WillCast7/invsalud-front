@@ -52,20 +52,19 @@ export class ProductDialogComponent {
   productForm: FormGroup = new FormGroup({
     id: new FormControl(null),
     name: new FormControl('', Validators.required),
-    code: new FormControl('', Validators.required),
     concentration: new FormControl(''),
     presentation: new FormControl(''),
     pharmaceuticalForm: new FormControl(''),
     details: new FormControl(''),
     isPublicHealth: new FormControl(false),
     isActive: new FormControl(true),
-    
+
     // Subfields for Create Mode
     concNumber1: new FormControl(''),
     concUnit1: new FormControl(''),
     concNumber2: new FormControl(''),
     concUnit2: new FormControl(''),
-    
+
     presType: new FormControl(''),
     presQuantity: new FormControl(''),
     presForm: new FormControl('')
@@ -81,7 +80,7 @@ export class ProductDialogComponent {
       this.productForm.get('concNumber1')?.setValidators([Validators.required]);
       this.productForm.get('concUnit1')?.setValidators([Validators.required]);
       this.productForm.get('presQuantity')?.setValidators([Validators.required]);
-      
+
       this.productForm.get('concNumber1')?.updateValueAndValidity();
       this.productForm.get('concUnit1')?.updateValueAndValidity();
       this.productForm.get('presQuantity')?.updateValueAndValidity();
@@ -124,7 +123,6 @@ export class ProductDialogComponent {
               this.productForm.patchValue({
                 id: this.productSearched?.id,
                 name: this.productSearched?.name,
-                code: this.productSearched?.code,
                 type: this.productSearched?.type,
                 concentration: this.productSearched?.concentration,
                 presentation: this.productSearched?.presentation,
@@ -152,7 +150,7 @@ export class ProductDialogComponent {
   onSave() {
     if (this.productForm.valid) {
       let payload = { ...this.productForm.value };
-      
+
       if (this.data.mode === 'create') {
         const num1 = this.productForm.get('concNumber1')?.value;
         const unit1 = this.productForm.get('concUnit1')?.value;
@@ -210,8 +208,8 @@ export class ProductDialogComponent {
 
   onCancel() {
     this.dialogRef.close({
-            success: false,
-            message: 'Operación cancelada'
-          });
+      success: false,
+      message: 'Operación cancelada'
+    });
   }
 }

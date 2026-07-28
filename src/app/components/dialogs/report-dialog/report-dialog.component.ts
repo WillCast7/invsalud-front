@@ -49,6 +49,8 @@ export class ReportDialogComponent {
     if (rawFilters.startDate) filters.startDate = this.formatDate(rawFilters.startDate);
     if (rawFilters.endDate) filters.endDate = this.formatDate(rawFilters.endDate);
     if (rawFilters.documentNumber) filters.documentNumber = rawFilters.documentNumber;
+    if (rawFilters.status) filters.status = rawFilters.status;
+    if (rawFilters.units) filters.units = rawFilters.units;
 
     if (rawFilters.product) {
       filters.product = typeof rawFilters.product === 'object' ? rawFilters.product.name : rawFilters.product;
@@ -90,6 +92,8 @@ export class ReportDialogComponent {
     if (rawFilters.startDate) filters.startDate = this.formatDate(rawFilters.startDate);
     if (rawFilters.endDate) filters.endDate = this.formatDate(rawFilters.endDate);
     if (rawFilters.documentNumber) filters.documentNumber = rawFilters.documentNumber;
+    if (rawFilters.status) filters.status = rawFilters.status;
+    if (rawFilters.units) filters.units = rawFilters.units;
 
     if (rawFilters.product) {
       filters.product = typeof rawFilters.product === 'object' ? rawFilters.product.name : rawFilters.product;

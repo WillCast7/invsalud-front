@@ -85,7 +85,11 @@ export class SaleDialogComponent implements OnInit {
       this.details.clear();
       this.authorizedProducts = [];
       const thirdPartyId = supplier.id || supplier;
-      this.loadAuthorizedProducts(thirdPartyId);
+      if (this.isPublicHealth) {
+        this.loadPublicHealthProducts();
+      } else {
+        this.loadAuthorizedProducts(thirdPartyId);
+      }
     });
   }
 
@@ -194,6 +198,22 @@ export class SaleDialogComponent implements OnInit {
         this.alertService.infoMixin.fire({
           icon: 'error',
           title: err.error?.message || 'Error al guardar la salida'
+        });
+      }
+    });
+  }
+
+  loadPublicHealthProducts() {
+    this.restService.getRequest('/prescription-inventory/public-health').subscribe({
+      next: (res) => {
+        let products: PrescriptionInventoryInterface[] = res.data || res;
+        if (!Array.isArray(products)) products = [];
+        this.authorizedProducts = products;
+      },
+      error: (err) => {
+        this.alertService.infoMixin.fire({
+          icon: 'error',
+          title: err.message || 'Error al cargar productos de salud pública'
         });
       }
     });

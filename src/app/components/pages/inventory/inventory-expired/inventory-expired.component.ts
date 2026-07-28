@@ -73,14 +73,15 @@ export class InventoryExpiredComponent {
 
   buttonAction(event: { type: string, row: any }) {
     switch (event.type) {
-      case 'createInventory':
-        this.openModalInventory('create');
-        break;
       case 'search':
         this.search(event.row);
         break;
-      case 'expired':
       case 'removed':
+        this.pageMode.set(event.type);
+        this.searchValue = '';
+        this.getData(0, 10, this.searchValue, event.type);
+        break;
+      case 'expired':
         this.pageMode.set(event.type);
         this.searchValue = '';
         this.getData(0, 10, this.searchValue, event.type);
@@ -91,31 +92,44 @@ export class InventoryExpiredComponent {
     }
   }
 
+
   tableAction(event: { type: string, row: PrescriptionInventoryTableInterface }) {
     switch (event.type) {
       case 'remove':
         this.remove(event.row);
         break;
+
+      case 'view':
+        this.openModalInventory('view', event.row);
+        break;
     }
   }
 
   remove(row: PrescriptionInventoryTableInterface) {
-    this.alertService.modal.fire({
+    this.alertService.modalWithInput.fire({
       icon: "warning",
-      title: 'Retirar medicamento?',
-      text: 'Esta accion no se puede deshacer',
+      title: '¿Retirar medicamento?',
+      text: 'Esta acción no se puede deshacer. Escriba una observación:',
+      input: 'textarea',
+      inputPlaceholder: 'Escriba una observación...',
       showCancelButton: true,
-      confirmButtonText: 'Si',
+      confirmButtonText: 'Sí',
       confirmButtonColor: '#3d5a80',
       cancelButtonColor: '#ac0505',
-      cancelButtonText: 'No'
+      cancelButtonText: 'No',
+      inputValidator: (value) => {
+        if (!value) {
+          return '¡Debes escribir una observación!';
+        }
+        return null;
+      }
     }).then((result: any) => {
       if (result.isConfirmed) {
-        this.restService.putRequest(this.url + "/drawal/" + row.id, {}).subscribe({
+        this.restService.putRequest(this.url + "/drawal/" + row.id, { observation: result.value }).subscribe({
           next: () => {
             this.alertService.infoMixin.fire({
               icon: 'success',
-              title: "Eliminado correctamente",
+              title: "Retirado correctamente",
             });
             this.getData(
               this.dataValue.pageable.pageNumber,
@@ -130,6 +144,11 @@ export class InventoryExpiredComponent {
               title: error.error.message,
             });
           }
+        });
+      } else {
+        this.alertService.infoMixin.fire({
+          icon: 'info',
+          title: "Operación cancelada",
         });
       }
     });

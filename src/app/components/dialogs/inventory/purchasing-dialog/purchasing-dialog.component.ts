@@ -23,6 +23,7 @@ import { greaterThanValidator } from '../../../../shared/validators/custom-valid
 import { ProductDialogComponent } from '../../management/product-dialog/product-dialog.component';
 import { BatchDialogComponent } from '../../management/batch-dialog/batch-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
+import { SizemodalInitializer } from '../../../../models/modal/sizemodal-interface';
 
 export class ParentErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -95,6 +96,7 @@ export class PurchasingDialogComponent implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { mode: string, type: string, data?: any }) {
     this.isPublicHealth = this.data.type === 'public';
+    this.today.setMonth(this.today.getMonth() + 5);
 
     if (this.data.mode === 'view') {
       this.title.set(this.isPublicHealth ? 'Detalle de Ingreso (Salud Pública)' : 'Detalle de Compra (Control Especial)');
@@ -158,7 +160,7 @@ export class PurchasingDialogComponent implements OnInit {
       product: [null, Validators.required],
       batch: [null, Validators.required],
       observations: [null],
-      priceUnit: [0, this.isPublicHealth ? [] : [Validators.required, Validators.min(0)]],
+      priceUnit: [0, this.isPublicHealth ? [Validators.min(0)] : [Validators.required, Validators.min(0)]],
       units: [1, [Validators.required, Validators.min(1)]],
       sellPrice: [0, this.isPublicHealth ? [] : [Validators.required, Validators.min(0)]],
       expirationDate: [null, Validators.required],
@@ -176,8 +178,6 @@ export class PurchasingDialogComponent implements OnInit {
 
   setupTotalCalculation() {
     this.mainForm.valueChanges.subscribe(value => {
-      if (this.isPublicHealth) return;
-
       const detailsArray = this.details;
       for (let i = 0; i < detailsArray.length; i++) {
         const group = detailsArray.at(i) as FormGroup;
@@ -192,7 +192,6 @@ export class PurchasingDialogComponent implements OnInit {
   }
 
   get grandTotal() {
-    if (this.isPublicHealth) return 0;
     return this.details.controls.reduce((sum, control) => {
       return sum + (control.get('priceTotal')?.value || 0);
     }, 0);
@@ -336,7 +335,7 @@ export class PurchasingDialogComponent implements OnInit {
           if (result.isConfirmed) {
             if (isProductString) {
               this.dialog.open(ProductDialogComponent, {
-                width: '90vh',
+                ...SizemodalInitializer,
                 data: { mode: 'create' }
               });
             } else {
@@ -349,10 +348,6 @@ export class PurchasingDialogComponent implements OnInit {
         });
         return;
       }
-
-      console.log("Entro aqui")
-
-      console.log(this.isPublicHealth)
 
       if (!this.isPublicHealth) {
         if (detailsArray[i].get('priceUnit')?.value < 0 || detailsArray[i].get('sellPrice')?.value < 0) {
@@ -373,7 +368,6 @@ export class PurchasingDialogComponent implements OnInit {
           return;
         }
       }
-
     }
 
 
@@ -386,9 +380,6 @@ export class PurchasingDialogComponent implements OnInit {
         });
       }
 
-      console.log("Entro aqui 4")
-      console.log(this.mainForm.getError)
-      console.log(this.mainForm)
       if (this.mainForm.get('providerData')?.invalid) {
         this.alertService.infoMixin.fire({
           icon: 'warning',
@@ -414,8 +405,6 @@ export class PurchasingDialogComponent implements OnInit {
     const value = this.mainForm.value;
     const typeLabel = this.isPublicHealth ? 'public' : 'special';
 
-    console.log("Entro aqui 2")
-
     const payload = {
       thirdParty: newSupplier,
       type: typeLabel,
@@ -424,7 +413,7 @@ export class PurchasingDialogComponent implements OnInit {
       items: value.details.map((d: any) => ({
         product: d.product,
         batch: d.batch,
-        priceUnit: this.isPublicHealth ? 0 : d.priceUnit,
+        priceUnit: d.priceUnit,
         sellPrice: this.isPublicHealth ? 0 : d.sellPrice,
         units: d.units,
         expirationDate: d.expirationDate,
