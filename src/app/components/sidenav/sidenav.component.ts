@@ -21,6 +21,7 @@ import { SessionService } from '../../services/session.service';
 import { MenuItemInterface } from '../../models/menuItem-interface';
 import { NotificationInterface } from '../../models/notifications/notification-interface';
 import { NotificationStoreService } from '../../services/notification-store.service';
+import { AiChatComponent } from '../ai-chat/ai-chat.component';
 
 @Component({
   selector: 'app-sidenav',
@@ -29,6 +30,7 @@ import { NotificationStoreService } from '../../services/notification-store.serv
     CommonModule,
     RouterOutlet,
     LoginComponent,
+    AiChatComponent,
     MatButtonModule,
     MatSelectModule,
     MatFormFieldModule,

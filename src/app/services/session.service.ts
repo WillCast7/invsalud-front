@@ -6,6 +6,7 @@ import { MenuItemInterface } from '../models/menuItem-interface';
 import { WebSocketService } from './websocket-service';
 import { AuthInterface } from '../models/auth-interface';
 import { NotificationStoreService } from './notification-store.service';
+import { AiChatService } from './ai-chat.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class SessionService {
   constructor(
     private readonly router: Router,
     private readonly menuService: MenuService,
+    private readonly aiChatService: AiChatService
     //private readonly webSocket: WebSocketService,
     //private readonly notificationStoreService: NotificationStoreService
   ) { }
@@ -36,11 +38,8 @@ export class SessionService {
 
     this.currentUserNames.set(authBody.names);
 
-    //TODO notificacionesthis.notificationStoreService.setInitialNotifications(authBody.notifications);
-
-    // localStorage.setItem('notifications', JSON.stringify(authBody.notifications));  // Almacenar notificaciones token en localStorage
-
-    //this.webSocket.connect(authBody.jwt);
+    // Iniciar una conversación limpia para la nueva sesión
+    this.aiChatService.clearSessionChat();
 
     // Guardar el menú también en el menúSubject para que esté disponible globalmente
     this.menuSubject.next(newMenu);
@@ -72,11 +71,13 @@ export class SessionService {
     return token != null && !this.isTokenExpired();
   }
 
-  // Cerrar sesión (limpiar localStorage)
+  // Cerrar sesión (limpiar localStorage y sessionStorage)
   logOut(): void {
     //this.webSocket.disconnect();
     this.currentUserNames.set('');
     localStorage.clear();
+    sessionStorage.clear();
+    this.aiChatService.clearSessionChat();
     this.router.navigate(['/']);
   }
 

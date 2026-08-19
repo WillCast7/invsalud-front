@@ -1,0 +1,179 @@
+<div class="rag-dialog-container p-3">
+  <!-- Dialog Header -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <div class="icon-badge">
+        <mat-icon class="text-primary">{{ data.mode === 'view' ? 'auto_stories' : (data.mode === 'replace' ? 'history' : 'note_add') }}</mat-icon>
+      </div>
+      <div>
+        <h4 class="m-0 fw-bold title-text">
+          @if (data.mode === 'create') { Agregar Documento RAG }
+          @else if (data.mode === 'replace') { Reemplazar / Versionar Documento }
+          @else { Fragmentos del Documento: {{ data.document?.documentTitle }} }
+        </h4>
+        <small class="text-muted">
+          @if (data.mode === 'create') { Registre información de manuales, normatividad o guías operativas para el motor de IA. }
+          @else if (data.mode === 'replace') { Cargue una versión actualizada para refrescar el conocimiento vectorial RAG. }
+          @else { Inspeccione los chunks y contenido almacenado en la base de datos vectorial. }
+        </small>
+      </div>
+    </div>
+    <button mat-icon-button (click)="onCancel()" title="Cerrar modal">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Mode Create & Replace Form -->
+  @if (data.mode === 'create' || data.mode === 'replace') {
+    <form [formGroup]="ragForm" (ngSubmit)="onSubmit()" class="mt-3">
+      <div class="row g-3">
+        <!-- Title -->
+        <div class="col-md-8">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Título del Documento</mat-label>
+            <input matInput formControlName="documentTitle" placeholder="Ej: Manual de Usuario - Módulo Inventario" />
+            <mat-icon matSuffix class="text-secondary">description</mat-icon>
+            @if (ragForm.get('documentTitle')?.hasError('required')) {
+              <mat-error>El título es obligatorio</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Version -->
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Versión</mat-label>
+            <input matInput formControlName="version" placeholder="1.0" />
+            <mat-icon matSuffix class="text-secondary">new_releases</mat-icon>
+            @if (ragForm.get('version')?.hasError('required')) {
+              <mat-error>La versión es requerida</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Module Select -->
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Módulo / Categoría</mat-label>
+            <mat-select formControlName="moduleCode">
+              @for (mod of modulesList; track mod.code) {
+                <mat-option [value]="mod.code">{{ mod.label }}</mat-option>
+              }
+            </mat-select>
+            <mat-icon matSuffix class="text-secondary">category</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- File Type Select -->
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Tipo de Archivo</mat-label>
+            <mat-select formControlName="fileType">
+              @for (ft of fileTypes; track ft.code) {
+                <mat-option [value]="ft.code">{{ ft.label }}</mat-option>
+              }
+            </mat-select>
+            <mat-icon matSuffix class="text-secondary">insert_drive_file</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- File Upload Area -->
+        <div class="col-12">
+          <div class="file-upload-box text-center p-3 border rounded bg-light mb-2">
+            <mat-icon class="upload-icon text-primary fs-1">cloud_upload</mat-icon>
+            <p class="m-0 fw-semibold">Cargar archivo de texto / documento</p>
+            <small class="text-muted d-block mb-2">Formatos aceptados: .txt, .pdf, .md, .docx, .json</small>
+            <input type="file" #fileInput (change)="onFileSelected($event)" class="d-none" accept=".txt,.pdf,.md,.docx,.json" />
+            <button type="button" mat-stroked-button color="primary" (click)="fileInput.click()">
+              <mat-icon>attach_file</mat-icon> Seleccionar Archivo
+            </button>
+            @if (fileName) {
+              <div class="mt-2 text-success fw-medium">
+                <mat-icon class="align-middle fs-6 me-1">check_circle</mat-icon> {{ fileName }}
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="col-12">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Contenido del Documento (Instrucciones / Texto a Vectorizar)</mat-label>
+            <textarea matInput formControlName="content" rows="6" placeholder="Pegue aquí las instrucciones paso a paso o el texto completo..."></textarea>
+            @if (ragForm.get('content')?.hasError('required')) {
+              <mat-error>El contenido del documento no puede estar vacío</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Metadata / Description -->
+        <div class="col-12">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Metadatos / Notas adicionales (Opcional)</mat-label>
+            <input matInput formControlName="metadata" placeholder="Ej: Dirigido a usuarios administradores. Fuente: Manual v2" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button type="button" mat-button (click)="onCancel()" [disabled]="isSubmitting">
+          Cancelar
+        </button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="isSubmitting">
+          <ng-container>
+            @if (isSubmitting) {
+              Procesando y Vectorizando...
+            } @else {
+              <mat-icon>save</mat-icon> {{ data.mode === 'create' ? 'Guardar Documento' : 'Publicar Nueva Versión' }}
+            }
+          </ng-container>
+        </button>
+      </div>
+    </form>
+  }
+
+  <!-- Mode View Chunks -->
+  @if (data.mode === 'view') {
+    <div class="mt-3">
+      @if (loadingChunks) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2 text-muted">Cargando fragmentos vectoriales...</p>
+        </div>
+      } @else if (chunksList.length === 0) {
+        <div class="alert alert-info text-center">
+          No se encontraron fragmentos activos registrados para este documento.
+        </div>
+      } @else {
+        <div class="chunks-container pe-1">
+          <p class="fw-semibold text-secondary mb-2">Total de Chunks: {{ chunksList.length }}</p>
+          @for (chunk of chunksList; track chunk.id; let i = $index) {
+            <div class="card mb-3 shadow-sm border-start border-4 border-primary">
+              <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                <span class="badge bg-primary">Chunk #{{ i + 1 }} (ID: {{ chunk.id }})</span>
+                <span class="badge bg-secondary">Versión: {{ chunk.version }}</span>
+              </div>
+              <div class="card-body">
+                <p class="card-text text-dark font-monospace small bg-white p-2 border rounded">
+                  {{ chunk.chunkContent }}
+                </p>
+                <div class="d-flex gap-3 text-muted small">
+                  <span><strong>Módulo:</strong> {{ chunk.moduleCode }}</span>
+                  <span><strong>Tipo:</strong> {{ chunk.fileType }}</span>
+                  <span><strong>Estado:</strong> {{ chunk.status }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="d-flex justify-content-end mt-3">
+        <button mat-raised-button color="primary" (click)="onCancel()">Cerrar</button>
+      </div>
+    </div>
+  }
+</div>

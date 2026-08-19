@@ -4,6 +4,7 @@ export const config = {
   //urlMedia: 'http://auealab.com',
   //urlBackend: 'http://auealab.com/api',
   urlMedia: 'http://localhost:4200',
+  //urlBackend: '/api',
   urlBackend: 'http://localhost:9091',
 
 

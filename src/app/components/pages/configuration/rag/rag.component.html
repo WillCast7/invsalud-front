@@ -1,0 +1,176 @@
+<div class="container-fluid p-4">
+  <!-- Header Card -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="fw-bold m-0 text-dark header-title">
+        <mat-icon class="align-middle me-2 color-primary">psychology</mat-icon>
+        Administración de Documentos Vectoriales (RAG)
+      </h2>
+      <p class="text-muted m-0">
+        Gestione la documentación, manuales y normatividad procesada por el motor de inteligencia artificial.
+      </p>
+    </div>
+    <button mat-raised-button color="primary" (click)="openCreateModal()" class="px-3 py-2 btn-add">
+      <mat-icon>add</mat-icon> Nuevo Documento
+    </button>
+  </div>
+
+  <!-- Search & Filter Card -->
+  <div class="card shadow-sm border-0 mb-4 p-3 filter-card">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0">
+            <mat-icon class="text-secondary">search</mat-icon>
+          </span>
+          <input
+            type="text"
+            class="form-control border-start-0 ps-0 search-input"
+            placeholder="Buscar por título, contenido o metadatos..."
+            [(ngModel)]="searchValue"
+            (keyup.enter)="onSearchChange()"
+          />
+          <button class="btn btn-outline-secondary" type="button" (click)="onSearchChange()">
+            Buscar
+          </button>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <select
+          class="form-select module-select"
+          [(ngModel)]="selectedModule"
+          (change)="onModuleChange()"
+        >
+          @for (opt of moduleOptions; track opt.code) {
+            <option [value]="opt.code">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="col-md-2 text-end">
+        <button mat-icon-button (click)="loadDocuments()" matTooltip="Refrescar lista">
+          <mat-icon class="text-secondary">refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Documents Table Card -->
+  <div class="card shadow-sm border-0 table-card">
+    <div class="card-body p-0">
+      @if (isLoading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2 text-muted">Cargando documentos vectoriales...</p>
+        </div>
+      } @else if (documents().length === 0) {
+        <div class="text-center py-5 px-3">
+          <mat-icon class="fs-1 text-muted">folder_open</mat-icon>
+          <h5 class="fw-semibold text-secondary mt-2">No se encontraron documentos RAG</h5>
+          <p class="text-muted small">Cargue un nuevo documento para alimentar la base de datos vectorial del chat de IA.</p>
+          <button mat-stroked-button color="primary" (click)="openCreateModal()">
+            <mat-icon>add</mat-icon> Agregar Primer Documento
+          </button>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-hover align-middle m-0 custom-table">
+            <thead class="table-light">
+              <tr>
+                <th scope="col" class="ps-4">Documento / Título</th>
+                <th scope="col">Módulo</th>
+                <th scope="col" class="text-center">Versión</th>
+                <th scope="col" class="text-center">Estado</th>
+                <th scope="col" class="text-center">Fragmentos (Chunks)</th>
+                <th scope="col">Actualizado</th>
+                <th scope="col" class="text-end pe-4">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (doc of documents(); track doc.id) {
+                <tr>
+                  <td class="ps-4">
+                    <div class="d-flex align-items-center">
+                      <div class="doc-icon me-3">
+                        <mat-icon class="text-primary">article</mat-icon>
+                      </div>
+                      <div>
+                        <div class="fw-semibold text-dark">{{ doc.documentTitle }}</div>
+                        @if (doc.metadata) {
+                          <small class="text-muted d-block text-truncate max-w-250">{{ doc.metadata }}</small>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge rounded-pill" [ngClass]="getModuleBadgeClass(doc.moduleCode)">
+                      {{ doc.moduleCode || 'GENERAL' }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge bg-light text-dark border">
+                      v{{ doc.version || '1.0' }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge" [ngClass]="getStatusClass(doc.status)">
+                      {{ doc.status || 'PROCESADO' }}
+                    </span>
+                  </td>
+                  <td class="text-center fw-medium">
+                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">
+                      {{ doc.chunkCount || 1 }} chunks
+                    </span>
+                  </td>
+                  <td>
+                    <small class="text-muted">
+                      {{ doc.updatedAt ? (doc.updatedAt | date:'dd/MM/yyyy HH:mm') : (doc.createdAt | date:'dd/MM/yyyy HH:mm') }}
+                    </small>
+                  </td>
+                  <td class="text-end pe-4">
+                    <div class="d-flex justify-content-end gap-1">
+                      <button
+                        mat-icon-button
+                        color="primary"
+                        (click)="openViewChunksModal(doc)"
+                        matTooltip="Ver fragmentos vectoriales"
+                      >
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                      <button
+                        mat-icon-button
+                        color="accent"
+                        (click)="openReplaceModal(doc)"
+                        matTooltip="Reemplazar / Subir nueva versión"
+                      >
+                        <mat-icon>update</mat-icon>
+                      </button>
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="deleteDocument(doc)"
+                        matTooltip="Eliminar documento y vectores"
+                      >
+                        <mat-icon>delete_outline</mat-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginator -->
+        <mat-paginator
+          [length]="totalItems()"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="[5, 10, 20, 50]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+        ></mat-paginator>
+      }
+    </div>
+  </div>
+</div>

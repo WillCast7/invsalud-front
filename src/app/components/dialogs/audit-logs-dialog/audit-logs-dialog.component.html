@@ -1,15 +1,8 @@
-<h2 mat-dialog-title class="d-flex align-items-center justify-content-between border-bottom pb-3">
+<h2 mat-dialog-title class="d-flex align-items-center justify-content-center border-bottom pb-3">
   <div class="d-flex align-items-center gap-2">
-    <mat-icon color="primary" class="scale-150">manage_search</mat-icon>
     <span class="fw-light text-secondary">Registro de Auditoría:</span>
-    <span class="fw-bold">#{{ auditLog.id }}</span>
+    <span class="fw-bold">{{ auditLog.id }}</span>
   </div>
-  <span
-    class="badge rounded-pill px-3 py-2"
-    [ngClass]="getActionBadgeClass(auditLog.actionType)"
-    style="font-size: 0.85rem;">
-    {{ auditLog.actionType || 'N/A' }}
-  </span>
 </h2>
 
 <mat-dialog-content class="py-4">
@@ -87,12 +80,14 @@
                     <tr [class.table-warning]="isFieldValueChanged(key)">
                       <td class="fw-bold text-secondary">{{ key }}</td>
                       <td>
-                        <span [class.text-decoration-line-through]="isFieldValueChanged(key)" class="text-muted font-monospace">
+                        <span [class.text-decoration-line-through]="isFieldValueChanged(key)"
+                          class="text-muted font-monospace">
                           {{ getFormattedValue(auditLog.oldValues ? auditLog.oldValues[key] : null) }}
                         </span>
                       </td>
                       <td>
-                        <span [class.fw-bold]="isFieldValueChanged(key)" [class.text-success]="isFieldValueChanged(key)" class="font-monospace">
+                        <span [class.fw-bold]="isFieldValueChanged(key)" [class.text-success]="isFieldValueChanged(key)"
+                          class="font-monospace">
                           {{ getFormattedValue(auditLog.newValues ? auditLog.newValues[key] : null) }}
                         </span>
                       </td>
@@ -113,9 +108,10 @@
           <mat-tab label="Valores Anteriores (RAW)">
             <div class="py-3">
               @if (auditLog.oldValues && (auditLog.oldValues | json) !== '{}') {
-                <pre class="bg-dark text-light p-3 rounded font-monospace fs-7 overflow-auto" style="max-height: 300px;">{{ auditLog.oldValues | json }}</pre>
+              <pre class="bg-dark text-light p-3 rounded font-monospace fs-7 overflow-auto"
+                style="max-height: 300px;">{{ auditLog.oldValues | json }}</pre>
               } @else {
-                <div class="text-center py-3 text-muted border rounded bg-light">Sin valores anteriores</div>
+              <div class="text-center py-3 text-muted border rounded bg-light">Sin valores anteriores</div>
               }
             </div>
           </mat-tab>
@@ -123,9 +119,10 @@
           <mat-tab label="Valores Nuevos (RAW)">
             <div class="py-3">
               @if (auditLog.newValues && (auditLog.newValues | json) !== '{}') {
-                <pre class="bg-dark text-light p-3 rounded font-monospace fs-7 overflow-auto" style="max-height: 300px;">{{ auditLog.newValues | json }}</pre>
+              <pre class="bg-dark text-light p-3 rounded font-monospace fs-7 overflow-auto"
+                style="max-height: 300px;">{{ auditLog.newValues | json }}</pre>
               } @else {
-                <div class="text-center py-3 text-muted border rounded bg-light">Sin valores nuevos</div>
+              <div class="text-center py-3 text-muted border rounded bg-light">Sin valores nuevos</div>
               }
             </div>
           </mat-tab>

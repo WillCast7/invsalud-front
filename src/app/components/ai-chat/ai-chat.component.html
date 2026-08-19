@@ -1,0 +1,152 @@
+<!-- Botón flotante disparador del chat -->
+<div class="ai-chat-launcher" [class.hidden]="aiChatService.isOpen()">
+  <button mat-fab class="ai-launcher-btn" (click)="toggleChat()" matTooltip="Asistente INVSALUD"
+    matTooltipPosition="left">
+    <mat-icon class="ai-sparkle-icon">auto_awesome</mat-icon>
+    <span class="ai-launcher-pulse"></span>
+    @if (aiChatService.hasUnread()) {
+    <span class="ai-unread-badge" matTooltip="Nueva respuesta del asistente"></span>
+    }
+  </button>
+</div>
+
+
+<!-- Ventana de Chat Flotante -->
+<div class="ai-chat-window" [class.open]="aiChatService.isOpen()">
+  <!-- Header del Chat -->
+  <div class="ai-chat-header">
+    <div class="ai-header-info">
+      <div class="ai-avatar">
+        <mat-icon>smart_toy</mat-icon>
+      </div>
+      <div class="ai-header-titles">
+        <span class="ai-title">Asistente IA INVSALUD</span>
+      </div>
+    </div>
+    <div class="ai-header-actions">
+      <button mat-icon-button class="ai-action-btn" (click)="clearChat()"
+        matTooltip="Reiniciar conversación de la sesión">
+        <mat-icon>restart_alt</mat-icon>
+      </button>
+      <button mat-icon-button class="ai-action-btn" (click)="toggleChat()" matTooltip="Minimizar">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Barra de Filtros de Módulo RAG -->
+  <div class="ai-module-filter-bar">
+    <span class="filter-label"><mat-icon class="filter-icon">filter_alt</mat-icon> Filtro:</span>
+    <div class="filter-chips-wrapper">
+      @for (filter of moduleFilters; track filter.code) {
+      <button type="button" class="filter-chip" [class.active]="aiChatService.selectedModuleFilter() === filter.code"
+        (click)="selectModuleFilter(filter.code)">
+        {{ filter.label }}
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Contenedor de Mensajes -->
+  <div class="ai-chat-body" #scrollContainer>
+    <div class="ai-messages-list">
+      @for (msg of aiChatService.messages(); track msg.id) {
+      <div class="ai-message-wrapper" [class.user]="msg.sender === 'user'"
+        [class.assistant]="msg.sender === 'assistant'">
+        @if (msg.sender === 'assistant') {
+        <div class="ai-msg-avatar">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        }
+
+        <div class="ai-message-card">
+          <div class="ai-msg-content" [innerText]="msg.text"></div>
+
+          <!-- Bloque de Fuentes / Referencias de Documentos RAG -->
+          @if (msg.sender === 'assistant' && msg.sources && msg.sources.length > 0) {
+          <div class="ai-sources-card mt-2 pt-2">
+            <div class="ai-sources-header">
+              <mat-icon class="sources-icon">menu_book</mat-icon>
+              <span>Fuentes de la Base de Datos ({{ msg.sources.length }}):</span>
+            </div>
+            <div class="ai-sources-list mt-1">
+              @for (source of msg.sources; track source.documentTitle; let idx = $index) {
+              <div class="source-item">
+                <button type="button" class="source-badge-btn" (click)="toggleSourceSnippet((msg.id || '') + '_' + idx)"
+                  [matTooltip]="'Ver fragmento del documento trozado'">
+                  <mat-icon class="doc-icon">description</mat-icon>
+                  <span class="doc-title">{{ source.documentTitle }}</span>
+                  @if (source.moduleCode) {
+                  <span class="doc-module-badge">{{ source.moduleCode }}</span>
+                  }
+                  @if (source.similarity) {
+                  <span class="doc-sim-badge">{{ (source.similarity * 100) | number:'1.0-0' }}% match</span>
+                  }
+                </button>
+
+                <!-- Fragmento desplegable -->
+                @if (source.contentSnippet && isSourceExpanded((msg.id || '') + '_' + idx)) {
+                <div class="source-snippet-box">
+                  <div class="snippet-header">
+                    <small>Fragmento de vector trozado #{{ source.chunkIndex || (idx + 1) }}:</small>
+                  </div>
+                  <p class="snippet-text">"{{ source.contentSnippet }}"</p>
+                </div>
+                }
+              </div>
+              }
+            </div>
+          </div>
+          }
+
+          <div class="ai-msg-footer">
+            <small class="ai-msg-time">{{ msg.timestamp | date:'shortTime' }}</small>
+            @if (msg.sender === 'user' && msg.status) {
+            <mat-icon class="ai-status-icon">check</mat-icon>
+            }
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- Indicador de carga (Typing Dots) -->
+      @if (aiChatService.isLoading()) {
+      <div class="ai-message-wrapper assistant loading">
+        <div class="ai-msg-avatar">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        <div class="ai-message-card loading-card">
+          <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <span class="loading-text">Buscando en base de datos trozada y consultando IA...</span>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- Sugerencias rápidas (Chips) -->
+  <div class="ai-suggestions-container">
+    @for (chip of quickSuggestions; track chip) {
+    <button type="button" class="ai-chip-btn" (click)="sendQuickSuggestion(chip)">
+      {{ chip }}
+    </button>
+    }
+  </div>
+
+  <!-- Pie de página / Input -->
+  <div class="ai-chat-footer">
+    <div class="ai-input-wrapper">
+      <textarea class="ai-chat-textarea" [(ngModel)]="userInput" (keydown)="onKeydown($event)"
+        placeholder="Pregunta sobre normativas, manuales o la app..." rows="1">
+      </textarea>
+      <button mat-icon-button class="ai-send-btn" [disabled]="!userInput.trim() || aiChatService.isLoading()"
+        (click)="onSendMessage()" matTooltip="Enviar mensaje (Enter)">
+        <mat-icon>send</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

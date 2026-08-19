@@ -16,6 +16,7 @@ import { BillTemplatesComponent } from './components/pages/configuration/bill-te
 import { ReportsComponent } from './components/pages/reports/reports.component';
 import { CompanyComponent } from './components/pages/configuration/company/company.component';
 import { AuditLogsComponent } from './components/pages/audit-logs/audit-logs.component';
+import { RagComponent } from './components/pages/configuration/rag/rag.component';
 
 export const routes: Routes = [
     { path: '', component: DashboardComponent, title: "Dashboard" },
@@ -36,5 +37,6 @@ export const routes: Routes = [
     { path: 'gestion/ingresos', component: PurchasingComponent, title: "Ingresos" },
     { path: 'administracion/reportes', component: ReportsComponent, title: "Reportes" },
     { path: 'configuracion/empresa', component: CompanyComponent, title: "Empresa" },
+    { path: 'configuracion/rag', component: RagComponent, title: "Administración RAG" },
     { path: '**', redirectTo: '', pathMatch: 'full', title: "Dashboard" }
 ];

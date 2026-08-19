@@ -227,38 +227,76 @@ export class SaleDialogComponent implements OnInit {
   }
 
   onPrint(row: any) {
-    this.restService.fileGetRequest("/report/sale/" + row.id).subscribe({
-      next: (blob) => {
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL, '_blank');
-      },
-      error: async (error: HttpErrorResponse) => {
-        console.log(error);
+    const isPublicHealth = this.isPublicHealth || row.type === 'MEDICAMENTOS_SP' || row.type === 'public';
 
-        let mensajeMostrar = "Ocurrió un error inesperado";
+    if (isPublicHealth) {
+      this.restService.fileGetRequest("/report/sale/" + row.id + "/excel").subscribe({
+        next: (blob) => {
+          const fileURL = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = fileURL;
+          a.download = `orden_salida_salud_publica_${row.id}.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(fileURL);
+        },
+        error: async (error: HttpErrorResponse) => {
+          console.log(error);
+          let mensajeMostrar = "Ocurrió un error inesperado al descargar el Excel";
 
-        // Verificamos si el error viene dentro de un Blob
-        if (error.error instanceof Blob) {
-          try {
-            // Convertimos el Blob a texto plano
-            const text = await error.error.text();
-            // Parseamos el texto a JSON
-            const errorJson = JSON.parse(text);
-            // Extraemos el mensaje
-            mensajeMostrar = errorJson.message || mensajeMostrar;
-          } catch (e) {
-            console.error("No se pudo parsear el error del Blob", e);
+          if (error.error instanceof Blob) {
+            try {
+              const text = await error.error.text();
+              const errorJson = JSON.parse(text);
+              mensajeMostrar = errorJson.message || mensajeMostrar;
+            } catch (e) {
+              console.error("No se pudo parsear el error del Blob", e);
+            }
+          } else if (error.error?.message) {
+            mensajeMostrar = error.error.message;
           }
-        } else if (error.error?.message) {
-          // Si por alguna razón ya viene parseado
-          mensajeMostrar = error.error.message;
-        }
 
-        this.alertService.infoMixin.fire({
-          icon: 'error',
-          title: mensajeMostrar,
-        });
-      }
-    });
+          this.alertService.infoMixin.fire({
+            icon: 'error',
+            title: mensajeMostrar,
+          });
+        }
+      });
+    } else {
+      this.restService.fileGetRequest("/report/sale/" + row.id).subscribe({
+        next: (blob) => {
+          const fileURL = URL.createObjectURL(blob);
+          window.open(fileURL, '_blank');
+        },
+        error: async (error: HttpErrorResponse) => {
+          console.log(error);
+
+          let mensajeMostrar = "Ocurrió un error inesperado";
+
+          // Verificamos si el error viene dentro de un Blob
+          if (error.error instanceof Blob) {
+            try {
+              // Convertimos el Blob a texto plano
+              const text = await error.error.text();
+              // Parseamos el texto a JSON
+              const errorJson = JSON.parse(text);
+              // Extraemos el mensaje
+              mensajeMostrar = errorJson.message || mensajeMostrar;
+            } catch (e) {
+              console.error("No se pudo parsear el error del Blob", e);
+            }
+          } else if (error.error?.message) {
+            // Si por alguna razón ya viene parseado
+            mensajeMostrar = error.error.message;
+          }
+
+          this.alertService.infoMixin.fire({
+            icon: 'error',
+            title: mensajeMostrar,
+          });
+        }
+      });
+    }
   }
 }

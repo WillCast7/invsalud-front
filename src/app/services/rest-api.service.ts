@@ -66,12 +66,14 @@ export class RestApiService {
   }
 
   // Delete Method
-  deleteRequest(url: string, body: any, params: any) {
+  deleteRequest(url: string, body: any = null, params: any = null) {
     let headers = this.setHeaders();
-    params = Object.assign(body, params);
-    params = this.processParams(params);
+    let queryParams = {};
+    if (body) Object.assign(queryParams, body);
+    if (params) Object.assign(queryParams, params);
+    const httpParams = this.processParams(queryParams);
     url = config.urlBackend + url;
-    return this.httpClient.delete(url, { headers, params });
+    return this.httpClient.delete(url, { headers, params: httpParams });
   }
 
   processParams(params: any) {
