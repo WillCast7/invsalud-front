@@ -11,6 +11,7 @@ export interface ProductInterface {
     details: string;
     isPublicHealth: boolean;
     isActive: boolean;
+    unitsAlert?: number;
 }
 
 export const ProductExample: ProductInterface = {
@@ -24,5 +25,6 @@ export const ProductExample: ProductInterface = {
     active: false,
     details: '',
     isPublicHealth: false,
-    isActive: false
+    isActive: false,
+    unitsAlert: 0
 }

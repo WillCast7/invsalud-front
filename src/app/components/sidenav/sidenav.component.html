@@ -55,29 +55,57 @@
         <span class="fw-medium greeting-name font-colored">{{namesUser()}}</span>
       </button>
 
-      <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon favorite-icon font-colored"
-        title="Notificaciones" aria-label="Example icon-button with heart icon">
-        <mat-icon [matBadge]="notificationsNumber()"
-          [matBadgeHidden]="notificationsNumber() === 0">notifications_none</mat-icon>
+      <button mat-icon-button [matMenuTriggerFor]="notificationMenu" class="example-icon favorite-icon font-colored"
+        title="Notificaciones" aria-label="Notificaciones">
+        <mat-icon [matBadge]="notificationService.unreadCount()"
+          [matBadgeHidden]="notificationService.unreadCount() === 0"
+          matBadgeColor="warn">notifications</mat-icon>
       </button>
-      <mat-menu #menu="matMenu" class="notifications-menu">
-        @for (notification of notificationList(); track $index) {
-        <button mat-menu-item (click)="processNotification(notification)" [ngClass]="{
-                'btn-enviada': notification.recipient.status === 'ENVIADA',
-                'btn-visto': notification.recipient.status === 'VISTO'
-              }">
-          <div class="d-flex flex-column justify-content-around">
-            <span class="fw-bold">{{notification.title}} </span>
-            <small class="text-muted"> {{notification.message}}</small>
-          </div>
-        </button>
-        }
+      <mat-menu #notificationMenu="matMenu" class="notifications-menu-panel" xPosition="before">
+        <div class="notification-header px-3 py-2 border-bottom d-flex justify-content-between align-items-center" (click)="$event.stopPropagation()">
+          <span class="fw-bold fs-6">Notificaciones</span>
+          @if (notificationService.unreadCount() > 0) {
+            <button mat-button color="primary" class="p-0 btn-sm mark-all-btn" (click)="markAllAsRead($event)">
+              Marcar leídas
+            </button>
+          }
+        </div>
 
-        <button mat-menu-item (click)="router.navigate(['/configuracion/notificaciones'])">
-          <div class="d-flex flex-row justify-content-around ">
-            <small class="text-muted">Ver historial de notificaciones</small>
-          </div>
-        </button>
+        <div class="notification-scroll-container">
+          @if (notificationService.recentNotifications().length === 0) {
+            <div class="p-4 text-center text-muted">
+              <mat-icon style="font-size: 32px; width: 32px; height: 32px; opacity: 0.5;" class="mb-1">notifications_off</mat-icon>
+              <div style="font-size: 13px;">No hay notificaciones recientes</div>
+            </div>
+          } @else {
+            @for (notification of notificationService.recentNotifications(); track notification.id) {
+            <button mat-menu-item (click)="processNotification(notification)" class="notification-item-row"
+              [ngClass]="{'notif-unread': !notification.isRead, 'notif-read': notification.isRead}">
+              <div class="d-flex align-items-start gap-2 w-100 py-1">
+                <mat-icon [ngClass]="getPriorityIconClass(notification.priority)" class="notif-type-icon">
+                  {{ getPriorityIcon(notification.priority) }}
+                </mat-icon>
+                <div class="d-flex flex-column flex-grow-1 text-wrap text-start">
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                    <span class="fw-bold text-dark notif-item-title">{{notification.title}}</span>
+                    @if (!notification.isRead) {
+                      <span class="badge bg-primary rounded-pill ms-1" style="font-size: 9px;">Nueva</span>
+                    }
+                  </div>
+                  <small class="text-secondary notif-item-msg">{{notification.message}}</small>
+                  <span class="text-muted notif-item-time">{{ getRelativeTime(notification.createdAt) }}</span>
+                </div>
+              </div>
+            </button>
+            }
+          }
+        </div>
+
+        <div class="border-top p-1 text-center bg-light">
+          <button mat-button class="w-100 text-primary fw-medium" (click)="navigateTo('/configuracion/notificaciones')">
+            Ver historial de notificaciones
+          </button>
+        </div>
       </mat-menu>
 
       <button mat-icon-button class="example-icon font-colored" (click)="logOut()" title="Cerrar Sesión">

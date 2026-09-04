@@ -47,6 +47,8 @@ export class OrderRecipeDialogComponent implements OnInit {
   suppliers: ThirdPartyInterface[] = [];
   suppliersFinded: ThirdPartyInterface[] = [];
   salePrice: number = 2000;
+  useIva: boolean = false;
+  ivaPercent: number = 0;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { mode: string, type: string, data?: any }) {
     this.mode = this.data.mode as any;
@@ -63,6 +65,7 @@ export class OrderRecipeDialogComponent implements OnInit {
   ngOnInit() {
     console.log(this.data.mode);
     this.initForm();
+    this.fetchCompanyData();
 
     if ((this.mode === 'edit' || this.mode === 'view') && this.data.data) {
       if (this.mode === 'view') {
@@ -87,9 +90,39 @@ export class OrderRecipeDialogComponent implements OnInit {
     });
   }
 
-  get total() {
-    const units = this.mainForm.get('units')?.value || 0;
-    return units * this.salePrice;
+  fetchCompanyData() {
+    this.restService.getRequest('/company').subscribe({
+      next: (res) => {
+        const company = res?.data || res;
+        if (company) {
+          this.useIva = !!company.useIva;
+          this.ivaPercent = company.useIva ? (company.iva || 0) : 0;
+        }
+      },
+      error: (err) => {
+        console.warn('Could not fetch company tax config', err);
+      }
+    });
+  }
+
+  get units(): number {
+    return this.mainForm.get('units')?.value || 0;
+  }
+
+  get subtotal(): number {
+    return this.units * this.salePrice;
+  }
+
+  get iva(): number {
+    return this.useIva ? this.ivaPercent : 0;
+  }
+
+  get priceIva(): number {
+    return this.useIva ? (this.subtotal * (this.iva / 100)) : 0;
+  }
+
+  get total(): number {
+    return this.subtotal + this.priceIva;
   }
 
   fetchRecipePrice() {
@@ -188,11 +221,20 @@ export class OrderRecipeDialogComponent implements OnInit {
     }
 
     const value = this.mainForm.value;
+    const units = value.units || 1;
+    const subtotal = units * this.salePrice;
+    const ivaVal = this.useIva ? this.ivaPercent : 0;
+    const priceIvaVal = this.useIva ? (subtotal * (ivaVal / 100)) : 0;
+    const totalVal = subtotal + priceIvaVal;
+
     const payload = {
       thirdParty: value.thirdParty?.id?.toString() || value.thirdParty,
       type: 'recipe',
-      total: this.total,
-      units: value.units,
+      subtotal: subtotal,
+      total: totalVal,
+      units: units,
+      iva: ivaVal,
+      priceIva: priceIvaVal,
       items: []
     };
 

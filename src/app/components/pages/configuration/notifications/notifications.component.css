@@ -1,17 +1,48 @@
-.btn-visto{
-  background-color: #ffffff; /* Verde */
-}
-.btn-enviada{
-  background-color: #f1f1f1; /* Verde */
+.notification-table-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.mat-mdc-row .mat-mdc-cell {
-    border-bottom: 1px solid transparent;
-    border-top: 1px solid transparent;
-    cursor: pointer;
-    padding: 1px 8px;
-  }
-  
-.mat-mdc-row :hover {
-    background-color: #e6e6e6;
+.notification-table-row:hover {
+  background-color: #f1f5f9 !important;
+}
+
+.row-unread {
+  background-color: #f8fafc;
+  font-weight: 500;
+  border-left: 3px solid #3d5a80;
+}
+
+/* Priority Badges */
+.badge-priority-info {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.badge-priority-warning {
+  background-color: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.badge-priority-critical {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.mat-mdc-table .mat-mdc-header-cell {
+  background-color: #f8fafc;
+  font-size: 13px;
+}
+
+.mat-mdc-table .mat-mdc-cell {
+  font-size: 13px;
+  padding: 12px 14px;
 }

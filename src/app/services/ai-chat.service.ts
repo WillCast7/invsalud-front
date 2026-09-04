@@ -15,6 +15,7 @@ export class AiChatService {
   public isOpen = signal<boolean>(false);
   public hasUnread = signal<boolean>(false);
   public selectedModuleFilter = signal<string>('TODOS');
+  public selectedSearchMode = signal<'DOCUMENTOS' | 'API'>('API');
 
 
   private sessionId: string = '';
@@ -114,18 +115,21 @@ export class AiChatService {
 
     this.isLoading.set(true);
 
+    const activeMode = this.selectedSearchMode();
     const activeFilter = this.selectedModuleFilter();
 
-    // Estructura adaptada al ChatMessagesEntity + RAG filter
+    // Estructura adaptada al ChatMessagesEntity + RAG filter + searchMode
     const payload: AiChatRequest = {
       sessionId: this.sessionId,
       rol: 'user',
       content: trimmed,
       message: trimmed,
-      moduleFilter: activeFilter === 'TODOS' ? undefined : activeFilter,
+      searchMode: activeMode,
+      moduleFilter: activeMode === 'API' ? 'API' : (activeFilter === 'TODOS' ? undefined : activeFilter),
       context: {
         currentUser: localStorage.getItem('currentUser') || 'usuario',
         roleId: localStorage.getItem('rId') || '0',
+        searchMode: activeMode,
         activeModuleFilter: activeFilter
       }
     };
@@ -133,8 +137,8 @@ export class AiChatService {
     // Petición al backend
     this.restApiService.postRequest('/ai/chat', payload).pipe(
       catchError((error) => {
-        console.warn('Endpoint /ai/chat no respondió, usando respuesta de contingencia RAG:', error);
-        return of(this.getMockAiResponse(trimmed, activeFilter));
+        console.warn('Endpoint /ai/chat no respondió, usando respuesta de contingencia:', error);
+        return of(this.getMockAiResponse(trimmed, activeMode));
       })
     ).subscribe({
       next: (response: any) => {
@@ -177,64 +181,59 @@ export class AiChatService {
   }
 
   /**
-   * Respuesta de contingencia contextual RAG mientras el endpoint procesa Ollama
+   * Respuesta de contingencia contextual mientras el endpoint procesa
    */
-  private getMockAiResponse(prompt: string, moduleFilter: string): AiChatResponse {
+  private getMockAiResponse(prompt: string, searchMode: 'DOCUMENTOS' | 'API'): AiChatResponse {
     const lower = prompt.toLowerCase();
     let reply = '';
     let sources: ChatSource[] = [];
 
-    if (lower.includes('normat') || lower.includes('ley') || lower.includes('resoluc') || lower.includes('vencid') || lower.includes('vencer')) {
-      reply = '📜 **Consulta sobre Normatividad Sanitaria y Medicamentos Vencidos**:\n\nSegún la **Resolución 1403 de 2007** y los manuales de procedimientos de INVSALUD:\n\n1. Los medicamentos por vencer (menos de 60 días) deben ser colocados en **semáforo de alerta (Amarillo/Rojo)**.\n2. Los medicamentos vencidos deben ser segregados inmediatamente al área de **Devoluciones / Farmacovigilancia**.\n3. Queda prohibida la comercialización o dispensación de productos sin registro INVIMA activo.';
+    if (searchMode === 'API') {
+      if (lower.includes('dolex') || lower.includes('stock') || lower.includes('inventario') || lower.includes('metadona')) {
+        reply = '📊 **Resultados de Stock en Inventario (API INVSALUD)**:\n\n' +
+                '* **Dolex (500mg)** | Lote: `ABC123` | Disponibles: **10** | Vence: 2026-07-23 | Precio: $3.500\n' +
+                '* **Dolex (500mg)** | Lote: `DEF321` | Disponibles: **10** | Vence: 2027-01-05 | Precio: $5.000\n' +
+                '* **Metadona (10mg/ml)** | Lote: `ABC123` | Disponibles: **660** | Vence: 2026-08-14 | Precio: $12.000\n' +
+                '* **Atorvastatina (20mg)** | Lote: `ABC123` | Disponibles: **50** | Vence: 2027-03-15 | Precio: $8.500';
+      } else {
+        reply = '📊 **Consulta a la API del Sistema**:\n\n' +
+                '* **Atorvastatina** (Código: `123456789`) | Forma: Tableta | Estado: Activo\n' +
+                '* **Metadona** (Código: `metadona-5`) | Forma: Jarabe | Estado: Activo\n' +
+                '* **Dolex** (Código: `DOLEX1`) | Forma: Tableta | Estado: Activo\n' +
+                '* **Amoxicilina** (Código: `AMOX500`) | Forma: Cápsula | Estado: Activo';
+      }
       sources = [
         {
-          documentTitle: 'Resolución_1403_2007_Normativa_Farmaceutica.pdf',
-          moduleCode: 'NORMATIVA',
-          similarity: 0.94,
-          chunkIndex: 12,
-          contentSnippet: 'Artículo 8: Clasificación y semaforización de medicamentos según su fecha de vencimiento...'
-        },
-        {
-          documentTitle: 'Manual_Procedimientos_Medicamentos_Vencidos.pdf',
-          moduleCode: 'MANUALES',
-          similarity: 0.88,
-          chunkIndex: 4,
-          contentSnippet: 'Segregación en el área de cuarentena para devolución al proveedor o acta de destrucción...'
-        }
-      ];
-    } else if (lower.includes('crear') || lower.includes('agregar') || lower.includes('nuevo') || lower.includes('editar') || lower.includes('eliminar')) {
-      reply = '🛠️ **Procedimiento en la Aplicación INVSALUD**:\n\nPara realizar acciones de creación, edición o eliminación:\n\n* **Crear Insumo/Producto**: Dirígete al menú **Inventario > Gestión** y haz clic en el botón `+ Nuevo Insumo`. Llena el código, Lote, Registro INVIMA y stock inicial.\n* **Editar Registro**: En la tabla de inventario, presiona el icono de lápiz `✏️` en la fila correspondiente.\n* **Eliminar/Baja**: Requiere permiso de Administrador y se realiza mediante la opción `Dar de baja lote`.';
-      sources = [
-        {
-          documentTitle: 'Manual_Usuario_INVSALUD_v2.pdf',
-          moduleCode: 'MANUALES',
-          similarity: 0.96,
-          chunkIndex: 2,
-          contentSnippet: 'Capítulo 3: Gestión de Productos e Insumos Médicos. Alta, actualización y eliminación de lotes.'
-        }
-      ];
-    } else if (lower.includes('inventario') || lower.includes('stock') || lower.includes('producto')) {
-      reply = '📦 **Consulta de Inventario y Control de Stock**:\n\nPuedes revisar el catálogo completo de productos e insumos desde **Inventario > Gestión**.\n\nEl sistema soporta filtrado por lote, semaforización de vencimiento y trazabilidad de código de barras.';
-      sources = [
-        {
-          documentTitle: 'Guia_Gestion_Inventario_INVSALUD.pdf',
-          moduleCode: 'INVENTARIO',
-          similarity: 0.91,
-          chunkIndex: 1,
-          contentSnippet: 'Visualización y control de existencias en bodegas y farmacias satélite...'
+          documentTitle: 'Base de Datos en Vivo (API INVSALUD)',
+          moduleCode: 'API_DATOS',
+          similarity: 1.0,
+          contentSnippet: 'Registros recuperados directamente desde la base de datos de producción.'
         }
       ];
     } else {
-      reply = `🤖 Consulta recibida: "*${prompt}*".\n\nEl mensaje fue enviado con el filtro de módulo \`${moduleFilter}\`. El pipeline RAG buscará los vectores más cercanos en la tabla \`document_chunks\` y devolverá la respuesta respaldada en las normativas y manuales trozados.`;
-      sources = [
-        {
-          documentTitle: 'Documento_General_INVSALUD.pdf',
-          moduleCode: moduleFilter !== 'TODOS' ? moduleFilter : 'GENERAL',
-          similarity: 0.85,
-          chunkIndex: 1,
-          contentSnippet: 'Fragmento recuperado mediante búsqueda de similitud coseno en la BD de vectores...'
-        }
-      ];
+      // Modo DOCUMENTOS
+      if (lower.includes('crear') || lower.includes('nuevo') || lower.includes('agregar') || lower.includes('insumo')) {
+        reply = '🛠️ **Guía Procedimental: Creación y Gestión de Insumos**\n\n' +
+                'Para crear un nuevo producto o insumo en **INVSALUD**:\n' +
+                '1. Dirígete en el menú lateral a **Inventario > Gestión de Productos**.\n' +
+                '2. Haz clic en el botón `+ Nuevo Producto`.\n' +
+                '3. Diligencia los campos requeridos: Código, Nombre del medicamento, Forma farmacéutica, Concentración y tipo de producto.\n' +
+                '4. Presiona `Guardar`.\n\n' +
+                '💡 *Nota: Para consultar stock real registrado, presiona el botón **API / Datos** en el chat.*';
+      } else if (lower.includes('normat') || lower.includes('vencid') || lower.includes('vencer') || lower.includes('baja')) {
+        reply = '📜 **Guía Procedimental y Normativa de Medicamentos**:\n\n' +
+                'Conforme a la normativa farmacéutica (Resolución 1403 de 2007):\n' +
+                '1. Los medicamentos por vencer (menos de 60 días) deben mantenerse en semáforo de alerta preventiva (Amarillo/Rojo).\n' +
+                '2. Los medicamentos vencidos deben ser segregados inmediatamente al área de Devoluciones / Cuarentena.\n' +
+                '3. En la aplicación, el retiro se efectúa desde la tabla de inventario seleccionando `Dar de baja lote` indicando causal.\n\n' +
+                'ℹ️ *Los documentos PDF normativos se encuentran en preparación para la carga en el RAG.*';
+      } else {
+        reply = `📚 **Búsqueda en Documentos (RAG)**:\n\n` +
+                `Has consultado: "*${prompt}*".\n\n` +
+                `Actualmente la base de conocimiento vectorial para normativas y resoluciones en PDF se encuentra en preparación para la carga de documentos.\n\n` +
+                `- Para consultar guías paso a paso de **cómo usar la app**, pregunta aquí.\n` +
+                `- Para consultar **stock, lotes, productos o compras en tiempo real**, presiona el botón **[🔌 API / Datos]**.`;
+      }
     }
 
     return {
@@ -245,6 +244,10 @@ export class AiChatService {
       createdAt: new Date().toISOString(),
       sources: sources
     };
+  }
+
+  public setSearchMode(mode: 'DOCUMENTOS' | 'API'): void {
+    this.selectedSearchMode.set(mode);
   }
 
   public setModuleFilter(filterCode: string): void {

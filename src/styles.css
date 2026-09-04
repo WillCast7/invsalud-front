@@ -73,3 +73,29 @@ body {
 .full-screen-dialog .mat-mdc-dialog-container {
   padding: 0 !important;
 }
+
+/* Notification Snackbar Styles */
+.notif-snackbar-info .mdc-snackbar__surface {
+  background-color: #293241 !important;
+  color: #ffffff !important;
+  border-left: 4px solid #3d5a80 !important;
+}
+
+.notif-snackbar-warning .mdc-snackbar__surface {
+  background-color: #3d2c00 !important;
+  color: #ffffff !important;
+  border-left: 4px solid #ffb703 !important;
+}
+
+.notif-snackbar-critical .mdc-snackbar__surface {
+  background-color: #3b0a0a !important;
+  color: #ffffff !important;
+  border-left: 4px solid #e63946 !important;
+}
+
+.notif-snackbar-info .mat-mdc-snack-bar-action,
+.notif-snackbar-warning .mat-mdc-snack-bar-action,
+.notif-snackbar-critical .mat-mdc-snack-bar-action {
+  color: #90e0ef !important;
+  font-weight: 600 !important;
+}

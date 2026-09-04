@@ -232,6 +232,70 @@
           <input type="file" #filePurchasing (change)="onFileSelected($event, 'logoPurchasing')" accept="image/*" class="d-none" />
         </div>
       </div>
+
+      <!-- Footer / Pie de Página -->
+      <div class="col-md-6 mb-4">
+        <div class="logo-upload-container border p-3 rounded text-center h-100 d-flex flex-column align-items-center justify-content-between">
+          <span class="fw-semibold text-muted mb-2">Pie de Página / Footer (Documentos)</span>
+          <div class="preview-box border rounded mb-3 d-flex align-items-center justify-content-center">
+            @if (companyForm.get('footer')?.value) {
+              <img [src]="companyForm.get('footer')?.value" alt="Preview footer" class="img-preview" />
+            } @else {
+              <span class="text-muted small">Sin imagen</span>
+            }
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" mat-raised-button color="primary" (click)="fileFooter.click()">
+              Subir
+            </button>
+            @if (companyForm.get('footer')?.value) {
+              <button type="button" mat-stroked-button color="warn" (click)="clearImage('footer')">
+                Quitar
+              </button>
+            }
+          </div>
+          <input type="file" #fileFooter (change)="onFileSelected($event, 'footer')" accept="image/*" class="d-none" />
+        </div>
+      </div>
+    </div>
+
+    <mat-divider class="my-4"></mat-divider>
+
+    <!-- Tax configuration section -->
+    <h3 class="section-subtitle mb-3 fw-semibold">Configuración de Impuestos (IVA)</h3>
+    <div class="row align-items-center">
+      <div class="col-md-6 mb-3">
+        <div class="p-3 border rounded d-flex align-items-center justify-content-between bg-light">
+          <div>
+            <span class="fw-semibold text-dark d-block">Habilitar IVA</span>
+            <small class="text-muted">Activar el uso de IVA en los procesos de la empresa</small>
+          </div>
+          <mat-checkbox formControlName="useIva" color="primary"></mat-checkbox>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Porcentaje de IVA (%)</mat-label>
+          <input matInput type="number" formControlName="iva" placeholder="Ej. 19" min="0" max="100">
+          <span matTextSuffix class="pe-2 fw-bold text-muted">%</span>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-divider class="my-4"></mat-divider>
+
+    <!-- Resolution limit configuration section -->
+    <h3 class="section-subtitle mb-3 fw-semibold">Límite de Días para Cotizaciones por Resolución</h3>
+    <div class="row align-items-center">
+      <div class="col-md-12 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Días Límite de Resolución (Margen de Vigencia)</mat-label>
+          <input matInput type="number" formControlName="daysLimitResolution" placeholder="Ej. 15" min="0">
+          <mat-icon matSuffix color="primary">event_available</mat-icon>
+          <mat-hint>Margen de días que se sumarán a la fecha actual para no permitir cotizaciones que expiren antes de este plazo</mat-hint>
+        </mat-form-field>
+      </div>
     </div>
   </form>
 </mat-dialog-content>

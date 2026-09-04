@@ -5,7 +5,7 @@ import { MenuService } from './menu.service';
 import { MenuItemInterface } from '../models/menuItem-interface';
 import { WebSocketService } from './websocket-service';
 import { AuthInterface } from '../models/auth-interface';
-import { NotificationStoreService } from './notification-store.service';
+import { NotificationService } from './notification.service';
 import { AiChatService } from './ai-chat.service';
 
 @Injectable({
@@ -17,9 +17,8 @@ export class SessionService {
   constructor(
     private readonly router: Router,
     private readonly menuService: MenuService,
-    private readonly aiChatService: AiChatService
-    //private readonly webSocket: WebSocketService,
-    //private readonly notificationStoreService: NotificationStoreService
+    private readonly aiChatService: AiChatService,
+    private readonly notificationService: NotificationService
   ) { }
 
   public menuSubject: BehaviorSubject<MenuItemInterface[]> = new BehaviorSubject<MenuItemInterface[]>([]);
@@ -37,6 +36,9 @@ export class SessionService {
     localStorage.setItem('rId', authBody.rid.toString());
 
     this.currentUserNames.set(authBody.names);
+
+    // Iniciar notificaciones y WebSocket para la nueva sesión
+    this.notificationService.initUserSession(authBody.jwt);
 
     // Iniciar una conversación limpia para la nueva sesión
     this.aiChatService.clearSessionChat();
@@ -73,7 +75,7 @@ export class SessionService {
 
   // Cerrar sesión (limpiar localStorage y sessionStorage)
   logOut(): void {
-    //this.webSocket.disconnect();
+    this.notificationService.disconnectSession();
     this.currentUserNames.set('');
     localStorage.clear();
     sessionStorage.clear();

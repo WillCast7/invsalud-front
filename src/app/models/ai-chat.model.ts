@@ -28,6 +28,7 @@ export interface AiChatRequest {
   content: string;
   message?: string;
   moduleFilter?: string;
+  searchMode?: 'DOCUMENTOS' | 'API';
   context?: Record<string, any>;
 }
 

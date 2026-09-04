@@ -59,7 +59,7 @@ export class OrdersComponent {
     { key: 'total', label: 'Total', isSortable: true },
     { key: 'createdAt', label: 'F. Creación', isSortable: true, pipe: 'date' },
     { key: 'expirateAt', label: 'F. Expiración', isSortable: true, pipe: 'date' },
-    { key: 'status', label: 'Estado', isSortable: true }
+    { key: 'status', label: 'Estado', pipe: 'status', isSortable: true }
   ];
 
   tableOptions: TableOption[] = [
@@ -197,7 +197,7 @@ export class OrdersComponent {
         this.dataValue.pageable.pageSize,
         this.searchValue
       );
-      
+
     });
   }
 
@@ -214,13 +214,13 @@ export class OrdersComponent {
           title: result.message
         });
       }
-      
+
       this.getData(
         this.dataValue.pageable.pageNumber,
         this.dataValue.pageable.pageSize,
         this.searchValue
       );
-    
+
     });
   }
 

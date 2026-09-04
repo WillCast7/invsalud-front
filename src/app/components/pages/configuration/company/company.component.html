@@ -74,6 +74,48 @@
               </div>
             </mat-card-content>
           </mat-card>
+
+          <!-- Tax Configuration Card -->
+          <mat-card class="shadow-sm border-0">
+            <mat-card-header class="pb-2 border-bottom">
+              <mat-card-title class="d-flex align-items-center gap-2" style="color: #3d5a80;">
+                <mat-icon>receipt_long</mat-icon>
+                Configuración Fiscal e Impuestos
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="pt-3">
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Uso de IVA</label>
+                  <p class="fs-6 mb-0">
+                    @if (company().useIva) {
+                      <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 fw-semibold">
+                        <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;">check_circle</mat-icon>
+                        Habilitado
+                      </span>
+                    } @else {
+                      <span class="badge bg-secondary-subtle text-secondary px-3 py-1 fw-semibold">
+                        <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;">cancel</mat-icon>
+                        Deshabilitado
+                      </span>
+                    }
+                  </p>
+                </div>
+                <div class="col-sm-6">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Porcentaje de IVA</label>
+                  <p class="fs-5 fw-bold mb-0 text-dark">{{ company().iva || 0 }}%</p>
+                </div>
+                <div class="col-12 mt-3 pt-3 border-top">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Días Límite de Resolución</label>
+                  <p class="fs-5 fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                    <mat-icon style="color: #3d5a80;">event_available</mat-icon>
+                    {{ company().daysLimitResolution || 0 }} días
+                  </p>
+                  <small class="text-muted">Margen mínimo de días de vigencia requerido para cotizar productos por resolución</small>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
         </div>
 
         <!-- Right Column -->
@@ -117,13 +159,13 @@
             <mat-card-header class="pb-2 border-bottom">
               <mat-card-title class="d-flex align-items-center gap-2" style="color: #3d5a80;">
                 <mat-icon>image</mat-icon>
-                Logotipos Cargados
+                Logotipos e Imágenes
               </mat-card-title>
             </mat-card-header>
             <mat-card-content class="pt-3">
               <div class="row g-3">
                 <!-- Logo Url -->
-                <div class="col-6 text-center">
+                <div class="col-6 col-md-4 text-center">
                   <div class="logo-box border rounded p-2 d-flex flex-column align-items-center justify-content-center">
                     <span class="text-muted small fw-semibold mb-2">Logo Principal</span>
                     <div class="logo-preview-wrapper d-flex align-items-center justify-content-center">
@@ -137,7 +179,7 @@
                 </div>
 
                 <!-- Logo Order -->
-                <div class="col-6 text-center">
+                <div class="col-6 col-md-4 text-center">
                   <div class="logo-box border rounded p-2 d-flex flex-column align-items-center justify-content-center">
                     <span class="text-muted small fw-semibold mb-2">Logo Cotizaciones</span>
                     <div class="logo-preview-wrapper d-flex align-items-center justify-content-center">
@@ -151,7 +193,7 @@
                 </div>
 
                 <!-- Logo Sold -->
-                <div class="col-6 text-center">
+                <div class="col-6 col-md-4 text-center">
                   <div class="logo-box border rounded p-2 d-flex flex-column align-items-center justify-content-center">
                     <span class="text-muted small fw-semibold mb-2">Logo Salidas</span>
                     <div class="logo-preview-wrapper d-flex align-items-center justify-content-center">
@@ -165,12 +207,26 @@
                 </div>
 
                 <!-- Logo Purchasing -->
-                <div class="col-6 text-center">
+                <div class="col-6 col-md-4 text-center">
                   <div class="logo-box border rounded p-2 d-flex flex-column align-items-center justify-content-center">
                     <span class="text-muted small fw-semibold mb-2">Logo Ingresos</span>
                     <div class="logo-preview-wrapper d-flex align-items-center justify-content-center">
                       @if (company().logoPurchasing) {
                       <img [src]="company().logoPurchasing" alt="Logo Purchasing" class="logo-img" />
+                      } @else {
+                      <span class="text-muted small italic">Sin Imagen</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Footer / Pie de Página -->
+                <div class="col-6 col-md-4 text-center">
+                  <div class="logo-box border rounded p-2 d-flex flex-column align-items-center justify-content-center">
+                    <span class="text-muted small fw-semibold mb-2">Pie de Página (Footer)</span>
+                    <div class="logo-preview-wrapper d-flex align-items-center justify-content-center">
+                      @if (company().footer) {
+                      <img [src]="company().footer" alt="Footer" class="logo-img" />
                       } @else {
                       <span class="text-muted small italic">Sin Imagen</span>
                       }

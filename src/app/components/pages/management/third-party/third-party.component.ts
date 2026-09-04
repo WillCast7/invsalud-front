@@ -76,6 +76,9 @@ export class ThirdPartyComponent {
       case 'thirdParty':
         this.openThirdPartyModal("create");
         break;
+      case 'search':
+        this.search(event.row);
+        break;
     }
   }
 
@@ -134,7 +137,7 @@ export class ThirdPartyComponent {
   openThirdPartyModal(mode: string, row: ThirdPartyInterface | undefined = undefined) {
     const dialogRef: MatDialogRef<any> = this.dialog.open(ThirdPartyDialogComponent, { ...SizemodalInitializer, data: { data: row, mode: mode } });
     dialogRef.afterClosed().subscribe(result => {
-      
+
       if (result) {
         this.alertService.infoMixin.fire({
           icon: result.success ? 'success' : 'warning',

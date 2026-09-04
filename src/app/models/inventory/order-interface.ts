@@ -12,7 +12,10 @@ export interface OrderInterface {
     soldBy: Date, //no
     isActive: boolean, //no
     isSold: boolean, //no
-    type: string //no
+    type: string, //no
+    iva?: number,
+    priceIva?: number,
+    subtotal?: number
 }
 
 export const OrderExample: OrderInterface = {
@@ -29,5 +32,8 @@ export const OrderExample: OrderInterface = {
     soldBy: new Date(),
     isActive: false,
     isSold: false,
-    type: ''
+    type: '',
+    iva: 0,
+    priceIva: 0,
+    subtotal: 0
 }

@@ -1,19 +1,27 @@
-import { RecipientInitializer, RecipientInterface } from "./recipient-interface";
-
 export interface NotificationInterface {
-    id?: number;
-    route: string;
-    type: string;
+    id: number;              // ID de user_notification
+    notificationId?: number;  // ID de notification
+    userId?: number;
     title: string;
     message: string;
-    recipient: RecipientInterface;
+    category: string;        // 'SECURITY', 'EXPIRATION_MEDICINE', 'CONTRACT'
+    priority: 'INFO' | 'WARNING' | 'CRITICAL' | string;
+    targetUrl?: string;      // Ruta interna en Angular para navegación directa
+    createdAt: string;
+    isRead: boolean;
+    readAt?: string | null;
 }
 
 export const NotificationInitializer: NotificationInterface = {
-    id: 0,  
-    route: '',
-    type: '',
+    id: 0,
+    notificationId: 0,
+    userId: 0,
     title: '',
     message: '',
-    recipient: RecipientInitializer
-}
+    category: 'SECURITY',
+    priority: 'INFO',
+    targetUrl: '',
+    createdAt: new Date().toISOString(),
+    isRead: false,
+    readAt: null
+};

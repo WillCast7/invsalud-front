@@ -54,32 +54,39 @@ export class ResolutionDialogComponent implements OnInit {
   private restService = inject(RestApiService);
   private alertService = inject(AlertService);
 
+  public data: { mode: string, data: ResolutionInterface | undefined } = inject(MAT_DIALOG_DATA, { optional: true }) ?? { mode: 'create', data: undefined };
   title = signal("Crear Resolución");
   productsList: ProductInterface[] = [];
   thirdPartiesList: ThirdPartyInterface[] = [];
-  selectedProducts: ProductInterface[] = [];
-  
-  productSearchCtrl = new FormControl('');
   resolutionSearched: ResolutionInterface = ResolutionInitializer;
 
   form: FormGroup = this.fb.group({
     id: [null],
     thirdParty: [null],
-    code: ['', [Validators.required]],
-    startDate: ['', [Validators.required]],
-    expirationDate: ['', [Validators.required]],
+    code: [''],
+    startDate: [this.today, [Validators.required, this.validateStartDate.bind(this)]],
+    expirationDate: ['', [Validators.required, this.validateExpirationDate.bind(this)]],
     description: [''],
     isActive: [true],
     products: [[], [Validators.required]]
   });
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: { mode: string, data: ResolutionInterface | undefined }
-  ) { }
+  get minStartDate(): Date {
+    if (this.data?.mode && this.data.mode !== 'create' && this.resolutionSearched?.startDate) {
+      const orig = new Date(this.resolutionSearched.startDate);
+      if (orig < this.today) {
+        return orig;
+      }
+    }
+    return this.today;
+  }
+
+  constructor() { }
 
   ngOnInit() {
+    this.loadProducts();
     this.getData();
-    
+
     this.form.get('thirdParty')?.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged()
@@ -92,42 +99,78 @@ export class ResolutionDialogComponent implements OnInit {
       }
     });
 
-    this.productSearchCtrl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(value => {
-      const term = typeof value === 'string' ? value : (value as any)?.name;
-      if (term && term.length >= 3) {
-        this.searchProducts(term);
-      } else {
-        this.productsList = [];
-      }
+    this.form.get('startDate')?.valueChanges.subscribe(() => {
+      this.form.get('expirationDate')?.updateValueAndValidity();
     });
+  }
+
+  validateStartDate(control: FormControl) {
+    if (!control.value) return null;
+    const dateVal = new Date(control.value);
+    if (isNaN(dateVal.getTime())) return null;
+    const selected = new Date(dateVal).setHours(0, 0, 0, 0);
+    const today = new Date().setHours(0, 0, 0, 0);
+
+    // En edición o vista, permitir mantener la fecha original si no fue modificada
+    if (this.data?.mode && this.data.mode !== 'create' && this.resolutionSearched?.startDate) {
+      const orig = new Date(this.resolutionSearched.startDate).setHours(0, 0, 0, 0);
+      if (selected === orig) {
+        return null;
+      }
+    }
+
+    return selected < today ? { minDate: true } : null;
+  }
+
+  validateExpirationDate(control: FormControl) {
+    if (!control.value || !this.form) return null;
+    const startDateVal = this.form.get('startDate')?.value;
+    if (!startDateVal) return null;
+
+    const expDate = new Date(control.value).setHours(0, 0, 0, 0);
+    const startDate = new Date(startDateVal).setHours(0, 0, 0, 0);
+
+    return expDate < startDate ? { minExpiration: true } : null;
   }
 
   displayThirdParty(tp: any): string {
     return tp && tp.fullName ? `${tp.fullName} - ${tp.documentNumber}` : '';
   }
 
-  addProduct(event: MatAutocompleteSelectedEvent) {
-    const product = event.option.value;
-    if (!this.selectedProducts.find(p => p.id === product.id)) {
-      this.selectedProducts.push(product);
-      this.form.patchValue({ products: this.selectedProducts.map(p => p.id) });
-    }
-    // No reseteamos acá el valor directamente con setValue para evitar que cause otro valueChanges
-    // de todos modos podemos hacerlo con emitEvent falso
-    this.productSearchCtrl.setValue('', { emitEvent: false });
-    this.productsList = [];
-  }
-
-  removeProduct(product: ProductInterface) {
-    this.selectedProducts = this.selectedProducts.filter(p => p.id !== product.id);
-    this.form.patchValue({ products: this.selectedProducts.map(p => p.id) });
-  }
-
   compareWithId(o1: any, o2: any): boolean {
-    return o1 && o2 ? o1.id === o2.id : o1 === o2;
+    const id1 = o1 && typeof o1 === 'object' ? o1.id : o1;
+    const id2 = o2 && typeof o2 === 'object' ? o2.id : o2;
+    return id1 != null && id2 != null ? id1 == id2 : id1 === id2;
+  }
+
+  loadProducts() {
+    this.restService.getRequest('/products', { page: 0, size: 1000, searchValue: '', isPublicHealth: false }).subscribe({
+      next: (res) => {
+        if (res.pageable && res.pageable.content) {
+          this.productsList = res.pageable.content;
+        } else if (res.data && res.data.content) {
+          this.productsList = res.data.content;
+        } else if (res.data) {
+          this.productsList = res.data;
+        } else {
+          this.productsList = Array.isArray(res) ? res : [];
+        }
+        this.ensureExistingProductsInList();
+      },
+      error: (err) => {
+        console.error('Error al cargar productos:', err);
+      }
+    });
+  }
+
+  ensureExistingProductsInList() {
+    if (this.resolutionSearched?.products && this.resolutionSearched.products.length > 0) {
+      this.resolutionSearched.products.forEach(p => {
+        if (!this.productsList.some(item => item.id === p.id)) {
+          this.productsList.push(p);
+        }
+      });
+    }
   }
 
   onSend() {
@@ -135,7 +178,10 @@ export class ResolutionDialogComponent implements OnInit {
       const payload = { ...this.form.value };
 
       if (payload.products && payload.products.length > 0) {
-        payload.products = payload.products.map((pId: number) => ({ id: pId }));
+        payload.products = payload.products.map((p: any) => {
+          const id = typeof p === 'object' && p !== null ? p.id : p;
+          return { id };
+        });
       }
 
       if (payload.thirdParty && payload.thirdParty.id) {
@@ -145,8 +191,8 @@ export class ResolutionDialogComponent implements OnInit {
       }
 
       const method = this.data.mode === 'edit' && payload.id
-        ? this.restService.putRequest(`/resolution/${payload.id}`, payload)
-        : this.restService.postRequest("/resolution", payload);
+        ? this.restService.putRequest(`/resolutions/${payload.id}`, payload)
+        : this.restService.postRequest("/resolutions", payload);
 
       method.subscribe({
         next: () => {
@@ -180,21 +226,33 @@ export class ResolutionDialogComponent implements OnInit {
 
   onCancel() {
     this.dialogRef.close({
-            success: false,
-            message: 'Operación cancelada'
-          });
+      success: false,
+      message: 'Operación cancelada'
+    });
   }
 
   getData() {
-    if (this.data.mode === "create") {
+    if (!this.data || this.data.mode === "create") {
       this.title.set("Crear Resolución");
+      this.form.patchValue({
+        startDate: this.today
+      });
     } else if (this.data.data?.id) {
+      if (this.data.mode === "edit") {
+        this.title.set("Editar Resolución");
+      } else {
+        this.title.set("Información de la Resolución");
+      }
+
+      if (this.data.data) {
+        this.resolutionSearched = { ...this.resolutionSearched, ...this.data.data };
+      }
+
       this.restService.getRequest("/resolutions/" + this.data.data.id).subscribe({
         next: (objData) => {
           this.resolutionSearched = objData.data || objData;
 
-          if (this.data.mode === "edit") {
-            this.title.set("Editar Resolución");
+          if (this.data?.mode === "edit") {
             this.form.patchValue({
               id: this.resolutionSearched.id,
               thirdParty: this.resolutionSearched.thirdParty,
@@ -203,11 +261,9 @@ export class ResolutionDialogComponent implements OnInit {
               expirationDate: this.resolutionSearched.expirationDate,
               description: this.resolutionSearched.description,
               isActive: this.resolutionSearched.isActive,
-              products: this.resolutionSearched.products ? this.resolutionSearched.products.map(p => p.id) : []
+              products: this.resolutionSearched.products ? this.resolutionSearched.products.map((p: any) => p.id) : []
             });
-            this.selectedProducts = this.resolutionSearched.products || [];
-          } else {
-            this.title.set("Información de la Resolución");
+            this.ensureExistingProductsInList();
           }
         },
         error: (error) => {
@@ -221,23 +277,12 @@ export class ResolutionDialogComponent implements OnInit {
           });
         }
       });
-    }
-  }
-
-  searchProducts(term: string) {
-    this.restService.getRequest('/products', { page: 0, size: 50, searchValue: term }).subscribe({
-      next: (res) => {
-        if (res.pageable && res.pageable.content) {
-          this.productsList = res.pageable.content;
-        } else if (res.data && res.data.content) {
-          this.productsList = res.data.content;
-        } else if (res.data) {
-          this.productsList = res.data;
-        } else {
-          this.productsList = Array.isArray(res) ? res : [];
-        }
+    } else if (this.data.data) {
+      this.resolutionSearched = { ...this.resolutionSearched, ...this.data.data };
+      if (this.data.mode === "view") {
+        this.title.set("Información de la Resolución");
       }
-    });
+    }
   }
 
   searchThirdParties(term: string) {

@@ -17,6 +17,7 @@ import { ReportsComponent } from './components/pages/reports/reports.component';
 import { CompanyComponent } from './components/pages/configuration/company/company.component';
 import { AuditLogsComponent } from './components/pages/audit-logs/audit-logs.component';
 import { RagComponent } from './components/pages/configuration/rag/rag.component';
+import { NotificationsComponent } from './components/pages/configuration/notifications/notifications.component';
 
 export const routes: Routes = [
     { path: '', component: DashboardComponent, title: "Dashboard" },
@@ -24,6 +25,7 @@ export const routes: Routes = [
     { path: 'configuracion/micuenta', component: AccountComponent, title: "Mi cuenta" },
     { path: 'configuracion/parametrosconfiguracion', component: ConfigParamsComponent, title: "Parametros de configuracion" },
     { path: 'configuracion/plantillafacturas', component: BillTemplatesComponent, title: "Plantillas de Facturas" },
+    { path: 'configuracion/notificaciones', component: NotificationsComponent, title: "Historial de Notificaciones" },
     { path: 'administracion/terceros', component: ThirdPartyComponent, title: "Terceros" },
     { path: 'administracion/usuarios', component: UserComponent, title: "Usuarios" },
     { path: 'administracion/primarios', component: PrimaryComponent, title: "Primarios" },

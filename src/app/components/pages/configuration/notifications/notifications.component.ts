@@ -1,151 +1,209 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatInputModule } from '@angular/material/input';
-import { MatTableModule } from '@angular/material/table';
-import { AlertService } from '../../../../services/alerts.service';
-import { PageableInitializer, PageableInterface } from '../../../../models/table/pageable-interface';
-import { CommonModule, formatDate } from '@angular/common';
-import { RestApiService } from '../../../../services/rest-api.service';
-import { NotificationInterface } from '../../../../models/notifications/notification-interface';
 import { Router } from '@angular/router';
+
+// Angular Material
+import { MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { NotificationStoreService } from '../../../../services/notification-store.service';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+
+// Propios
+import { NotificationInterface } from '../../../../models/notifications/notification-interface';
+import { NotificationService } from '../../../../services/notification.service';
+import { AlertService } from '../../../../services/alerts.service';
+import { PageableInitializer, PageableInterface } from '../../../../models/table/pageable-interface';
 
 @Component({
   selector: 'app-notifications',
+  standalone: true,
   imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
     MatTableModule,
     MatInputModule,
-    MatDatepickerModule,
-    FormsModule,
-    CommonModule,
-    ReactiveFormsModule,
     MatFormFieldModule,
     MatPaginatorModule,
     MatSelectModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatChipsModule,
+    MatTooltipModule,
+    MatCardModule,
+    MatProgressBarModule,
+    DatePipe
   ],
-  providers: [provideNativeDateAdapter()],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
 })
 export class NotificationsComponent implements OnInit {
-  today: Date = new Date(new Date().setHours(0, 0, 0, 0));
-  title: string = "Listado de notificaciones";
-  startDate: Date | null = null;
-  endDate: Date | null = null;
+  // --- Inyecciones ---
+  private readonly router = inject(Router);
+  public readonly notificationService = inject(NotificationService);
+  private readonly alertService = inject(AlertService);
+
+  // --- Estado de la Tabla ---
+  title: string = 'Historial de Notificaciones';
   dataValue: PageableInterface<NotificationInterface> = PageableInitializer;
   dataSource: NotificationInterface[] = [];
-  pageEvent: PageEvent = new PageEvent;
-  pageSizeOptions = [5, 10, 25];
-  searchValue: string = '';
+  isLoading = signal<boolean>(false);
 
-  displayedNames = {
-    "title":'Nombre',
-    "id": 'Id',
-    "message": 'Notificacion',
-    "date": 'Fecha',
-    "status" : 'Estado',
-    'seen_at': 'Visto'
-  };
+  // --- Filtros ---
+  searchValue: string = '';
+  selectedCategory: string = 'ALL';
+  selectedStatus: string = 'ALL'; // 'ALL', 'UNREAD', 'READ'
+
+  // --- Paginación ---
+  pageIndex: number = 0;
+  pageSize: number = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 50];
 
   displayedColumns: string[] = [
     'id',
+    'priority',
     'title',
     'message',
-    'date',
+    'category',
+    'createdAt',
     'status',
-    'seen_at'
+    'actions'
   ];
 
-
-  searchData(){
-    if ( this.startDate && this.endDate && this.startDate > this.endDate) {
-      this.alertService.infoMixin.fire({
-        icon: 'error',
-        title: 'La fecha de inicio no puede ser mayor que la fecha de fin',
-      });
-      return;
-    }
-
-
-    this.getData(
-      this.dataValue.pageable.pageNumber,
-      this.dataValue.pageable.pageSize,
-      this.searchValue
-    );
+  ngOnInit(): void {
+    this.loadData();
   }
 
-  handlePageEvent(e: PageEvent): void {
-    this.getData(
-      e.pageIndex,
-      e.pageSize,
+  loadData(): void {
+    this.isLoading.set(true);
+
+    let isReadFilter: boolean | undefined = undefined;
+    if (this.selectedStatus === 'UNREAD') isReadFilter = false;
+    if (this.selectedStatus === 'READ') isReadFilter = true;
+
+    this.notificationService.loadNotifications(
+      this.pageIndex,
+      this.pageSize,
+      this.selectedCategory !== 'ALL' ? this.selectedCategory : undefined,
+      isReadFilter,
       this.searchValue
-    );
-  }
-
-  askToUser(notification: NotificationInterface){
-
-    this.alertService.modal.fire({
-      title: 'ir a llamar al cliente?',
-      showCancelButton: true,
-      confirmButtonText: 'Si',
-      confirmButtonColor: '#3d5a80',
-      cancelButtonColor: '#ac0505',
-      cancelButtonText: 'No, Quedarme aqui'
-    }).then((result: any) => {
-      if (result.isConfirmed) {
-        if(notification.recipient.status === "ENVIADA"){
-          if (notification.id !== undefined) {
-            this.notificationStoreService.markAsRead(notification.id);
-          }
-          this.restService.putRequest("/configuracion/notificaciones/updatenotification", notification ).subscribe({});
+    ).subscribe({
+      next: (res: any) => {
+        this.isLoading.set(false);
+        if (res?.pageable) {
+          this.dataValue = res.pageable;
+          this.dataSource = res.pageable.content || [];
+        } else if (res?.data) {
+          this.dataValue = res.data;
+          this.dataSource = res.data.content || [];
         }
-        this.router.navigate([notification.route]);
+      },
+      error: (err: any) => {
+        this.isLoading.set(false);
+        console.error('Error cargando notificaciones:', err);
       }
     });
   }
 
-  getData(page: number, size: number, searchValue: string) {
-      
-      const startDate = this.startDate ? formatDate(this.startDate, 'yyyy-MM-dd', 'en-US') : null;
-      const endDate = this.endDate ? formatDate(this.endDate, 'yyyy-MM-dd', 'en-US') : null;
-      
-      this.restService.getRequest(this.router.url + "/table", {page: page, row: size, searchValue: searchValue, startDate: startDate, endDate: endDate})
-      .subscribe({
-        next: (objData) => {
-          this.dataValue = objData.pageable;
-        },
-        error: (error) => {
-          this.alertService.infoMixin.fire({
-            icon: 'error',
-            title: error.error.message
-          });
-        },
-        complete: () => console.info('transaction complete'),
-      });
+  onSearch(): void {
+    this.pageIndex = 0;
+    this.loadData();
   }
 
-  constructor(
-    private readonly alertService: AlertService,
-    private readonly restService: RestApiService,
-    private readonly router: Router,
-    private readonly notificationStoreService: NotificationStoreService
-  ){}
-
-  ngOnInit(): void {
-    this.getData(
-      this.dataValue.pageable.pageNumber,
-      this.dataValue.pageable.pageSize,
-      this.searchValue
-    );
+  onFilterChange(): void {
+    this.pageIndex = 0;
+    this.loadData();
   }
 
+  handlePageEvent(e: PageEvent): void {
+    this.pageIndex = e.pageIndex;
+    this.pageSize = e.pageSize;
+    this.loadData();
+  }
+
+  markAsRead(item: NotificationInterface, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.notificationService.markAsRead(item.id);
+    item.isRead = true;
+    item.readAt = new Date().toISOString();
+  }
+
+  markAllAsRead(): void {
+    this.alertService.modal.fire({
+      title: '¿Marcar todas como leídas?',
+      text: 'Se actualizarán todas tus notificaciones pendientes.',
+      icon: 'question',
+      confirmButtonText: 'Sí, marcar todas',
+      cancelButtonText: 'Cancelar'
+    }).then((result: any) => {
+      if (result.isConfirmed) {
+        this.notificationService.markAllAsRead();
+        this.dataSource.forEach(n => {
+          n.isRead = true;
+          n.readAt = new Date().toISOString();
+        });
+        this.alertService.infoMixin.fire({
+          icon: 'success',
+          title: 'Todas las notificaciones fueron marcadas como leídas'
+        });
+      }
+    });
+  }
+
+  navigateToTarget(item: NotificationInterface, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.notificationService.processNotificationClick(item);
+  }
+
+  // --- Helpers Visuales de Prioridad y Categoría ---
+  getPriorityBadgeClass(priority?: string): string {
+    switch ((priority || '').toUpperCase()) {
+      case 'CRITICAL':
+        return 'badge-priority-critical';
+      case 'WARNING':
+        return 'badge-priority-warning';
+      case 'INFO':
+      default:
+        return 'badge-priority-info';
+    }
+  }
+
+  getPriorityIcon(priority?: string): string {
+    switch ((priority || '').toUpperCase()) {
+      case 'CRITICAL':
+        return 'error';
+      case 'WARNING':
+        return 'warning';
+      case 'INFO':
+      default:
+        return 'info';
+    }
+  }
+
+  getCategoryLabel(category?: string): string {
+    switch ((category || '').toUpperCase()) {
+      case 'SECURITY':
+        return 'Seguridad';
+      case 'EXPIRATION_MEDICINE':
+        return 'Vencimiento Medicamento';
+      case 'CONTRACT':
+        return 'Contrato / Resolución';
+      case 'INVENTORY_ALERT':
+        return 'Alerta de Inventario';
+      default:
+        return category || 'General';
+    }
+  }
 }

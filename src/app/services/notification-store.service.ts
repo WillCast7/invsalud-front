@@ -31,7 +31,8 @@ export class NotificationStoreService{
         const updated = this.notificationsSubject.value.map(n =>
             n.id === id ? {
           ...n,
-          recipient: { ...n.recipient, status: 'VISTO' }
+          isRead: true,
+          readAt: new Date().toISOString()
         } : n
         );
         this.updateState(updated);

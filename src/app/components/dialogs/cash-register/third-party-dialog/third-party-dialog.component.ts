@@ -101,12 +101,12 @@ export class ThirdPartyDialogComponent {
     this.resolutions.push(
       this.fb.group({
         id: [null],
-        code: ['', Validators.required],
+        code: [null],
         startDate: [this.today, Validators.required],
         expirationDate: ['', Validators.required],
         description: [''],
         isActive: [true],
-        products: [[], Validators.required]
+        products: [[]]
       })
     );
   }
@@ -116,29 +116,32 @@ export class ThirdPartyDialogComponent {
   }
 
   onSend() {
-    if (this.form.valid) {
-
-      this.restService.postRequest("/thirdparty", this.form.value).subscribe({
-        next: (objData) => {
-          this.dialogRef.close({
-            success: true,
-            message: 'Tercero registrado exitosamente'
-          });
-        },
-        error: (error) => {
-          this.alertService.infoMixin.fire({
-            icon: 'error',
-            title: error.error.message,
-          });
-        },
-        complete: () => console.info('transaction complete'),
-      });
-    } else {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       this.alertService.infoMixin.fire({
         icon: 'warning',
         title: 'Por favor complete todos los campos requeridos.',
       });
+      return;
     }
+
+    const payload = { ...this.form.value };
+
+    this.restService.postRequest("/thirdparty", payload).subscribe({
+      next: (objData) => {
+        this.dialogRef.close({
+          success: true,
+          message: this.data.mode === 'edit' ? 'Tercero actualizado exitosamente' : 'Tercero registrado exitosamente'
+        });
+      },
+      error: (error) => {
+        this.alertService.infoMixin.fire({
+          icon: 'error',
+          title: error.error?.message || 'Error al guardar el tercero',
+        });
+      },
+      complete: () => console.info('transaction complete'),
+    });
   }
 
   onCancel() {
@@ -160,7 +163,7 @@ export class ThirdPartyDialogComponent {
         error: (error) => {
           this.alertService.infoMixin.fire({
             icon: 'error',
-            title: error.error.message,
+            title: error.error?.message || 'Error al obtener parámetros',
           });
         },
         complete: () => { return },
@@ -174,7 +177,6 @@ export class ThirdPartyDialogComponent {
             this.documentTypes = objData.data.documentTypes;
             this.thirdPartySearched = objData.data.thirdParty;
 
-
             if (this.data.mode === "edit") {
               this.title.set("Editar tercero");
               this.form.patchValue({
@@ -182,25 +184,24 @@ export class ThirdPartyDialogComponent {
                 documentType: this.thirdPartySearched?.documentType,
                 documentNumber: this.thirdPartySearched?.documentNumber,
                 fullName: this.thirdPartySearched?.fullName,
-                phoneNumber: this.thirdPartySearched?.phoneNumber,
-                email: this.thirdPartySearched?.email,
-                address: this.thirdPartySearched?.address,
-                rolesIds: Array.from(this.thirdPartySearched?.roles || []).map(role => role.id) || []
+                phoneNumber: this.thirdPartySearched?.phoneNumber || '',
+                email: this.thirdPartySearched?.email || '',
+                address: this.thirdPartySearched?.address || '',
+                rolesIds: Array.from(this.thirdPartySearched?.roles || []).map((role: any) => typeof role === 'object' ? role.id : role) || []
               });
 
-              console.log(this.thirdPartySearched.roles);
               if (this.thirdPartySearched?.resolutions) {
                 this.resolutions.clear();
                 this.thirdPartySearched.resolutions.forEach(res => {
                   this.resolutions.push(
                     this.fb.group({
                       id: [res.id],
-                      code: [res.code, Validators.required],
-                      startDate: [res.startDate, Validators.required],
-                      expirationDate: [res.expirationDate, Validators.required],
-                      description: [res.description],
-                      isActive: [res.isActive],
-                      products: [res.products]
+                      code: [res.code],
+                      startDate: [res.startDate ? new Date(res.startDate) : null, Validators.required],
+                      expirationDate: [res.expirationDate ? new Date(res.expirationDate) : null, Validators.required],
+                      description: [res.description || ''],
+                      isActive: [res.isActive !== undefined ? res.isActive : true],
+                      products: [res.products || []]
                     })
                   );
                 });
@@ -212,7 +213,7 @@ export class ThirdPartyDialogComponent {
           error: (error) => {
             this.alertService.infoMixin.fire({
               icon: 'error',
-              title: error.error.message,
+              title: error.error?.message || 'Error al obtener el tercero',
             });
           },
           complete: () => { return },

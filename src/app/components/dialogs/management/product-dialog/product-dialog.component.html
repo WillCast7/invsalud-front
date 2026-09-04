@@ -47,6 +47,16 @@
         </div>
       </div>
 
+      <div class="col-md-6">
+        <div class="p-3 border rounded bg-white shadow-sm h-100">
+          <div class="text-muted small text-uppercase fw-semibold mb-1">Alerta Unidades Mínimas</div>
+          <div class="d-flex align-items-center gap-2">
+            <mat-icon class="text-warning align-middle" inline>notifications_active</mat-icon>
+            <span class="fw-bold">{{ data.data?.unitsAlert ?? 0 }} unidades</span>
+          </div>
+        </div>
+      </div>
+
       <div class="col-12">
         <div class="p-3 border rounded bg-white shadow-sm">
           <div class="text-muted small text-uppercase fw-semibold mb-2">Detalles / Descripción</div>
@@ -67,7 +77,6 @@
 </div>
 }@else{
 <h2 mat-dialog-title class="p-3 d-flex align-items-center gap-2 m-0 bg-light border-bottom">
-  <mat-icon color="primary">{{ data.mode === 'edit' ? 'edit' : 'add_circle' }}</mat-icon>
   {{ title() }}
 </h2>
 
@@ -190,6 +199,16 @@
         </mat-form-field>
       </div>
       }
+
+      <div class="col-12 mb-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Alerta de Unidades Mínimas (Stock de Seguridad)</mat-label>
+          <input matInput type="number" formControlName="unitsAlert" min="0" placeholder="0">
+          <mat-icon matSuffix color="primary">notifications_active</mat-icon>
+          <mat-hint>Se disparará una notificación automática cuando el stock disponible de este medicamento sea menor o
+            igual a este valor</mat-hint>
+        </mat-form-field>
+      </div>
 
       <div class="col-12 mb-2">
         <mat-form-field appearance="outline" class="w-100">

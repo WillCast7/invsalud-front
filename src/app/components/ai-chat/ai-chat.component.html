@@ -34,16 +34,24 @@
     </div>
   </div>
 
-  <!-- Barra de Filtros de Módulo RAG -->
+  <!-- Selector de Modo de Búsqueda: Documentos vs API -->
   <div class="ai-module-filter-bar">
     <span class="filter-label"><mat-icon class="filter-icon">filter_alt</mat-icon> Filtro:</span>
     <div class="filter-chips-wrapper">
-      @for (filter of moduleFilters; track filter.code) {
-      <button type="button" class="filter-chip" [class.active]="aiChatService.selectedModuleFilter() === filter.code"
-        (click)="selectModuleFilter(filter.code)">
-        {{ filter.label }}
+      <button type="button" class="filter-chip mode-chip"
+        [class.active]="aiChatService.selectedSearchMode() === 'DOCUMENTOS'"
+        (click)="setSearchMode('DOCUMENTOS')"
+        matTooltip="Búsqueda RAG: Normativas, resoluciones, manuales e instrucciones de uso">
+        <mat-icon class="chip-mini-icon">description</mat-icon>
+        Documentos
       </button>
-      }
+      <button type="button" class="filter-chip mode-chip"
+        [class.active]="aiChatService.selectedSearchMode() === 'API'"
+        (click)="setSearchMode('API')"
+        matTooltip="Búsqueda en API: Stock en vivo, lotes, productos, órdenes y clientes">
+        <mat-icon class="chip-mini-icon">dns</mat-icon>
+        API
+      </button>
     </div>
   </div>
 
@@ -128,9 +136,9 @@
     </div>
   </div>
 
-  <!-- Sugerencias rápidas (Chips) -->
+  <!-- Sugerencias rápidas (Chips dinámicos según el modo) -->
   <div class="ai-suggestions-container">
-    @for (chip of quickSuggestions; track chip) {
+    @for (chip of activeQuickSuggestions; track chip) {
     <button type="button" class="ai-chip-btn" (click)="sendQuickSuggestion(chip)">
       {{ chip }}
     </button>
@@ -141,7 +149,7 @@
   <div class="ai-chat-footer">
     <div class="ai-input-wrapper">
       <textarea class="ai-chat-textarea" [(ngModel)]="userInput" (keydown)="onKeydown($event)"
-        placeholder="Pregunta sobre normativas, manuales o la app..." rows="1">
+        [placeholder]="inputPlaceholder" rows="1">
       </textarea>
       <button mat-icon-button class="ai-send-btn" [disabled]="!userInput.trim() || aiChatService.isLoading()"
         (click)="onSendMessage()" matTooltip="Enviar mensaje (Enter)">

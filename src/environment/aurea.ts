@@ -1,8 +1,9 @@
 // api configuration Here!
 export const config = {
   apiVersion: 'v1',
+  //urlMedia: 'http://190.6.176.222:4200',
+  //urlBackend: 'http://190.6.176.222:9090',
   //urlMedia: 'http://auealab.com',
-  //urlBackend: 'http://auealab.com/api',
   urlMedia: 'http://localhost:4200',
   //urlBackend: '/api',
   urlBackend: 'http://localhost:9091',
@@ -13,3 +14,4 @@ export const config = {
   maskDni: "0.000.000.000",
   maskMoney: "000.000.000"
 };
+

@@ -93,6 +93,10 @@ export class ResolutionsComponent {
     }
   }
 
+  buttonsList: TableOption[] = [
+    { icon: 'add', label: '', identifier: 'createResolution', title: 'Crear Parámetro' }
+  ];
+
   constructor(
     private readonly restService: RestApiService,
     private readonly alertService: AlertService

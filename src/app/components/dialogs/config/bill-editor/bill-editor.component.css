@@ -29,6 +29,7 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     background-color: white;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .a4-section {
@@ -36,6 +37,15 @@
     border: 1px solid transparent;
     transition: all 0.2s ease;
     cursor: pointer;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.a4-section table {
+    table-layout: fixed;
+    word-break: break-word;
+    word-wrap: break-word;
+    box-sizing: border-box;
 }
 
 .a4-section:hover {
@@ -127,4 +137,38 @@
     font-size: 0.75rem;
     color: #6b7280;
     line-height: 1.25;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .a4-page, .a4-page * {
+        visibility: visible;
+    }
+    .a4-page {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 10mm 15mm !important;
+        box-shadow: none !important;
+        border: none !important;
+        background-color: white !important;
+    }
+    .section-overlay,
+    .a4-section,
+    .a4-section:hover,
+    .a4-section.active {
+        border: none !important;
+        background-color: transparent !important;
+    }
+    .header-dialog,
+    .config-panel,
+    mat-dialog-actions {
+        display: none !important;
+    }
 }

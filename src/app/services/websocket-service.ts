@@ -171,7 +171,9 @@ export class WebSocketService{
                 if(msg.id){
                   this.notificationStoreService.markAsRead(msg.id)
                 }
-                this.router.navigate([msg.route])
+                if (msg.targetUrl) {
+                  this.router.navigate([msg.targetUrl])
+                }
               }
             });
           });

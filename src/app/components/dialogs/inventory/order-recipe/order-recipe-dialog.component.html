@@ -50,17 +50,32 @@
 
     <div class="p-3 rounded mb-1 border shadow-sm bg-white">
       <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Información de la Cotización</p>
-      <div class="row small">
-        <div class="col-md-3 mb-2">
-          <strong class="text-muted">Unidades:</strong><br> {{ data.data.items[0]?.units }}
+      <div class="row small align-items-center">
+        <div class="col-sm-2 col-6 mb-2">
+          <strong class="text-muted">Unidades:</strong><br>
+          <span class="fs-6 fw-bold text-dark">{{ data.data?.items?.[0]?.units || 0 }}</span>
         </div>
-        <div class="col-md-3 mb-2">
-          <strong class="text-muted">Precio unitario:</strong><br> {{ data.data.items[0]?.priceUnit | currency }}
+        <div class="col-sm-2 col-6 mb-2">
+          <strong class="text-muted">Precio unitario:</strong><br>
+          <span class="fs-6 fw-bold text-primary">{{ data.data?.items?.[0]?.priceUnit | currency }}</span>
         </div>
-        <div class="col-md-3 mb-2">
-          <strong class="text-muted">Total:</strong><br>
-          <strong class="fs-4 fw-bold text-success">{{ data.data?.items[0].units *
-            data.data?.items[0]?.priceUnit | currency }}</strong>
+        @if (data.data?.iva || data.data?.priceIva) {
+        <div class="col-sm-2 col-6 mb-2">
+          <strong class="text-muted">IVA (%):</strong><br>
+          <span class="fs-6 fw-bold text-dark">{{ data.data?.iva || 0 }}%</span>
+        </div>
+        <div class="col-sm-2 col-6 mb-2">
+          <strong class="text-muted">Subtotal:</strong><br>
+          <span class="fs-6 fw-bold text-dark">{{ (data.data?.subtotal || (data.data?.items?.[0]?.units * data.data?.items?.[0]?.priceUnit)) | currency }}</span>
+        </div>
+        <div class="col-sm-2 col-6 mb-2">
+          <strong class="text-muted">Precio del IVA:</strong><br>
+          <span class="fs-6 fw-bold text-warning">{{ data.data?.priceIva | currency }}</span>
+        </div>
+        }
+        <div class="col-sm-2 col-6 mb-2">
+          <strong class="text-muted">Total Cotizado:</strong><br>
+          <strong class="fs-4 fw-bold text-success">{{ (data.data?.total || (data.data?.items?.[0]?.units * data.data?.items?.[0]?.priceUnit)) | currency }}</strong>
         </div>
       </div>
     </div>
@@ -109,13 +124,30 @@
         <div class="d-flex flex-wrap align-items-center justify-content-between bg-light p-3 rounded border shadow-sm">
           <div class="d-flex flex-column mb-2 mb-md-0">
             <span class="text-muted small text-uppercase fw-bold">Unidades</span>
-            <span class="fs-4 fw-bold text-dark">{{ mainForm.get('units')?.value || 0 }}</span>
+            <span class="fs-4 fw-bold text-dark">{{ units }}</span>
           </div>
 
           <div class="d-flex flex-column mb-2 mb-md-0 border-start ps-4">
             <span class="text-muted small text-uppercase fw-bold">Precio Unitario</span>
             <span class="fs-4 fw-bold text-primary">{{ salePrice | currency }}</span>
           </div>
+
+          @if (useIva) {
+          <div class="d-flex flex-column mb-2 mb-md-0 border-start ps-4">
+            <span class="text-muted small text-uppercase fw-bold">IVA</span>
+            <span class="fs-4 fw-bold text-dark">{{ iva }}%</span>
+          </div>
+
+          <div class="d-flex flex-column mb-2 mb-md-0 border-start ps-4">
+            <span class="text-muted small text-uppercase fw-bold">Subtotal</span>
+            <span class="fs-4 fw-bold text-dark">{{ subtotal | currency }}</span>
+          </div>
+
+          <div class="d-flex flex-column mb-2 mb-md-0 border-start ps-4">
+            <span class="text-muted small text-uppercase fw-bold">Precio del IVA</span>
+            <span class="fs-4 fw-bold text-warning">{{ priceIva | currency }}</span>
+          </div>
+          }
 
           <div class="d-flex flex-column border-start ps-4">
             <span class="text-muted small text-uppercase fw-bold">Total Cotizado</span>

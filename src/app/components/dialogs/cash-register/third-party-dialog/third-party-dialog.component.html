@@ -87,7 +87,7 @@
             </div>
 
             <mat-divider class="my-2"></mat-divider>
-            <label class="text-muted small d-block mb-2">Productos autorizados:</label>
+            <label class="text-muted small d-block mb-2">Medicamentos autorizados:</label>
             <mat-chip-set>
               @for (prod of res.products; track prod.id) {
               <mat-chip class="small">
@@ -195,8 +195,11 @@
             <div class="row">
               <div class="col-md-4">
                 <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Numero</mat-label>
-                  <input matInput formControlName="code">
+                  <mat-label>Número (Serial)</mat-label>
+                  <input matInput formControlName="code" readonly placeholder="RES-Automático">
+                  <mat-icon matSuffix class="text-muted"
+                    style="font-size: 18px; width: 18px; height: 18px; margin-right: 8px;">lock</mat-icon>
+                  <mat-hint>Generado automáticamente</mat-hint>
                 </mat-form-field>
               </div>
               <div class="col-md-4">
@@ -209,7 +212,7 @@
               </div>
               <div class="col-md-4">
                 <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Fecha de Venc.</mat-label>
+                  <mat-label>Fecha de Vencimiento</mat-label>
                   <input matInput [matDatepicker]="endPicker" formControlName="expirationDate"
                     [min]="resolutions.at(i).get('startDate')?.value">
                   <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
@@ -242,7 +245,7 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="mb-2 pe-3">
-  <button mat-raised-button class="save-button" [disabled]="form.invalid" (click)="onSend()">
+  <button mat-raised-button color="primary" class="save-button" (click)="onSend()">
     Guardar Tercero
   </button>
   <button mat-button (click)="onCancel()" class="cancel-button">Cancelar</button>

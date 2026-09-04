@@ -67,7 +67,11 @@ export class CompanyDialogComponent implements OnInit {
       logoSold: [''],
       logoPurchasing: [''],
       nameApp: ['', Validators.required],
-      isActive: [true]
+      isActive: [true],
+      useIva: [false],
+      iva: [0],
+      footer: [''],
+      daysLimitResolution: [0, [Validators.min(0)]]
     });
   }
 
@@ -106,7 +110,7 @@ export class CompanyDialogComponent implements OnInit {
     };
 
     // Update company details using the endpoint
-    this.restService.putRequest('/login', payload).subscribe({
+    this.restService.putRequest('/company', payload).subscribe({
       next: (response) => {
         this.dialogRef.close({
           success: true,

@@ -40,7 +40,7 @@ import { SizemodalInitializer } from '../../../../models/modal/sizemodal-interfa
     ReactiveFormsModule,
     MatPaginatorModule,
     MatButtonToggleModule,
-    
+
     A11yModule,
     MatCardModule,
     TableHeaderControlsComponent,
@@ -72,6 +72,7 @@ export class PrimaryComponent {
   productColumns: ColumnTableInterface[] = [
     { key: 'id', label: 'id', isSortable: true },
     { key: 'code', label: 'Codigo', isSortable: true },
+    { key: 'name', label: 'Nombre', isSortable: true },
     { key: 'concentration', label: 'Concentracion', isSortable: true },
     { key: 'presentation', label: 'Presentacion', isSortable: true },
     { key: 'pharmaceuticalForm', label: 'F. farmaceutica', isSortable: true },

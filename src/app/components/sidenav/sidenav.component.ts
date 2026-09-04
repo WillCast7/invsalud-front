@@ -20,7 +20,7 @@ import { LoginComponent } from "../pages/login/login.component";
 import { SessionService } from '../../services/session.service';
 import { MenuItemInterface } from '../../models/menuItem-interface';
 import { NotificationInterface } from '../../models/notifications/notification-interface';
-import { NotificationStoreService } from '../../services/notification-store.service';
+import { NotificationService } from '../../services/notification.service';
 import { AiChatComponent } from '../ai-chat/ai-chat.component';
 
 @Component({
@@ -48,6 +48,7 @@ export class SidenavComponent implements OnInit {
   readonly router = inject(Router);
   private readonly titleService = inject(Title);
   private readonly sessionService = inject(SessionService);
+  public readonly notificationService = inject(NotificationService);
 
   // --- ViewChild ---
   @ViewChild('drawer') drawer!: MatDrawer;
@@ -57,10 +58,8 @@ export class SidenavComponent implements OnInit {
   drawerValue = signal<MatDrawerMode>('push');
 
   // --- Signals de Datos ---
-  namesUser = this.sessionService.currentUserNames; // Ya es signal en el servicio
+  namesUser = this.sessionService.currentUserNames;
   menues = signal<MenuItemInterface[]>([]);
-  notificationList = signal<NotificationInterface[]>([]);
-  notificationsNumber = signal<number>(0);
 
   // --- Lógica Reactiva de Navegación ---
   private readonly navEnd$ = this.router.events.pipe(
@@ -68,16 +67,13 @@ export class SidenavComponent implements OnInit {
   );
 
   // Signal del Título del Navbar
-  // 1. Signal del Título del Navbar (Versión ultra-precisa)
   readonly pageTitle = toSignal(
     this.navEnd$.pipe(
       map(() => {
-        // Navegamos por el árbol de rutas activas hasta llegar a la hoja final
         let route = this.router.routerState.snapshot.root;
         while (route.firstChild) {
           route = route.firstChild;
         }
-        // Retornamos el título configurado en la ruta o, si no tiene, el del TitleService
         return route.title || this.titleService.getTitle();
       })
     ),
@@ -91,8 +87,6 @@ export class SidenavComponent implements OnInit {
     ),
     { initialValue: typeof window !== 'undefined' ? window.location.pathname === '/reset-password' : false }
   );
-  // Signal de Acciones Dinámicas (Botones extra en navbar si existen)
-
 
   // --- Listeners ---
   @HostListener('window:resize')
@@ -101,15 +95,9 @@ export class SidenavComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Suscripción al menú (Hasta que el servicio sea 100% signals)
+    // Suscripción al menú
     this.sessionService.menuSubject.subscribe(() => {
       this.menues.set(this.sessionService.menu);
-    });
-
-    this.notificationService.notifications$.subscribe((notifs: NotificationInterface[]) => {
-      this.notificationList.set(notifs);
-      if (this.notificationList && this.notificationList.length > 0) { }
-      this.notificationsNumber.set(notifs.filter(n => n.recipient.status === 'ENVIADA').length);
     });
   }
 
@@ -128,7 +116,6 @@ export class SidenavComponent implements OnInit {
       this.drawer.close();
     }
 
-    // Limpieza de acordeones de Bootstrap (necesario por el HTML que usas)
     const accordions = document.querySelectorAll('.accordion-collapse');
     accordions.forEach((accordion) => {
       accordion.classList.remove('show');
@@ -139,12 +126,58 @@ export class SidenavComponent implements OnInit {
 
   // --- Notificaciones ---
   processNotification(notification: NotificationInterface): void {
-    // Lógica para marcar como leída si es necesario
-    this.router.navigate([notification.route]);
+    this.notificationService.processNotificationClick(notification);
   }
 
-  constructor(
-    private readonly notificationService: NotificationStoreService,
+  markAllAsRead(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.notificationService.markAllAsRead();
+  }
 
-  ) { }
+  getPriorityIcon(priority?: string): string {
+    switch ((priority || '').toUpperCase()) {
+      case 'CRITICAL':
+        return 'error';
+      case 'WARNING':
+        return 'warning';
+      case 'INFO':
+      default:
+        return 'info';
+    }
+  }
+
+  getPriorityIconClass(priority?: string): string {
+    switch ((priority || '').toUpperCase()) {
+      case 'CRITICAL':
+        return 'text-danger';
+      case 'WARNING':
+        return 'text-warning';
+      case 'INFO':
+      default:
+        return 'text-primary';
+    }
+  }
+
+  getRelativeTime(dateStr?: string): string {
+    if (!dateStr) return '';
+    try {
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMin = Math.floor(diffMs / (1000 * 60));
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffMin < 1) return 'Hace un momento';
+      if (diffMin < 60) return `Hace ${diffMin} min`;
+      if (diffHours < 24) return `Hace ${diffHours} h`;
+      if (diffDays === 1) return 'Ayer';
+      if (diffDays < 7) return `Hace ${diffDays} días`;
+      return date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
+    } catch {
+      return '';
+    }
+  }
 }

@@ -25,20 +25,29 @@ export class AiChatComponent implements AfterViewChecked {
   public userInput: string = '';
   public expandedSources: Set<string> = new Set<string>();
 
-  public moduleFilters = [
-    { code: 'TODOS', label: 'Todos los Docs' },
-    { code: 'NORMATIVA', label: '📜 Normatividad' },
-    { code: 'MANUALES', label: '📘 Manuales' },
-    { code: 'INVENTARIO', label: '📦 Inventario' },
-    { code: 'RESOLUCIONES', label: '📑 Resoluciones' }
-  ];
+  public get activeQuickSuggestions(): string[] {
+    if (this.aiChatService.selectedSearchMode() === 'API') {
+      return [
+        '📦 Stock de Dolex',
+        '📋 Medicamentos registrados',
+        '⏳ Lotes y vencimientos',
+        '📑 Resoluciones del sistema'
+      ];
+    } else {
+      return [
+        '📜 Normativa de medicamentos vencidos',
+        '🛠️ ¿Cómo crear un nuevo producto?',
+        '🗑️ ¿Cómo dar de baja un lote?',
+        '📘 Manual de usuario de la app'
+      ];
+    }
+  }
 
-  public quickSuggestions: string[] = [
-    '📜 Normativa de medicamentos vencidos',
-    '🛠️ ¿Cómo crear o editar un insumo?',
-    '📦 Consultar estado de inventario',
-    '🗑️ ¿Cómo dar de baja un lote?'
-  ];
+  public get inputPlaceholder(): string {
+    return this.aiChatService.selectedSearchMode() === 'API'
+      ? 'Consultar stock, productos, lotes, compras o clientes...'
+      : 'Preguntar sobre normativas, resoluciones o manuales...';
+  }
 
   private shouldScrollToBottom: boolean = false;
 
@@ -57,6 +66,10 @@ export class AiChatComponent implements AfterViewChecked {
       this.scrollToBottom();
       this.shouldScrollToBottom = false;
     }
+  }
+
+  public setSearchMode(mode: 'DOCUMENTOS' | 'API'): void {
+    this.aiChatService.setSearchMode(mode);
   }
 
   public selectModuleFilter(filterCode: string): void {

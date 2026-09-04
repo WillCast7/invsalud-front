@@ -19,6 +19,10 @@ export interface CompanyInterface {
     nameApp: string;
     createdAt: Date;
     isActive: boolean;
+    useIva: boolean;
+    iva: number;
+    footer: string;
+    daysLimitResolution: number;
 }
 
 export const CompanyInitializer: CompanyInterface = {
@@ -41,5 +45,9 @@ export const CompanyInitializer: CompanyInterface = {
     subscriptionPlan: '',
     nameApp: '',
     createdAt: new Date(),
-    isActive: true
+    isActive: true,
+    useIva: false,
+    iva: 0,
+    footer: '',
+    daysLimitResolution: 0
 }
