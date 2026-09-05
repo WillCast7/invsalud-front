@@ -22,6 +22,7 @@ import { OrderInterface } from '../../../../models/inventory/order-interface';
 import { SizemodalInitializer } from '../../../../models/modal/sizemodal-interface';
 import { OrderDialogComponent } from '../../../dialogs/inventory/order/order-dialog.component';
 import { OrderRecipeDialogComponent } from '../../../dialogs/inventory/order-recipe/order-recipe-dialog.component';
+import { QuotePrintService } from '../../../../services/quote-print.service';
 
 @Component({
   selector: 'app-orders',
@@ -45,8 +46,10 @@ import { OrderRecipeDialogComponent } from '../../../dialogs/inventory/order-rec
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css'
 })
+
 export class OrdersComponent {
   readonly dialog = inject(MatDialog);
+  private readonly quotePrintService = inject(QuotePrintService);
   pageEvent: PageEvent = new PageEvent;
   dataValue: PageableInterface<OrderInterface> = PageableInitializer;
   searchValue = "";
@@ -244,18 +247,8 @@ export class OrdersComponent {
   }
 
   onPrint(row: any) {
-    this.restService.fileGetRequest("/report/order/" + row.id).subscribe({
-      next: (blob) => {
-        const fileURL = URL.createObjectURL(blob);
-        window.open(fileURL, '_blank');
-      },
-      error: (error) => {
-        this.alertService.infoMixin.fire({
-          icon: 'error',
-          title: error.error?.message || 'Error al descargar la cotización en PDF',
-        });
-      }
-    });
+    if (!row || !row.id) return;
+    this.quotePrintService.printOrder(row.id);
   }
 
 }
