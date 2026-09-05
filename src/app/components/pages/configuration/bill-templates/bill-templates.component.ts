@@ -20,7 +20,7 @@ import { TableHeaderControlsComponent } from '../../../../shared/table-header-co
     MatDialogModule,
     TableHeaderControlsComponent,
     TableComponent
-],
+  ],
   templateUrl: './bill-templates.component.html',
   styleUrl: './bill-templates.component.css'
 })
@@ -38,7 +38,7 @@ export class BillTemplatesComponent {
     { key: 'name', label: 'Nombre Plantilla', isSortable: true },
     { key: 'category', label: 'Categoría', isSortable: true },
     { key: 'documentType', label: 'Tipo Doc.', isSortable: true },
-    { key: 'isDefault', label: '¿Predeterminada?', isSortable: true },
+    { key: 'isDefault', label: '¿Predeterminada?', isSortable: true, pipe: 'status' },
     { key: 'createdAt', label: 'Fecha Creación', isSortable: true, pipe: 'date' }
   ];
 
@@ -95,27 +95,27 @@ export class BillTemplatesComponent {
     this.restService.getRequest(this.url, { page: page + 1, size: size, searchValue: searchValue }).subscribe({
       next: (objData: any) => {
         const apiData = objData.content !== undefined ? objData : objData.pageable;
-        if(apiData) {
-            this.dataValue = {
-                empty: objData.empty || false,
-                first: objData.first || false,
-                last: objData.last || false,
-                number: objData.number || page,
-                numberOfElements: objData.numberOfElements || 0,
-                pageable: objData.pageable || {
-                    offset: 0,
-                    pageNumber: page,
-                    pageSize: size,
-                    paged: true,
-                    sort: { empty: true, sorted: false, unsorted: true },
-                    unsorted: true
-                },
-                size: objData.size || size,
-                sort: objData.sort || { empty: true, sorted: false, unsorted: true },
-                totalElements: objData.totalElements || 0,
-                totalPages: objData.totalPages || 0,
-                content: objData.content || []
-            };
+        if (apiData) {
+          this.dataValue = {
+            empty: objData.empty || false,
+            first: objData.first || false,
+            last: objData.last || false,
+            number: objData.number || page,
+            numberOfElements: objData.numberOfElements || 0,
+            pageable: objData.pageable || {
+              offset: 0,
+              pageNumber: page,
+              pageSize: size,
+              paged: true,
+              sort: { empty: true, sorted: false, unsorted: true },
+              unsorted: true
+            },
+            size: objData.size || size,
+            sort: objData.sort || { empty: true, sorted: false, unsorted: true },
+            totalElements: objData.totalElements || 0,
+            totalPages: objData.totalPages || 0,
+            content: objData.content || []
+          };
         }
       },
       error: (error) => {

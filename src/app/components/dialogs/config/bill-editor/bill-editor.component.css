@@ -139,10 +139,412 @@
     line-height: 1.25;
 }
 
+/* =========================================================
+   Cotización Recetarios (Letter format: 612pt x 792pt)
+   ========================================================= */
+.recipe-quote-preview-container {
+    width: 100%;
+}
+
+.recipe-quote-preview-container .page {
+    position: relative;
+    width: 8.5in;
+    min-width: 8.5in;
+    max-width: 8.5in;
+    height: 11in;
+    min-height: 11in;
+    max-height: 11in;
+    overflow: hidden;
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12pt;
+    color: #000;
+    box-sizing: border-box;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    margin: 10px auto;
+}
+
+.recipe-quote-preview-container .header {
+    position: absolute;
+    top: 38pt;
+    left: 0;
+    width: 100%;
+    height: 69pt;
+}
+
+.recipe-quote-preview-container .header img {
+    display: block;
+    width: 271pt;
+    height: auto;
+    margin: 0 auto;
+}
+
+.recipe-quote-preview-container .content {
+    position: absolute;
+    left: 71pt;
+    right: 71pt;
+    top: 119pt;
+    bottom: 82pt;
+}
+
+.recipe-quote-preview-container .form-code {
+    line-height: 1.2;
+    margin: 0;
+}
+
+.recipe-quote-preview-container .document-code {
+    margin-top: 18pt;
+    line-height: 1.2;
+}
+
+.recipe-quote-preview-container .order-info {
+    position: absolute;
+    top: 59pt;
+    right: -8pt;
+    width: 210pt;
+    text-align: right;
+    line-height: 1.35;
+}
+
+.recipe-quote-preview-container .order-code {
+    font-weight: 700;
+}
+
+.recipe-quote-preview-container .recipient {
+    margin-top: 66pt;
+    line-height: 1.18;
+}
+
+.recipe-quote-preview-container .recipient-name {
+    font-weight: 700;
+}
+
+.recipe-quote-preview-container .reference {
+    margin-top: 18pt;
+    white-space: nowrap;
+}
+
+.recipe-quote-preview-container .recipient-subject {
+    margin-top: 14pt;
+    font-weight: 700;
+}
+
+.recipe-quote-preview-container .recipient-intro {
+    margin-top: 8pt;
+    text-align: justify;
+    line-height: 1.2;
+}
+
+.recipe-quote-preview-container .quote-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-top: 40pt;
+    font-size: 12pt;
+}
+
+.recipe-quote-preview-container .quote-table th,
+.recipe-quote-preview-container .quote-table td {
+    border: 1px solid #000;
+    padding: 4pt 3pt;
+    vertical-align: middle;
+}
+
+.recipe-quote-preview-container .quote-table th {
+    font-style: italic;
+    font-weight: 700;
+    text-align: center;
+    height: 29pt;
+}
+
+.recipe-quote-preview-container .quote-table td {
+    text-align: center;
+    height: 31pt;
+    line-height: 1.05;
+}
+
+.recipe-quote-preview-container .quote-table .qty {
+    width: 22%;
+}
+
+.recipe-quote-preview-container .quote-table .unit {
+    width: 27%;
+}
+
+.recipe-quote-preview-container .quote-table .subtotal {
+    width: 26%;
+}
+
+.recipe-quote-preview-container .quote-table .iva {
+    width: 18%;
+}
+
+.recipe-quote-preview-container .quote-table .total {
+    width: 18%;
+}
+
+.recipe-quote-preview-container .quote-table .grand-label {
+    font-weight: 700;
+    text-align: center;
+}
+
+.recipe-quote-preview-container .quote-table .grand-total {
+    font-weight: 700;
+    text-align: left;
+    padding-left: 8pt;
+}
+
+/* Tabla de Medicamentos (7 Columnas) */
+.recipe-quote-preview-container .quote-table.medicamentos {
+    margin-top: 14pt;
+    font-size: 8.5pt;
+}
+
+.recipe-quote-preview-container .quote-table.medicamentos th {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 8.5pt;
+    text-align: center;
+    height: auto;
+    padding: 4pt 2pt;
+}
+
+.recipe-quote-preview-container .quote-table.medicamentos td {
+    font-size: 8.5pt;
+    height: auto;
+    padding: 4pt 2pt;
+    line-height: 1.15;
+    text-align: center;
+    word-break: break-word;
+}
+
+.recipe-quote-preview-container .quote-table.medicamentos .col-batch { width: 15%; }
+.recipe-quote-preview-container .quote-table.medicamentos .col-name { width: 21%; }
+.recipe-quote-preview-container .quote-table.medicamentos .col-pres { width: 16%; }
+.recipe-quote-preview-container .quote-table.medicamentos .col-exp { width: 15%; }
+.recipe-quote-preview-container .quote-table.medicamentos .col-qty { width: 9%; }
+.recipe-quote-preview-container .quote-table.medicamentos .col-unit { width: 12%; }
+.recipe-quote-preview-container .quote-table.medicamentos .col-total { width: 12%; }
+
+.recipe-quote-preview-container .quote-table.medicamentos .grand-label {
+    font-weight: 700;
+    text-align: center;
+}
+
+.recipe-quote-preview-container .quote-table.medicamentos .grand-total {
+    font-weight: 700;
+    text-align: center;
+    padding-left: 0;
+}
+
+.recipe-quote-preview-container .notes {
+    margin-top: 56pt;
+    line-height: 1.12;
+}
+
+.recipe-quote-preview-container .notes.medicamentos {
+    margin-top: 22pt;
+    line-height: 1.15;
+}
+
+.recipe-quote-preview-container .note-title {
+    margin-bottom: 20pt;
+}
+
+.recipe-quote-preview-container .notes.medicamentos .note-title {
+    margin-bottom: 10pt;
+}
+
+.recipe-quote-preview-container .med-note-sub {
+    margin-bottom: 6pt;
+    line-height: 1.2;
+}
+
+.recipe-quote-preview-container .med-clause {
+    margin-bottom: 9pt;
+    text-align: justify;
+    line-height: 1.2;
+}
+
+.recipe-quote-preview-container .note-item {
+    display: grid;
+    grid-template-columns: 36pt 1fr;
+    margin-bottom: 1pt;
+}
+
+.recipe-quote-preview-container .note-item .letter {
+    display: block;
+}
+
+.recipe-quote-preview-container .note-item .text {
+    text-align: justify;
+}
+
+.recipe-quote-preview-container .footer {
+    position: absolute;
+    left: 18pt;
+    bottom: 0;
+    width: 576pt;
+    height: auto;
+}
+
+.recipe-quote-preview-container .footer img {
+    display: block;
+    width: 576pt;
+    height: auto;
+}
+
+/* Page 2 */
+.recipe-quote-preview-container .page-2 .content {
+    top: 119pt;
+}
+
+.recipe-quote-preview-container .page-2 .notes {
+    margin-top: 0;
+}
+
+.recipe-quote-preview-container .page-2 .note-title {
+    margin-bottom: 20pt;
+}
+
+.recipe-quote-preview-container .page-2 .thanks {
+    margin-top: 20pt;
+    line-height: 1.2;
+}
+
+.recipe-quote-preview-container .page-2 .signature {
+    margin-top: 43pt;
+    line-height: 1.2;
+}
+
+.recipe-quote-preview-container .page-2 .signature-block {
+    margin-top: 56pt;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Orden de Salida Medicamentos */
+.recipe-quote-preview-container .sale-order-recipient {
+    margin-top: 42pt;
+    line-height: 1.25;
+}
+
+.recipe-quote-preview-container .sale-order-recipient .recipient-title {
+    font-weight: 700;
+    font-size: 11pt;
+    color: #000;
+}
+
+.recipe-quote-preview-container .sale-order-recipient .recipient-dept {
+    font-weight: 700;
+    font-size: 11pt;
+    color: #000;
+    margin-top: 2pt;
+}
+
+.recipe-quote-preview-container .sale-order-recipient .recipient-intro-delivery {
+    margin-top: 14pt;
+    text-align: justify;
+    line-height: 1.25;
+    font-size: 10.5pt;
+    color: #000;
+}
+
+.recipe-quote-preview-container .sale-order-signatures {
+    margin-top: 24pt;
+}
+
+.recipe-quote-preview-container .sale-order-signatures .receipt-data {
+    line-height: 1.7;
+    font-size: 10.5pt;
+    color: #000;
+}
+
+.recipe-quote-preview-container .sale-order-signatures .sale-institution-sign {
+    margin-top: 20pt;
+    text-align: center;
+    line-height: 1.25;
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #000;
+}
+
+.recipe-quote-preview-container .sale-order-signatures .sale-institution-sign .sign-line {
+    font-weight: normal;
+    margin-bottom: 3pt;
+    letter-spacing: -0.5px;
+}
+
+.recipe-quote-preview-container .quote-table.recetarios-salida {
+    margin-top: 20pt;
+    font-size: 10pt;
+}
+
+.recipe-quote-preview-container .quote-table.recetarios-salida th {
+    font-weight: 700;
+    font-size: 10pt;
+    padding: 6pt 4pt;
+}
+
+.recipe-quote-preview-container .quote-table.recetarios-salida td {
+    font-size: 10pt;
+    padding: 6pt 4pt;
+    line-height: 1.2;
+}
+
+/* Interactive section hover & active outlines */
+.recipe-interactive-section {
+    cursor: pointer;
+    transition: outline 0.15s ease, background-color 0.15s ease;
+}
+
+.recipe-interactive-section:hover {
+    outline: 2px dashed #0d6efd;
+    background-color: rgba(13, 110, 253, 0.03);
+}
+
+.recipe-interactive-section.active {
+    outline: 2px solid #0d6efd;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
 @media print {
     body * {
         visibility: hidden;
     }
+
+    /* Recipe Quote template (Letter 2 pages) */
+    .recipe-quote-preview-container,
+    .recipe-quote-preview-container * {
+        visibility: visible;
+    }
+    .recipe-quote-preview-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        gap: 0 !important;
+    }
+    .recipe-quote-preview-container .page {
+        margin: 0 !important;
+        box-shadow: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+    }
+    .recipe-quote-preview-container .page:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+    }
+    .recipe-interactive-section,
+    .recipe-interactive-section:hover,
+    .recipe-interactive-section.active {
+        outline: none !important;
+        background-color: transparent !important;
+    }
+
+    /* Standard A4 pages */
     .a4-page, .a4-page * {
         visibility: visible;
     }

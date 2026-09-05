@@ -25,8 +25,13 @@
           {{ element[column.key] ? 'Activo' : 'Inactivo' }}
         </span>
         }
+        @if (column.key === 'isDefault') {
+        <span class="fw-bold">
+          {{ element[column.key] ? 'Si' : 'No' }}
+        </span>
+        }
         @if (column.key === 'type') {
-        <span class="badge rounded-pill"
+        <span class=" badge rounded-pill"
           [ngClass]="element[column.key] === 'Venta' ? 'bg-success text-light' : 'bg-danger text-light'">
           {{ element[column.key] }}
         </span>
