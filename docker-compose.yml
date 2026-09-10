@@ -8,5 +8,5 @@ services:
     container_name: inventario
     restart: always
     ports:
-      # Mapeamos el puerto 4330 de la máquina anfitriona al puerto 8000 del contenedor
-      - "4330:8000"
+      # Mapeamos el puerto 4200 de la máquina anfitriona al puerto 4200 del contenedor
+      - "4200:4200"
