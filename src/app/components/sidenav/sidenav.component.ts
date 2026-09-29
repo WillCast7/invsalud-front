@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, signal, inject, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, signal, inject, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 // Propios
 import { LoginComponent } from "../pages/login/login.component";
@@ -22,6 +23,7 @@ import { MenuItemInterface } from '../../models/menuItem-interface';
 import { NotificationInterface } from '../../models/notifications/notification-interface';
 import { NotificationService } from '../../services/notification.service';
 import { AiChatComponent } from '../ai-chat/ai-chat.component';
+import { ChangePasswordComponent } from '../dialogs/config/change-password/change-password.component';
 
 @Component({
   selector: 'app-sidenav',
@@ -38,7 +40,8 @@ import { AiChatComponent } from '../ai-chat/ai-chat.component';
     MatIconModule,
     MatBadgeModule,
     MatToolbarModule,
-    MatMenuModule
+    MatMenuModule,
+    MatDialogModule
   ],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.css'
@@ -49,6 +52,32 @@ export class SidenavComponent implements OnInit {
   private readonly titleService = inject(Title);
   private readonly sessionService = inject(SessionService);
   public readonly notificationService = inject(NotificationService);
+  private readonly dialog = inject(MatDialog);
+
+  private isPasswordDialogOpen = false;
+
+  constructor() {
+    effect(() => {
+      const active = this.isSessionActive();
+      const mustChange = this.sessionService.mustChangePassword();
+      if (active && mustChange && !this.isPasswordDialogOpen) {
+        this.openForcedChangePasswordDialog();
+      }
+    });
+  }
+
+  private openForcedChangePasswordDialog(): void {
+    this.isPasswordDialogOpen = true;
+    const dialogRef = this.dialog.open(ChangePasswordComponent, {
+      width: '500px',
+      disableClose: true,
+      data: { forceChange: true }
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.isPasswordDialogOpen = false;
+    });
+  }
 
   // --- ViewChild ---
   @ViewChild('drawer') drawer!: MatDrawer;

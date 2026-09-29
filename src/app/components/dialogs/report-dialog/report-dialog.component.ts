@@ -1,5 +1,7 @@
 import { Component, Inject, signal } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogClose } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogClose, MatDialogTitle } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { ColumnTableInterface } from '../../../models/table/column-table-interface';
 import { TableComponent } from "../../../shared/table/table.component";
 import { PageableInitializer, PageableInterface } from '../../../models/table/pageable-interface';
@@ -9,13 +11,32 @@ import { PageEvent } from '@angular/material/paginator';
 import { RestApiService } from '../../../services/rest-api.service';
 import { AlertService } from '../../../services/alerts.service';
 
+export interface AppliedFilter {
+  label: string;
+  value: string;
+  icon: string;
+}
+
 @Component({
   selector: 'app-report-dialog',
-  imports: [TableComponent, MatDialogActions, MatButtonModule, MatDialogContent, MatDialogClose],
+  imports: [
+    CommonModule,
+    TableComponent,
+    MatDialogActions,
+    MatButtonModule,
+    MatDialogContent,
+    MatDialogClose,
+    MatDialogTitle,
+    MatIconModule
+  ],
   templateUrl: './report-dialog.component.html',
   styleUrl: './report-dialog.component.css',
 })
 export class ReportDialogComponent {
+
+  title = signal('Reporte de inventario');
+  appliedFilters: AppliedFilter[] = [];
+  dataValue: PageableInterface<PrescriptionInventoryTableInterface> = PageableInitializer;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { data: any },
@@ -23,10 +44,135 @@ export class ReportDialogComponent {
     private readonly alertService: AlertService
   ) {
     console.log(data);
+    this.extractAppliedFilters();
     this.getData();
   }
-  title = signal('Reporte de inventario');
-  dataValue: PageableInterface<PrescriptionInventoryTableInterface> = PageableInitializer;
+
+  private extractAppliedFilters(): void {
+    const rawFilters = this.data?.data || {};
+    const filters: AppliedFilter[] = [];
+
+    // Tipo de reporte
+    if (rawFilters.type) {
+      const typeLabels: Record<string, string> = {
+        order: 'Cotización',
+        purchasing: 'Ingresos',
+        sold: 'Salidas',
+        inventory: 'Inventario'
+      };
+      const labelValue = typeLabels[rawFilters.type] || rawFilters.type;
+      filters.push({
+        label: 'Tipo',
+        value: labelValue,
+        icon: 'analytics'
+      });
+      this.title.set(`Reporte de ${labelValue}`);
+    }
+
+    // Categoría
+    if (rawFilters.category) {
+      const categoryLabels: Record<string, string> = {
+        special: 'Medicamentos',
+        public: 'Salud pública',
+        recipe: 'Recetarios'
+      };
+      filters.push({
+        label: 'Categoría',
+        value: categoryLabels[rawFilters.category] || rawFilters.category,
+        icon: 'category'
+      });
+    }
+
+    // Fechas
+    const start = this.formatDate(rawFilters.startDate);
+    const end = this.formatDate(rawFilters.endDate);
+    if (start && end) {
+      filters.push({
+        label: 'Período',
+        value: `${start} a ${end}`,
+        icon: 'date_range'
+      });
+    } else if (start) {
+      filters.push({
+        label: 'Desde',
+        value: start,
+        icon: 'event'
+      });
+    } else if (end) {
+      filters.push({
+        label: 'Hasta',
+        value: end,
+        icon: 'event'
+      });
+    }
+
+    // Tercero / Documento
+    if (rawFilters.documentNumber) {
+      filters.push({
+        label: 'Tercero (Doc)',
+        value: String(rawFilters.documentNumber),
+        icon: 'badge'
+      });
+    }
+
+    // Producto
+    if (rawFilters.product) {
+      const prodName = typeof rawFilters.product === 'object'
+        ? (rawFilters.product.name || rawFilters.product.code)
+        : rawFilters.product;
+      if (prodName) {
+        filters.push({
+          label: 'Producto',
+          value: prodName,
+          icon: 'medication'
+        });
+      }
+    }
+
+    // Lote
+    if (rawFilters.batch) {
+      const batchCode = typeof rawFilters.batch === 'object'
+        ? (rawFilters.batch.code || rawFilters.batch.details)
+        : rawFilters.batch;
+      if (batchCode) {
+        filters.push({
+          label: 'Lote',
+          value: batchCode,
+          icon: 'layers'
+        });
+      }
+    }
+
+    // Estado
+    if (rawFilters.status) {
+      const statusLabels: Record<string, string> = {
+        vigente: 'Vigente',
+        vencido: 'Vencido',
+        retirado: 'Retirado'
+      };
+      filters.push({
+        label: 'Estado',
+        value: statusLabels[rawFilters.status] || rawFilters.status,
+        icon: 'verified'
+      });
+    }
+
+    // Unidades
+    if (rawFilters.units && rawFilters.units !== 'all') {
+      const unitLabels: Record<string, string> = {
+        available: 'Con unid. disp.',
+        unavailable: 'Sin unid. disp.',
+        some_but_not_available: 'Con unid. no disp.'
+      };
+      filters.push({
+        label: 'Unidades',
+        value: unitLabels[rawFilters.units] || rawFilters.units,
+        icon: 'inventory_2'
+      });
+    }
+
+    this.appliedFilters = filters;
+  }
 
   inventoryColumns: ColumnTableInterface[] = [
     { key: 'id', label: 'ID', isSortable: true },

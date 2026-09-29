@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { HttpErrorResponse } from '@angular/common/http';
 import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { PageableInitializer, PageableInterface } from '../../../../models/table/pageable-interface';
@@ -248,7 +249,42 @@ export class OrdersComponent {
 
   onPrint(row: any) {
     if (!row || !row.id) return;
-    this.quotePrintService.printOrder(row.id);
+
+    const templateId = row.quoteTemplateOrderId || row.quote_template_order_id || row.quoteTemplateId || row.quote_template_id;
+    if (!templateId) {
+      this.alertService.infoMixin.fire({
+        icon: 'warning',
+        title: 'Esta cotización no tiene ningún template',
+      });
+      return;
+    }
+
+    this.restService.fileGetRequest(`/report/order/${row.id}?templateId=${templateId}`).subscribe({
+      next: (blob) => {
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL, '_blank');
+      },
+      error: async (error: HttpErrorResponse) => {
+        let mensajeMostrar = "Ocurrió un error inesperado al descargar la cotización";
+
+        if (error.error instanceof Blob) {
+          try {
+            const text = await error.error.text();
+            const errorJson = JSON.parse(text);
+            mensajeMostrar = errorJson.message || mensajeMostrar;
+          } catch (e) {
+            console.error("No se pudo parsear el error del Blob", e);
+          }
+        } else if (error.error?.message) {
+          mensajeMostrar = error.error.message;
+        }
+
+        this.alertService.infoMixin.fire({
+          icon: 'error',
+          title: mensajeMostrar,
+        });
+      }
+    });
   }
 
 }

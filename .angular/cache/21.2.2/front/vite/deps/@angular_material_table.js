@@ -7,7 +7,7 @@ import {
   CDK_VIRTUAL_SCROLL_VIEWPORT,
   ScrollingModule,
   ViewportRuler
-} from "./chunk-XPYDAXOF.js";
+} from "./chunk-ENBIGDWV.js";
 import {
   DataSource,
   _RecycleViewRepeaterStrategy,
@@ -16,10 +16,6 @@ import {
 } from "./chunk-BBOZITVB.js";
 import "./chunk-GUGIMSVJ.js";
 import {
-  BidiModule,
-  Directionality
-} from "./chunk-JLBUACPJ.js";
-import {
   _isNumberValue
 } from "./chunk-NMG3ZRHV.js";
 import {
@@ -27,6 +23,10 @@ import {
 } from "./chunk-RODSRFG6.js";
 import "./chunk-XJC6SEPO.js";
 import "./chunk-B66IRT2Z.js";
+import {
+  BidiModule,
+  Directionality
+} from "./chunk-JLBUACPJ.js";
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,

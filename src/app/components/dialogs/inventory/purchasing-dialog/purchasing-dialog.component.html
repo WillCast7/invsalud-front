@@ -16,6 +16,14 @@
 <!-- ===== VISTA DE DETALLE ===== -->
 <mat-dialog-content class="pt-4" style="overflow-x: hidden;">
 
+  <app-document-template-viewer
+    [documentId]="data.data?.id || objData.id"
+    documentType="purchase"
+    templateType="COMPRA"
+    category="MEDICAMENTOS"
+    [initialTemplateId]="data.data?.quoteTemplateId || objData.quoteTemplateId"
+    (templateSaved)="onTemplateSaved($event)">
+
   <div class="container-fluid">
 
     <!-- Encabezado de la compra -->
@@ -173,6 +181,8 @@
     </div>
 
   </div>
+
+  </app-document-template-viewer>
 
 </mat-dialog-content>
 

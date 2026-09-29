@@ -18,12 +18,9 @@ import {
   CdkScrollableModule,
   ScrollDispatcher,
   ViewportRuler
-} from "./chunk-XPYDAXOF.js";
+} from "./chunk-ENBIGDWV.js";
 import "./chunk-BBOZITVB.js";
 import "./chunk-GUGIMSVJ.js";
-import {
-  Directionality
-} from "./chunk-JLBUACPJ.js";
 import {
   coerceElement,
   coerceNumberProperty
@@ -31,6 +28,9 @@ import {
 import "./chunk-RODSRFG6.js";
 import "./chunk-XJC6SEPO.js";
 import "./chunk-B66IRT2Z.js";
+import {
+  Directionality
+} from "./chunk-JLBUACPJ.js";
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,

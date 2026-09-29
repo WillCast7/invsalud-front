@@ -1,0 +1,78 @@
+<div class="template-viewer-wrapper">
+  <!-- Barra superior de selección y guardado de plantilla (Sólo para roles 1, 2 y 3) -->
+  @if (canEditTemplate) {
+  <div class="template-toolbar d-flex flex-wrap align-items-center justify-content-between p-2 mb-3 bg-light rounded border gap-3">
+    <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 550px;">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-grow-1 density-compact">
+        <mat-label>Plantilla del Documento</mat-label>
+        <mat-select [value]="selectedTemplateId" (selectionChange)="onSelectTemplate($event.value)" [disabled]="isSaving">
+          <mat-option [value]="null">
+            <span class="text-muted">-- Sin plantilla (Vista estándar) --</span>
+          </mat-option>
+          @for (tpl of templates; track tpl.id) {
+          <mat-option [value]="tpl.id">
+            {{ tpl.name }} {{ tpl.isDefault ? ' (Predeterminada)' : '' }}
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      @if (selectedTemplateId !== savedTemplateId) {
+      <button mat-flat-button color="primary" class="save-template-btn" (click)="saveTemplate()" [disabled]="isSaving">
+        @if (isSaving) {
+        <mat-spinner diameter="18" class="d-inline-block me-1"></mat-spinner>
+        } @else {
+        <mat-icon class="me-1">save</mat-icon>
+        }
+        Guardar Plantilla
+      </button>
+      }
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      @if (selectedTemplateId && previewHtml) {
+      <button mat-stroked-button color="primary" type="button" (click)="printDocument()" [disabled]="isLoading" title="Imprimir plantilla activa">
+        <mat-icon class="me-1">print</mat-icon>
+        Imprimir
+      </button>
+      }
+
+      @if (selectedTemplateId) {
+      <span class="badge bg-primary px-3 py-2 fs-6">
+        <mat-icon class="fs-6 me-1 align-middle" style="width: 16px; height: 16px; font-size: 16px;">description</mat-icon>
+        Plantilla Activa
+      </span>
+      } @else {
+      <span class="badge bg-secondary px-3 py-2 fs-6">
+        <mat-icon class="fs-6 me-1 align-middle" style="width: 16px; height: 16px; font-size: 16px;">table_chart</mat-icon>
+        Vista Estándar
+      </span>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- Vista previa renderizada o vista estándar -->
+  @if (selectedTemplateId) {
+    @if (isLoading) {
+    <div class="preview-loading-container d-flex flex-column align-items-center justify-content-center p-5 border rounded bg-white shadow-sm" style="min-height: 500px;">
+      <mat-spinner diameter="48" class="mb-3"></mat-spinner>
+      <h5 class="text-secondary fw-semibold">Generando vista previa del documento...</h5>
+      <p class="text-muted small mb-0">Cargando los datos y aplicando el diseño de la plantilla seleccionada.</p>
+    </div>
+    } @else if (previewHtml) {
+    <div class="template-iframe-container border rounded shadow-sm bg-white overflow-hidden">
+      <iframe #previewFrame [srcdoc]="previewHtml" class="w-100" style="min-height: 800px; height: 80vh; border: none; display: block;"></iframe>
+    </div>
+    } @else {
+    <div class="alert alert-warning text-center p-4 rounded border">
+      <mat-icon class="fs-1 d-block mx-auto mb-2 text-warning" style="width: 36px; height: 36px;">warning</mat-icon>
+      <h6 class="fw-bold mb-1">No se pudo cargar la vista previa</h6>
+      <p class="text-muted small mb-3">La plantilla seleccionada no pudo generar la vista previa. Puede seleccionar otra plantilla o volver a la vista estándar.</p>
+      <button mat-stroked-button color="primary" (click)="onSelectTemplate(null)">Ver Vista Estándar</button>
+    </div>
+    }
+  } @else {
+    <ng-content></ng-content>
+  }
+</div>

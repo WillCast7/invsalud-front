@@ -12,7 +12,8 @@ export interface PurchaseTableInterface {
     purchasedCode: string,
     isActive: boolean,
     purchasingItems?: PurchasingItemInterface[],
-    purchasingRecipe?: PurchasingRecipeInterface
+    purchasingRecipe?: PurchasingRecipeInterface,
+    quoteTemplateId?: string
 }
 
 export const PurchaseTableExample: PurchaseTableInterface = {
@@ -37,6 +38,7 @@ export interface PurchaseInterface {
     purchasedCode: string,
     isActive: boolean,
     items?: PurchasingItemInterface[],
+    quoteTemplateId?: string
 }
 
 export const PurchaseExample: PurchaseInterface = {

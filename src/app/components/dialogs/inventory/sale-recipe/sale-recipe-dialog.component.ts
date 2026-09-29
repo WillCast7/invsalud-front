@@ -12,6 +12,7 @@ import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-interface';
 import { HttpErrorResponse } from '@angular/common/http';
+import { DocumentTemplateViewerComponent } from '../../../../shared/document-template-viewer/document-template-viewer.component';
 
 @Component({
   selector: 'app-order-recipe-dialog',
@@ -26,7 +27,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatSelectModule,
     MatDividerModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DocumentTemplateViewerComponent
   ],
   templateUrl: './sale-recipe-dialog.component.html'
 })
@@ -56,7 +58,16 @@ export class SaleRecipeDialogComponent implements OnInit {
   }
 
   onPrint(row: any) {
-    this.restService.fileGetRequest("/report/sale/" + row.id).subscribe({
+    const data = row || this.data?.data;
+    const templateId = data?.quoteTemplateSoldId || data?.quoteTemplateId;
+    if (!templateId) {
+      this.alertService.infoMixin.fire({
+        icon: 'warning',
+        title: 'Esta venta no tiene ningún template',
+      });
+      return;
+    }
+    this.restService.fileGetRequest(`/report/sale/${data.id || this.data.data.id}?templateId=${templateId}`).subscribe({
       next: (blob) => {
         const fileURL = URL.createObjectURL(blob);
         window.open(fileURL, '_blank');
@@ -212,5 +223,12 @@ export class SaleRecipeDialogComponent implements OnInit {
       success: false,
       message: 'Operación cancelada'
     });
+  }
+
+  onTemplateSaved(templateId: string | null) {
+    if (this.data?.data) {
+      this.data.data.quoteTemplateSoldId = templateId;
+      this.data.data.quoteTemplateId = templateId;
+    }
   }
 }

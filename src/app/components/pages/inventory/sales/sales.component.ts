@@ -156,7 +156,16 @@ export class SalesComponent {
         }
       });
     } else {
-      this.restService.fileGetRequest("/report/sale/" + row.id).subscribe({
+      const templateId = row.quoteTemplateSoldId || row.quote_template_sold_id || row.quoteTemplateId || row.quote_template_id;
+      if (!templateId) {
+        this.alertService.infoMixin.fire({
+          icon: 'warning',
+          title: 'Esta venta no tiene ningún template',
+        });
+        return;
+      }
+
+      this.restService.fileGetRequest(`/report/sale/${row.id}?templateId=${templateId}`).subscribe({
         next: (blob) => {
           const fileURL = URL.createObjectURL(blob);
           window.open(fileURL, '_blank');

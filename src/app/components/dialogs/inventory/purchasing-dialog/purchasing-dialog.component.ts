@@ -24,6 +24,7 @@ import { ProductDialogComponent } from '../../management/product-dialog/product-
 import { BatchDialogComponent } from '../../management/batch-dialog/batch-dialog.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SizemodalInitializer } from '../../../../models/modal/sizemodal-interface';
+import { DocumentTemplateViewerComponent } from '../../../../shared/document-template-viewer/document-template-viewer.component';
 
 export class ParentErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -53,7 +54,8 @@ export class ParentErrorStateMatcher implements ErrorStateMatcher {
     MatChipsModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxMaskDirective
+    NgxMaskDirective,
+    DocumentTemplateViewerComponent
   ],
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
@@ -448,7 +450,18 @@ export class PurchasingDialogComponent implements OnInit {
   }
 
   onPrint(row: any) {
-    this.restService.fileGetRequest("/report/purchase/" + row.id).subscribe({
+    const data = row || this.data?.data;
+    const id = data?.id;
+    if (!id) return;
+    const templateId = data?.quoteTemplateId || data?.purchasingRecipe?.quoteTemplateId;
+    if (!templateId) {
+      this.alertService.infoMixin.fire({
+        icon: 'warning',
+        title: 'Esta compra no tiene ningún template',
+      });
+      return;
+    }
+    this.restService.fileGetRequest(`/report/purchase/${id}?templateId=${templateId}`).subscribe({
       next: (blob) => {
         const fileURL = URL.createObjectURL(blob);
         window.open(fileURL, '_blank');
@@ -481,5 +494,14 @@ export class PurchasingDialogComponent implements OnInit {
         });
       }
     });
+  }
+
+  onTemplateSaved(templateId: string | null) {
+    if (this.data?.data) {
+      this.data.data.quoteTemplateId = templateId;
+    }
+    if (this.objData) {
+      this.objData.quoteTemplateId = templateId as any;
+    }
   }
 }

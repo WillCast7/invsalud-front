@@ -1,7 +1,27 @@
-<mat-dialog-content class="pt-3" style="overflow-x: hidden;">
-    <h2 mat-dialog-title>
-        {{title()}}
-    </h2>
+<h2 mat-dialog-title class="dialog-header d-flex align-items-center gap-2">
+    <mat-icon class="dialog-header-icon">analytics</mat-icon>
+    <span class="dialog-title-text">{{title()}}</span>
+</h2>
+
+<mat-dialog-content class="pt-2" style="overflow-x: hidden;">
+    @if (appliedFilters.length > 0) {
+    <div class="filter-params-bar mb-3">
+        <div class="filter-params-title">
+            <mat-icon class="filter-title-icon">filter_alt</mat-icon>
+            <span>Filtros aplicados:</span>
+        </div>
+        <div class="filter-chips-container">
+            @for (filter of appliedFilters; track filter.label) {
+            <div class="filter-badge">
+                <mat-icon class="filter-badge-icon">{{filter.icon}}</mat-icon>
+                <span class="filter-badge-label">{{filter.label}}:</span>
+                <span class="filter-badge-value">{{filter.value}}</span>
+            </div>
+            }
+        </div>
+    </div>
+    }
+
     <app-table [columns]="inventoryColumns" [pageable]="dataValue" (pageChange)="onPageChange($event)" />
 </mat-dialog-content>
 <mat-dialog-actions align="end" class="p-3">

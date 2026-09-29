@@ -16,11 +16,15 @@
 <mat-dialog-content class="pt-4">
   <div class="container-fluid">
     <div class="row mb-4">
-      <div class="col-md-5">
+      <div class="col-md-4">
         <label class="text-muted small d-block">Código</label>
         <span class="fs-5 fw-medium text-dark">{{ resolutionSearched.code || '-' }}</span>
       </div>
-      <div class="col-md-5">
+      <div class="col-md-4">
+        <label class="text-muted small d-block">N° de Resolución</label>
+        <span class="fs-5 fw-medium text-dark">{{ resolutionSearched.numberResolution || '-' }}</span>
+      </div>
+      <div class="col-md-4">
         <label class="text-muted small d-block">Tercero</label>
         <span class="fs-6 fw-bold">
           {{ resolutionSearched.thirdParty.fullName || 'Sin asignar' }}
@@ -90,7 +94,13 @@
           <mat-hint>Generado automáticamente</mat-hint>
         </mat-form-field>
       </div>
-      <div class="col-md-8">
+      <div class="col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>N° de Resolución</mat-label>
+          <input matInput formControlName="numberResolution" placeholder="Ej: 0123-2024">
+        </mat-form-field>
+      </div>
+      <div class="col-md-4">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Tercero (Opcional)</mat-label>
           <input matInput type="text" placeholder="Escriba para buscar (mín 3 letras)..." formControlName="thirdParty"

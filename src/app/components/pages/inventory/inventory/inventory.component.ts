@@ -22,6 +22,7 @@ import { PrescriptionInventoryTableInterface } from '../../../../models/inventor
 import { InventoryDialogComponent } from '../../../dialogs/inventory/inventory/inventory-dialog.component';
 import { RecipeTableComponent } from '../../../../shared/recipe-table/recipe-table.component';
 import { RecipeInterface } from '../../../../models/inventory/recipe-interface';
+import { SessionService } from '../../../../services/session.service';
 
 @Component({
   selector: 'app-inventory-page',
@@ -54,7 +55,10 @@ export class InventoryComponent {
   searchValue = "";
   url = '/prescription-inventory';
   pageMode = signal<string>('special');
-  rId: number = Number.parseInt(localStorage.getItem('rId') || '0');
+  private readonly sessionService = inject(SessionService);
+  get rId(): number {
+    return this.sessionService.roleId;
+  }
   inventoryColumns: ColumnTableInterface[] = [
     { key: 'id', label: 'ID', isSortable: true },
     { key: 'product', label: 'Producto', isSortable: true },

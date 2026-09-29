@@ -59,6 +59,8 @@ export class ProductDialogComponent {
     isPublicHealth: new FormControl(false),
     isActive: new FormControl(true),
     unitsAlert: new FormControl(0, [Validators.min(0)]),
+    code: new FormControl(null),
+
 
     // Subfields for Create Mode
     concNumber1: new FormControl(''),
@@ -131,7 +133,8 @@ export class ProductDialogComponent {
                 details: this.productSearched?.details,
                 isPublicHealth: this.productSearched?.isPublicHealth,
                 isActive: this.productSearched?.isActive,
-                unitsAlert: this.productSearched?.unitsAlert ?? 0
+                unitsAlert: this.productSearched?.unitsAlert ?? 0,
+                code: this.productSearched?.code,
               });
             } else if (this.data.mode === "view") {
               this.title.set("Informacion del producto");

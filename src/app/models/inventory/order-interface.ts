@@ -15,7 +15,9 @@ export interface OrderInterface {
     type: string, //no
     iva?: number,
     priceIva?: number,
-    subtotal?: number
+    subtotal?: number,
+    quoteTemplateOrderId?: string,
+    quoteTemplateSoldId?: string
 }
 
 export const OrderExample: OrderInterface = {

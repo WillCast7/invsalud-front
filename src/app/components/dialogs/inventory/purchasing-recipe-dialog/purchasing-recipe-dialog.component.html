@@ -13,63 +13,75 @@
 </div>
 
 @if (mode === 'view') {
-<div class="container-fluid py-1">
-  <!-- Header info: Codigo y Estado -->
-  <div class="row mb-1 bg-light p-3 rounded border">
-    <div class="col-md-6">
-      <p class="mb-0 text-muted small">Código de Ingreso</p>
-      <h3 class="fw-bold text-primary mb-0">{{ data.data?.purchasedCode || '---' }}</h3>
+<mat-dialog-content class="pt-2" style="overflow-x: hidden;">
+  <app-document-template-viewer
+    [documentId]="data.data?.id"
+    documentType="purchase"
+    templateType="COMPRA"
+    category="RECETARIOS"
+    [initialTemplateId]="data.data?.quoteTemplateId || data.data?.purchasingRecipe?.quoteTemplateId"
+    (templateSaved)="onTemplateSaved($event)">
+
+  <div class="container-fluid py-1">
+    <!-- Header info: Codigo y Estado -->
+    <div class="row mb-1 bg-light p-3 rounded border">
+      <div class="col-md-6">
+        <p class="mb-0 text-muted small">Código de Ingreso</p>
+        <h3 class="fw-bold text-primary mb-0">{{ data.data?.purchasedCode || '---' }}</h3>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <p class="mb-0 text-muted small">Fecha de Creación</p>
+        <p class="fw-medium mb-0">{{ data.data?.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
     </div>
-    <div class="col-md-6 text-md-end">
-      <p class="mb-0 text-muted small">Fecha de Creación</p>
-      <p class="fw-medium mb-0">{{ data.data?.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+
+    <!-- Tercero Info -->
+    <div class="p-3 rounded mb-1 border shadow-sm bg-white">
+      <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Información del Cliente</p>
+      <div class="row small d-flex justify-content-between">
+        <div class="col-md-3 mb-2">
+          <strong class="text-muted">Nombre:</strong><br> {{ data.data?.thirdParty?.fullName }}
+        </div>
+        <div class="col-md-3 mb-2">
+          <strong class="text-muted">Documento:</strong><br> {{ data.data?.thirdParty?.documentType }} {{
+          data.data?.thirdParty?.documentNumber }}
+        </div>
+        <div class="col-md-3 mb-2">
+          <strong class="text-muted">Dirección:</strong><br> {{ data.data?.thirdParty?.address || 'N/A' }}
+        </div>
+        <div class="col-md-3">
+          <strong class="text-muted">Email:</strong><br> {{ data.data?.thirdParty?.email || 'N/A' }}
+        </div>
+      </div>
+    </div>
+
+    <div class="p-3 rounded mb-1 border shadow-sm">
+      <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Información del Ingreso</p>
+      <div class="row small d-flex justify-content-between">
+        <div class="col-md-2 mb-2">
+          <strong class="text-muted">Serial Inicial:</strong><br> {{ data.data?.purchasingRecipe?.startSerial }}
+        </div>
+        <div class="col-md-2 mb-2">
+          <strong class="text-muted">Serial Final:</strong><br> {{ data.data?.purchasingRecipe?.finalSerial }}
+        </div>
+        <div class="col-md-1 mb-2">
+          <strong class="text-muted">Unidades:</strong><br> {{ data.data?.purchasingRecipe?.units }}
+        </div>
+        <div class="col-md-3 mb-2">
+          <strong class="text-muted">Precio unitario:</strong><br> {{ data.data?.purchasingRecipe?.priceUnit |
+          currency }}
+        </div>
+        <div class="col-md-3 mb-2">
+          <strong class="text-muted">Total:</strong><br>
+          <strong class="fs-4 fw-bold text-success">{{ (data.data?.purchasingRecipe?.priceTotal || 0) | currency
+            }}</strong>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Tercero Info -->
-  <div class="p-3 rounded mb-1 border shadow-sm bg-white">
-    <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Información del Cliente</p>
-    <div class="row small d-flex justify-content-between">
-      <div class="col-md-3 mb-2">
-        <strong class="text-muted">Nombre:</strong><br> {{ data.data?.thirdParty?.fullName }}
-      </div>
-      <div class="col-md-3 mb-2">
-        <strong class="text-muted">Documento:</strong><br> {{ data.data?.thirdParty?.documentType }} {{
-        data.data?.thirdParty?.documentNumber }}
-      </div>
-      <div class="col-md-3 mb-2">
-        <strong class="text-muted">Dirección:</strong><br> {{ data.data?.thirdParty?.address || 'N/A' }}
-      </div>
-      <div class="col-md-3">
-        <strong class="text-muted">Email:</strong><br> {{ data.data?.thirdParty?.email || 'N/A' }}
-      </div>
-    </div>
-  </div>
-
-  <div class="p-3 rounded mb-1 border shadow-sm">
-    <p class="fw-bold text-secondary border-bottom pb-1 mb-3">Información del Ingreso</p>
-    <div class="row small d-flex justify-content-between">
-      <div class="col-md-2 mb-2">
-        <strong class="text-muted">Serial Inicial:</strong><br> {{ data.data?.purchasingRecipe?.startSerial }}
-      </div>
-      <div class="col-md-2 mb-2">
-        <strong class="text-muted">Serial Final:</strong><br> {{ data.data?.purchasingRecipe?.finalSerial }}
-      </div>
-      <div class="col-md-1 mb-2">
-        <strong class="text-muted">Unidades:</strong><br> {{ data.data?.purchasingRecipe?.units }}
-      </div>
-      <div class="col-md-3 mb-2">
-        <strong class="text-muted">Precio unitario:</strong><br> {{ data.data?.purchasingRecipe?.priceUnit |
-        currency }}
-      </div>
-      <div class="col-md-3 mb-2">
-        <strong class="text-muted">Total:</strong><br>
-        <strong class="fs-4 fw-bold text-success">{{ (data.data?.purchasingRecipe?.priceTotal || 0) | currency
-          }}</strong>
-      </div>
-    </div>
-  </div>
-</div>
+  </app-document-template-viewer>
+</mat-dialog-content>
 } @else {
 <mat-dialog-content class="pt-3" style="overflow-x: hidden;">
   <form [formGroup]="mainForm" class="container-fluid">

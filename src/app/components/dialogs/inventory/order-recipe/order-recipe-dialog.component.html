@@ -15,6 +15,15 @@
 
 <mat-dialog-content>
   @if (mode === 'view') {
+  <app-document-template-viewer
+    [documentId]="data.data?.id"
+    documentType="order"
+    templateType="COTIZACION"
+    category="RECETARIOS"
+    [initialTemplateId]="data.data?.quoteTemplateOrderId || data.data?.quoteTemplateId"
+    orderType="order"
+    (templateSaved)="onTemplateSaved($event)">
+
   <div class="container-fluid py-1">
     <!-- Header info: Codigo y Estado -->
     <div class="row mb-1 bg-light p-3 rounded border">
@@ -87,6 +96,8 @@
     </div>
     }
   </div>
+
+  </app-document-template-viewer>
   } @else {
   <form [formGroup]="mainForm" class="flex col-12 gap-4 mt-4">
     <div class="col-md-12">

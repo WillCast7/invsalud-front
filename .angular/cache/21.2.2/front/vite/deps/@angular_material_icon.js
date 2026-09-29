@@ -9,11 +9,11 @@ import "./chunk-TH5FZGM6.js";
 import {
   HttpClient
 } from "./chunk-FPHCFDLT.js";
+import "./chunk-XJC6SEPO.js";
+import "./chunk-B66IRT2Z.js";
 import {
   BidiModule
 } from "./chunk-JLBUACPJ.js";
-import "./chunk-XJC6SEPO.js";
-import "./chunk-B66IRT2Z.js";
 import {
   ChangeDetectionStrategy,
   Component,

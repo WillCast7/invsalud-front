@@ -9,3 +9,13 @@ export interface DocumentTemplate {
     isActive?: boolean;
     version?: number;
 }
+
+export interface DocumentTemplateSummary {
+    id: string;
+    name: string;
+    documentType: string;
+    category: string;
+    isDefault?: boolean;
+    isActive?: boolean;
+    version?: number;
+}

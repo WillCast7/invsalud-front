@@ -102,6 +102,7 @@ export class ThirdPartyDialogComponent {
       this.fb.group({
         id: [null],
         code: [null],
+        numberResolution: [''],
         startDate: [this.today, Validators.required],
         expirationDate: ['', Validators.required],
         description: [''],
@@ -157,8 +158,29 @@ export class ThirdPartyDialogComponent {
     if (this.data.mode === "create") {
       this.restService.getRequest("/configparams/thirdParty").subscribe({
         next: (objData) => {
-          this.thirdPartyTypes = objData.data.roles;
+          this.thirdPartyTypes = Array.from(objData.data.roles || []);
           this.documentTypes = objData.data.documentTypes;
+
+          const clientRole = this.thirdPartyTypes.find(role =>
+            role.roleName?.toLowerCase().trim().includes('cliente')
+          );
+          if (clientRole) {
+            this.form.patchValue({
+              rolesIds: [clientRole.id]
+            });
+          }
+
+          const nitDocType = this.documentTypes.find(doc =>
+            doc.name?.toLowerCase().trim() === 'nit' ||
+            doc.shortname?.toLowerCase().trim() === 'nit' ||
+            doc.name?.toLowerCase().includes('nit') ||
+            doc.shortname?.toLowerCase().includes('nit')
+          );
+          if (nitDocType) {
+            this.form.patchValue({
+              documentType: nitDocType.name
+            });
+          }
         },
         error: (error) => {
           this.alertService.infoMixin.fire({
@@ -197,6 +219,7 @@ export class ThirdPartyDialogComponent {
                     this.fb.group({
                       id: [res.id],
                       code: [res.code],
+                      numberResolution: [res.numberResolution || ''],
                       startDate: [res.startDate ? new Date(res.startDate) : null, Validators.required],
                       expirationDate: [res.expirationDate ? new Date(res.expirationDate) : null, Validators.required],
                       description: [res.description || ''],

@@ -14,6 +14,7 @@ import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-int
 import { PurchaseTableInterface } from '../../../../models/inventory/purchase-interface';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { HttpErrorResponse } from '@angular/common/http';
+import { DocumentTemplateViewerComponent } from '../../../../shared/document-template-viewer/document-template-viewer.component';
 
 @Component({
   selector: 'app-purchasing-recipe-dialog',
@@ -29,7 +30,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatDividerModule,
     MatAutocompleteModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DocumentTemplateViewerComponent
   ],
   templateUrl: './purchasing-recipe-dialog.component.html'
 })
@@ -218,7 +220,18 @@ export class PurchasingRecipeDialogComponent implements OnInit {
   }
 
   onPrint(row: any) {
-    this.restService.fileGetRequest("/report/purchase/" + row.id).subscribe({
+    const data = row || this.data?.data;
+    const id = data?.id;
+    if (!id) return;
+    const templateId = data?.quoteTemplateId || data?.purchasingRecipe?.quoteTemplateId;
+    if (!templateId) {
+      this.alertService.infoMixin.fire({
+        icon: 'warning',
+        title: 'Esta compra no tiene ningún template',
+      });
+      return;
+    }
+    this.restService.fileGetRequest(`/report/purchase/${id}?templateId=${templateId}`).subscribe({
       next: (blob) => {
         const fileURL = URL.createObjectURL(blob);
         window.open(fileURL, '_blank');
@@ -266,5 +279,14 @@ export class PurchasingRecipeDialogComponent implements OnInit {
         });
       }
     });
+  }
+
+  onTemplateSaved(templateId: string | null) {
+    if (this.data?.data) {
+      (this.data.data as any).quoteTemplateId = templateId;
+      if ((this.data.data as any).purchasingRecipe) {
+        (this.data.data as any).purchasingRecipe.quoteTemplateId = templateId;
+      }
+    }
   }
 }

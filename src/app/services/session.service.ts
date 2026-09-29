@@ -14,6 +14,8 @@ import { AiChatService } from './ai-chat.service';
 export class SessionService {
 
   public currentUserNames = signal<string>(localStorage.getItem('namesUser') || '');
+  public mustChangePassword = signal<boolean>(localStorage.getItem('mustChangePassword') === 'true');
+  public currentRoleId = signal<number>(0);
   constructor(
     private readonly router: Router,
     private readonly menuService: MenuService,
@@ -33,7 +35,11 @@ export class SessionService {
     localStorage.setItem('namesUser', authBody.names);
     localStorage.setItem('menu', JSON.stringify(newMenu));
     localStorage.setItem('jwt', authBody.jwt);  // Almacenar JWT token en localStorage
-    localStorage.setItem('rId', authBody.rid.toString());
+    localStorage.removeItem('rId'); // No exponer rId en localStorage
+    this.currentRoleId.set(authBody.rid || 0);
+    const mustChange = Boolean(authBody.mustChangePassword);
+    localStorage.setItem('mustChangePassword', mustChange ? 'true' : 'false');
+    this.mustChangePassword.set(mustChange);
 
     this.currentUserNames.set(authBody.names);
 
@@ -45,6 +51,11 @@ export class SessionService {
 
     // Guardar el menú también en el menúSubject para que esté disponible globalmente
     this.menuSubject.next(newMenu);
+  }
+
+  setMustChangePassword(value: boolean) {
+    localStorage.setItem('mustChangePassword', value ? 'true' : 'false');
+    this.mustChangePassword.set(value);
   }
 
   // Getter para obtener el menú
@@ -77,6 +88,8 @@ export class SessionService {
   logOut(): void {
     this.notificationService.disconnectSession();
     this.currentUserNames.set('');
+    this.mustChangePassword.set(false);
+    this.currentRoleId.set(0);
     localStorage.clear();
     sessionStorage.clear();
     this.aiChatService.clearSessionChat();
@@ -126,7 +139,28 @@ export class SessionService {
   }
 
   get roleId(): number {
-    return Number(localStorage.getItem('rId') || '0');
+    if (this.currentRoleId() > 0) {
+      return this.currentRoleId();
+    }
+    const token = this.getTokenFromLocalStorage('jwt');
+    if (token) {
+      try {
+        const decoded = this.decodeJwt(token);
+        const rid = Number(decoded.roleId || decoded.rid || 0);
+        if (rid > 0) {
+          this.currentRoleId.set(rid);
+          return rid;
+        }
+      } catch {
+        return 0;
+      }
+    }
+    return 0;
+  }
+
+  canEditTemplate(): boolean {
+    const rid = this.roleId;
+    return rid >= 1 && rid <= 3;
   }
 
 }

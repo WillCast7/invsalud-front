@@ -128,7 +128,7 @@ export class AiChatService {
       moduleFilter: activeMode === 'API' ? 'API' : (activeFilter === 'TODOS' ? undefined : activeFilter),
       context: {
         currentUser: localStorage.getItem('currentUser') || 'usuario',
-        roleId: localStorage.getItem('rId') || '0',
+        roleId: this.getRoleId(),
         searchMode: activeMode,
         activeModuleFilter: activeFilter
       }
@@ -280,6 +280,21 @@ export class AiChatService {
     } catch (e) {
       console.error('Error guardando en sessionStorage:', e);
     }
+  }
+
+  private getRoleId(): string {
+    const token = localStorage.getItem('jwt');
+    if (token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace('-', '+').replace('_', '/');
+        const decoded = JSON.parse(window.atob(base64));
+        return (decoded.roleId || decoded.rid || '0').toString();
+      } catch {
+        return '0';
+      }
+    }
+    return '0';
   }
 }
 

@@ -4,5 +4,6 @@ export interface PurchasingRecipeInterface {
     priceUnit: number,
     priceTotal: number,
     startSerial: number,
-    finalSerial: number
+    finalSerial: number,
+    quoteTemplateId?: string
 }

@@ -8,17 +8,21 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { FormsModule } from '@angular/forms';
 import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-interface';
 import { PrescriptionInventoryInterface } from '../../../../models/inventory/prescription-inventory';
 import { HttpErrorResponse } from '@angular/common/http';
+import { DocumentTemplateViewerComponent } from '../../../../shared/document-template-viewer/document-template-viewer.component';
 
 @Component({
   selector: 'app-sale-dialog',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatIconModule,
@@ -26,7 +30,9 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatDividerModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule
+    MatSelectModule,
+    MatAutocompleteModule,
+    DocumentTemplateViewerComponent
   ],
   templateUrl: './sale-dialog.component.html'
 })
@@ -40,6 +46,7 @@ export class SaleDialogComponent implements OnInit {
 
   mainForm!: FormGroup;
   suppliers: ThirdPartyInterface[] = [];
+  suppliersFinded: ThirdPartyInterface[] = [];
   authorizedProducts: PrescriptionInventoryInterface[] = [];
 
   constructor(
@@ -75,9 +82,31 @@ export class SaleDialogComponent implements OnInit {
     return this.mainForm.get('details') as FormArray;
   }
 
+  displaySupplier(supplier: ThirdPartyInterface): string {
+    return supplier ? `${supplier.fullName} - ${supplier.documentNumber}` : '';
+  }
+
+  findSuppliers(event: any) {
+    const value = typeof event === 'string' ? event : event?.target?.value;
+    if (!value || value.length < 3) {
+      this.suppliersFinded = [];
+      return;
+    }
+    this.restService.getRequest('/thirdparty/' + value).subscribe({
+      next: (res) => {
+        this.suppliersFinded = res.data || [];
+      },
+      error: () => {
+        this.suppliersFinded = this.suppliers.filter(s =>
+          s.documentNumber?.includes(value) || s.fullName?.toLowerCase().includes(value.toLowerCase())
+        );
+      }
+    });
+  }
+
   setupThirdPartyListener() {
     this.mainForm.get('thirdParty')?.valueChanges.subscribe(supplier => {
-      if (!supplier) {
+      if (!supplier || typeof supplier === 'string' || !supplier.id) {
         this.authorizedProducts = [];
         this.details.clear();
         return;
@@ -111,7 +140,8 @@ export class SaleDialogComponent implements OnInit {
   }
 
   addDetail() {
-    if (!this.mainForm.get('thirdParty')?.value) {
+    const tp = this.mainForm.get('thirdParty')?.value;
+    if (!tp || typeof tp === 'string' || !tp.id) {
       this.alertService.infoMixin.fire({
         icon: 'warning',
         title: 'Debe seleccionar un receptor (tercero) primero.'
@@ -168,11 +198,17 @@ export class SaleDialogComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.mainForm.invalid || this.details.length === 0) {
+    if (this.mainForm.invalid || !this.mainForm.get('thirdParty')?.value?.id || this.details.length === 0) {
       this.mainForm.markAllAsTouched();
+      let msg = 'Complete todos los campos requeridos.';
+      if (!this.mainForm.get('thirdParty')?.value?.id) {
+        msg = 'Debe seleccionar un receptor (tercero) válido de la lista.';
+      } else if (this.details.length === 0) {
+        msg = 'Debe agregar al menos un medicamento.';
+      }
       this.alertService.infoMixin.fire({
         icon: 'warning',
-        title: this.details.length === 0 ? 'Debe agregar al menos un medicamento.' : 'Complete todos los campos requeridos.'
+        title: msg
       });
       return;
     }
@@ -264,7 +300,16 @@ export class SaleDialogComponent implements OnInit {
         }
       });
     } else {
-      this.restService.fileGetRequest("/report/sale/" + row.id).subscribe({
+      const data = row || this.data?.data;
+      const templateId = data?.quoteTemplateSoldId || data?.quoteTemplateId;
+      if (!templateId) {
+        this.alertService.infoMixin.fire({
+          icon: 'warning',
+          title: 'Esta venta no tiene ningún template',
+        });
+        return;
+      }
+      this.restService.fileGetRequest(`/report/sale/${this.data.data.id}?templateId=${templateId}`).subscribe({
         next: (blob) => {
           const fileURL = URL.createObjectURL(blob);
           window.open(fileURL, '_blank');
@@ -297,6 +342,13 @@ export class SaleDialogComponent implements OnInit {
           });
         }
       });
+    }
+  }
+
+  onTemplateSaved(templateId: string | null) {
+    if (this.data?.data) {
+      this.data.data.quoteTemplateSoldId = templateId;
+      this.data.data.quoteTemplateId = templateId;
     }
   }
 }

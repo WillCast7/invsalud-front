@@ -52,7 +52,7 @@ export class LoginComponent {
   initForm() {
     this.loginForm = this.formBuilder.group({
       user: ['', [Validators.required, Validators.minLength(4)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required]],
     });
   }
 

@@ -3,12 +3,12 @@ import {
 } from "./chunk-3LH6JVZA.js";
 import "./chunk-JEJXT6BY.js";
 import "./chunk-N4DOILP3.js";
-import {
-  BidiModule
-} from "./chunk-JLBUACPJ.js";
 import "./chunk-RODSRFG6.js";
 import "./chunk-XJC6SEPO.js";
 import "./chunk-B66IRT2Z.js";
+import {
+  BidiModule
+} from "./chunk-JLBUACPJ.js";
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,

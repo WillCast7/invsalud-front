@@ -278,7 +278,18 @@ export class PurchasingComponent {
   }
 
   onPrint(row: any) {
-    this.restService.fileGetRequest("/report/purchase/" + row.id).subscribe({
+    if (!row || !row.id) return;
+
+    const templateId = row.quoteTemplateId || row.quote_template_id || row.purchasingRecipe?.quoteTemplateId;
+    if (!templateId) {
+      this.alertService.infoMixin.fire({
+        icon: 'warning',
+        title: 'Esta compra no tiene ningún template',
+      });
+      return;
+    }
+
+    this.restService.fileGetRequest(`/report/purchase/${row.id}?templateId=${templateId}`).subscribe({
       next: (blob) => {
         const fileURL = URL.createObjectURL(blob);
         window.open(fileURL, '_blank');

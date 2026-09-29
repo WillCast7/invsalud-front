@@ -351,9 +351,9 @@ export class NotificationService {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace('-', '+').replace('_', '/');
       const decoded = JSON.parse(window.atob(base64));
-      return decoded.id || decoded.userId || Number(localStorage.getItem('rId') || '0');
+      return Number(decoded.userId || decoded.id || 0);
     } catch (e) {
-      return Number(localStorage.getItem('rId') || '0');
+      return 0;
     }
   }
 }

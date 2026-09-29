@@ -8,5 +8,6 @@ export interface AuthInterface {
     menus: MenuInterface[];
     notifications: NotificationInterface[];
     rid: number;
+    mustChangePassword?: boolean;
 }
 

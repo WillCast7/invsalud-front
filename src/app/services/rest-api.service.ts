@@ -49,6 +49,21 @@ export class RestApiService {
      });
   }
 
+  // Get Method with text/html response
+  textGetRequest(url: string, params: any = null): Observable<string> {
+    params = this.processParams(params);
+    const token = localStorage.getItem('jwt') ?? '';
+    const headers = new HttpHeaders({
+      Authorization: token ? `Bearer ${token}` : ''
+    });
+    url = config.urlBackend + url;
+    return this.httpClient.get(url, {
+      headers,
+      params,
+      responseType: 'text'
+    });
+  }
+
   // Put Method
   putRequest(url: string, body: any): Observable<any> {
     let headers = this.setHeaders();

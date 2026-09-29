@@ -14,6 +14,7 @@ import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-int
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { HttpErrorResponse } from '@angular/common/http';
 import { QuotePrintService } from '../../../../services/quote-print.service';
+import { DocumentTemplateViewerComponent } from '../../../../shared/document-template-viewer/document-template-viewer.component';
 
 @Component({
   selector: 'app-order-recipe-dialog',
@@ -29,7 +30,8 @@ import { QuotePrintService } from '../../../../services/quote-print.service';
     MatDividerModule,
     MatAutocompleteModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DocumentTemplateViewerComponent
   ],
   templateUrl: './order-recipe-dialog.component.html'
 })
@@ -299,9 +301,43 @@ export class OrderRecipeDialogComponent implements OnInit {
   }
 
   onPrint(row: any) {
-    const id = row?.id || this.data.data?.id;
+    const data = row || this.data?.data;
+    const id = data?.id;
     if (!id) return;
-    this.quotePrintService.printOrder(id);
+    const templateId = data?.quoteTemplateOrderId || data?.quoteTemplateId;
+    if (!templateId) {
+      this.alertService.infoMixin.fire({
+        icon: 'warning',
+        title: 'Esta cotización no tiene ningún template',
+      });
+      return;
+    }
+    this.restService.fileGetRequest(`/report/order/${id}?templateId=${templateId}`).subscribe({
+      next: (blob) => {
+        const fileURL = URL.createObjectURL(blob);
+        window.open(fileURL, '_blank');
+      },
+      error: async (error: HttpErrorResponse) => {
+        let mensajeMostrar = "Ocurrió un error inesperado al descargar la cotización";
+
+        if (error.error instanceof Blob) {
+          try {
+            const text = await error.error.text();
+            const errorJson = JSON.parse(text);
+            mensajeMostrar = errorJson.message || mensajeMostrar;
+          } catch (e) {
+            console.error("No se pudo parsear el error del Blob", e);
+          }
+        } else if (error.error?.message) {
+          mensajeMostrar = error.error.message;
+        }
+
+        this.alertService.infoMixin.fire({
+          icon: 'error',
+          title: mensajeMostrar,
+        });
+      }
+    });
   }
 
   onAbort() {
@@ -336,5 +372,12 @@ export class OrderRecipeDialogComponent implements OnInit {
       success: false,
       message: 'Operación cancelada'
     });
+  }
+
+  onTemplateSaved(templateId: string | null) {
+    if (this.data?.data) {
+      this.data.data.quoteTemplateOrderId = templateId;
+      this.data.data.quoteTemplateId = templateId;
+    }
   }
 }
