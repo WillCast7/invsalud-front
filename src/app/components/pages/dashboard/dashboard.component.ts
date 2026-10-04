@@ -1,16 +1,18 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RestApiService } from '../../../services/rest-api.service';
 import { AlertService } from '../../../services/alerts.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { RouterModule } from '@angular/router';
 import { MenuItemInterface } from '../../../models/menuItem-interface';
 import { MenuService } from '../../../services/menu.service';
@@ -28,11 +30,14 @@ import { SessionService } from '../../../services/session.service';
     MatButtonModule,
     MatCardModule,
     FormsModule,
+    ReactiveFormsModule,
     MatTableModule,
     MatFormFieldModule,
+    MatInputModule,
     MatIconModule,
     MatPaginatorModule,
     MatSelectModule,
+    MatAutocompleteModule,
     RouterModule,
     MatNativeDateModule,
     MatDatepickerModule,
@@ -59,6 +64,12 @@ export class DashboardComponent {
 
   thirdParties: ThirdPartyInterface[] = [];
   products: ProductInterface[] = [];
+  filteredThirdParties: ThirdPartyInterface[] = [];
+  filteredProducts: ProductInterface[] = [];
+
+  thirdPartyCtrl = new FormControl<string | ThirdPartyInterface>('');
+  productCtrl = new FormControl<string | ProductInterface>('');
+
   selectedThirdParty: number | null = null;
   selectedProduct: number | null = null;
   startDate: Date | null = null;
@@ -144,12 +155,76 @@ export class DashboardComponent {
     return '$' + value.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
+  normalizeMonthlyIncomes(backendIncomes: any[]): any[] {
+    const monthLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const monthMap: Record<number, number> = {};
+
+    (backendIncomes || []).forEach(item => {
+      let monthIdx = -1;
+      if (typeof item.month === 'number') {
+        monthIdx = item.month >= 1 && item.month <= 12 ? item.month - 1 : item.month;
+      } else if (typeof item.month === 'string') {
+        const mStr = item.month.toLowerCase().trim();
+        if (mStr.startsWith('ene') || mStr.startsWith('jan') || mStr === '1' || mStr === '01') monthIdx = 0;
+        else if (mStr.startsWith('feb') || mStr === '2' || mStr === '02') monthIdx = 1;
+        else if (mStr.startsWith('mar') || mStr === '3' || mStr === '03') monthIdx = 2;
+        else if (mStr.startsWith('abr') || mStr.startsWith('apr') || mStr === '4' || mStr === '04') monthIdx = 3;
+        else if (mStr.startsWith('may') || mStr === '5' || mStr === '05') monthIdx = 4;
+        else if (mStr.startsWith('jun') || mStr === '6' || mStr === '06') monthIdx = 5;
+        else if (mStr.startsWith('jul') || mStr === '7' || mStr === '07') monthIdx = 6;
+        else if (mStr.startsWith('ago') || mStr.startsWith('aug') || mStr === '8' || mStr === '08') monthIdx = 7;
+        else if (mStr.startsWith('sep') || mStr.startsWith('set') || mStr === '9' || mStr === '09') monthIdx = 8;
+        else if (mStr.startsWith('oct') || mStr === '10') monthIdx = 9;
+        else if (mStr.startsWith('nov') || mStr === '11') monthIdx = 10;
+        else if (mStr.startsWith('dic') || mStr.startsWith('dec') || mStr === '12') monthIdx = 11;
+      }
+
+      if (monthIdx >= 0 && monthIdx < 12) {
+        monthMap[monthIdx] = (monthMap[monthIdx] || 0) + (Number(item.amount) || 0);
+      }
+    });
+
+    return monthLabels.map((label, idx) => ({
+      month: label,
+      amount: monthMap[idx] || 0
+    }));
+  }
+
+  getBarWidth(): number {
+    return 22;
+  }
+
+  getBarX(index: number): number {
+    const colWidth = 660 / 12;
+    const barW = this.getBarWidth();
+    return 30 + index * colWidth + (colWidth - barW) / 2;
+  }
+
+  getBarCenterX(index: number): number {
+    const colWidth = 660 / 12;
+    return 30 + index * colWidth + colWidth / 2;
+  }
+
+  getBarHeight(amount: number): number {
+    if (!this.maxIncome || this.maxIncome <= 0 || !amount) return 0;
+    return (amount / this.maxIncome) * 95;
+  }
+
+  getBarY(amount: number): number {
+    return 130 - this.getBarHeight(amount);
+  }
+
+  getBarValY(amount: number): number {
+    return Math.max(16, this.getBarY(amount) - 6);
+  }
+
   get showFullDashboard(): boolean {
     const rId = this.sessionService.roleId;
     return rId === 1 || rId === 2 || rId === 3;
   }
 
   constructor() {
+    this.monthlyIncomes = this.normalizeMonthlyIncomes([]);
     this.getData();
     if (this.showFullDashboard) {
       this.loadFiltersData();
@@ -160,14 +235,110 @@ export class DashboardComponent {
     this.restService.getRequest('/thirdparty', { page: 0, size: 1000 }).subscribe({
       next: (res) => {
         this.thirdParties = res.pageable?.content || res.data?.content || res.data || [];
+        this.filteredThirdParties = this.thirdParties;
       }
     });
 
     this.restService.getRequest('/products', { page: 0, size: 1000 }).subscribe({
       next: (res) => {
         this.products = res.pageable?.content || res.data?.content || res.data || [];
+        this.filteredProducts = this.products;
       }
     });
+
+    this.setupFilterListeners();
+  }
+
+  setupFilterListeners() {
+    this.thirdPartyCtrl.valueChanges.subscribe((value) => {
+      if (typeof value === 'string') {
+        const query = value.toLowerCase().trim();
+        if (!query) {
+          this.filteredThirdParties = this.thirdParties;
+          if (this.selectedThirdParty !== null) {
+            this.selectedThirdParty = null;
+            this.getData();
+          }
+        } else {
+          this.filteredThirdParties = this.thirdParties.filter(tp =>
+            (tp.fullName && tp.fullName.toLowerCase().includes(query)) ||
+            (tp.documentNumber && tp.documentNumber.toLowerCase().includes(query))
+          );
+        }
+      }
+    });
+
+    this.productCtrl.valueChanges.subscribe((value) => {
+      if (typeof value === 'string') {
+        const query = value.toLowerCase().trim();
+        if (!query) {
+          this.filteredProducts = this.products;
+          if (this.selectedProduct !== null) {
+            this.selectedProduct = null;
+            this.getData();
+          }
+        } else {
+          this.filteredProducts = this.products.filter(p =>
+            (p.name && p.name.toLowerCase().includes(query)) ||
+            (p.code && p.code.toLowerCase().includes(query)) ||
+            (p.concentration && p.concentration.toLowerCase().includes(query))
+          );
+        }
+      }
+    });
+  }
+
+  displayThirdParty = (value: any): string => {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    return value.fullName || '';
+  };
+
+  displayProduct = (value: any): string => {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    return value.name || '';
+  };
+
+  onThirdPartySelected(event: MatAutocompleteSelectedEvent) {
+    const tp = event.option.value as ThirdPartyInterface;
+    this.selectedThirdParty = tp ? tp.id : null;
+    this.getData();
+  }
+
+  onProductSelected(event: MatAutocompleteSelectedEvent) {
+    const p = event.option.value as ProductInterface;
+    this.selectedProduct = p ? p.id : null;
+    this.getData();
+  }
+
+  clearThirdParty(event?: Event) {
+    if (event) event.stopPropagation();
+    this.thirdPartyCtrl.setValue('');
+    this.selectedThirdParty = null;
+    this.filteredThirdParties = this.thirdParties;
+    this.getData();
+  }
+
+  clearProduct(event?: Event) {
+    if (event) event.stopPropagation();
+    this.productCtrl.setValue('');
+    this.selectedProduct = null;
+    this.filteredProducts = this.products;
+    this.getData();
+  }
+
+  clearDateRange(event?: Event) {
+    if (event) event.stopPropagation();
+    this.startDate = null;
+    this.endDate = null;
+    this.getData();
+  }
+
+  onDateChange() {
+    if ((this.startDate && this.endDate) || (!this.startDate && !this.endDate)) {
+      this.getData();
+    }
   }
 
   onFilterChange() {
@@ -195,7 +366,7 @@ export class DashboardComponent {
         if (objData && objData.data) {
           this.menu = this.menuService.groupByFather(objData.data.menu || []);
           this.logoUrl = objData.data.logoUrl || '';
-          this.monthlyIncomes = objData.data.monthlyIncomes || [];
+          this.monthlyIncomes = this.normalizeMonthlyIncomes(objData.data.monthlyIncomes || []);
 
           this.cashSessionSummary = objData.data.summaries || objData.data.cashSessionSummary || null;
           const amounts = this.monthlyIncomes.map(item => item.amount || 0);
