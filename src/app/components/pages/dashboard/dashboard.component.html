@@ -24,6 +24,7 @@
           <input matInput
                  [formControl]="thirdPartyCtrl"
                  [matAutocomplete]="autoThirdParty"
+                 (keyup)="findThirdParties($event)"
                  placeholder="Buscar por nombre o documento..." />
           @if (selectedThirdParty || thirdPartyCtrl.value) {
           <button mat-icon-button matSuffix (click)="clearThirdParty($event)" aria-label="Limpiar tercero" type="button">
@@ -43,7 +44,13 @@
               </div>
             </mat-option>
             } @empty {
-            <mat-option disabled>No se encontraron terceros</mat-option>
+            <mat-option disabled>
+              @if (getFilterLength(thirdPartyCtrl.value) < 3) {
+                Digite al menos 3 caracteres para buscar...
+              } @else {
+                No se encontraron terceros
+              }
+            </mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>
@@ -54,6 +61,7 @@
           <input matInput
                  [formControl]="productCtrl"
                  [matAutocomplete]="autoProduct"
+                 (keyup)="findProducts($event)"
                  placeholder="Buscar por nombre o código..." />
           @if (selectedProduct || productCtrl.value) {
           <button mat-icon-button matSuffix (click)="clearProduct($event)" aria-label="Limpiar medicamento" type="button">
@@ -73,7 +81,13 @@
               </div>
             </mat-option>
             } @empty {
-            <mat-option disabled>No se encontraron medicamentos</mat-option>
+            <mat-option disabled>
+              @if (getFilterLength(productCtrl.value) < 3) {
+                Digite al menos 3 caracteres para buscar...
+              } @else {
+                No se encontraron medicamentos
+              }
+            </mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>

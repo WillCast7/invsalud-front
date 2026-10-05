@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RestApiService } from '../../../services/rest-api.service';
@@ -66,6 +67,9 @@ export class DashboardComponent {
   products: ProductInterface[] = [];
   filteredThirdParties: ThirdPartyInterface[] = [];
   filteredProducts: ProductInterface[] = [];
+
+  private searchThirdPartySub?: Subscription;
+  private searchProductSub?: Subscription;
 
   thirdPartyCtrl = new FormControl<string | ThirdPartyInterface>('');
   productCtrl = new FormControl<string | ProductInterface>('');
@@ -232,57 +236,82 @@ export class DashboardComponent {
   }
 
   loadFiltersData() {
-    this.restService.getRequest('/thirdparty', { page: 0, size: 1000 }).subscribe({
-      next: (res) => {
-        this.thirdParties = res.pageable?.content || res.data?.content || res.data || [];
-        this.filteredThirdParties = this.thirdParties;
-      }
-    });
-
-    this.restService.getRequest('/products', { page: 0, size: 1000 }).subscribe({
-      next: (res) => {
-        this.products = res.pageable?.content || res.data?.content || res.data || [];
-        this.filteredProducts = this.products;
-      }
-    });
-
     this.setupFilterListeners();
+  }
+
+  getFilterLength(value: any): number {
+    if (!value) return 0;
+    if (typeof value === 'string') return value.trim().length;
+    return 3;
+  }
+
+  findThirdParties(event?: any) {
+    const rawVal = typeof event === 'string' ? event : (event?.target?.value ?? (typeof this.thirdPartyCtrl.value === 'string' ? this.thirdPartyCtrl.value : ''));
+    const query = (rawVal || '').trim();
+
+    if (this.searchThirdPartySub) {
+      this.searchThirdPartySub.unsubscribe();
+    }
+
+    if (query.length < 3) {
+      this.filteredThirdParties = [];
+      return;
+    }
+
+    this.searchThirdPartySub = this.restService.getRequest('/thirdparty/' + encodeURIComponent(query)).subscribe({
+      next: (res) => {
+        this.filteredThirdParties = res.data || [];
+      },
+      error: () => {
+        this.filteredThirdParties = [];
+      }
+    });
+  }
+
+  findProducts(event?: any) {
+    const rawVal = typeof event === 'string' ? event : (event?.target?.value ?? (typeof this.productCtrl.value === 'string' ? this.productCtrl.value : ''));
+    const query = (rawVal || '').trim();
+
+    if (this.searchProductSub) {
+      this.searchProductSub.unsubscribe();
+    }
+
+    if (query.length < 3) {
+      this.filteredProducts = [];
+      return;
+    }
+
+    this.searchProductSub = this.restService.getRequest('/products', { page: 0, size: 20, searchValue: query }).subscribe({
+      next: (res) => {
+        this.filteredProducts = res.pageable?.content || res.data?.content || res.data || [];
+      },
+      error: () => {
+        this.filteredProducts = [];
+      }
+    });
   }
 
   setupFilterListeners() {
     this.thirdPartyCtrl.valueChanges.subscribe((value) => {
       if (typeof value === 'string') {
-        const query = value.toLowerCase().trim();
-        if (!query) {
-          this.filteredThirdParties = this.thirdParties;
-          if (this.selectedThirdParty !== null) {
-            this.selectedThirdParty = null;
-            this.getData();
-          }
-        } else {
-          this.filteredThirdParties = this.thirdParties.filter(tp =>
-            (tp.fullName && tp.fullName.toLowerCase().includes(query)) ||
-            (tp.documentNumber && tp.documentNumber.toLowerCase().includes(query))
-          );
+        if (this.selectedThirdParty !== null) {
+          this.selectedThirdParty = null;
+          this.getData();
+        }
+        if (!value.trim() || value.trim().length < 3) {
+          this.filteredThirdParties = [];
         }
       }
     });
 
     this.productCtrl.valueChanges.subscribe((value) => {
       if (typeof value === 'string') {
-        const query = value.toLowerCase().trim();
-        if (!query) {
-          this.filteredProducts = this.products;
-          if (this.selectedProduct !== null) {
-            this.selectedProduct = null;
-            this.getData();
-          }
-        } else {
-          this.filteredProducts = this.products.filter(p =>
-            (p.name && p.name.toLowerCase().includes(query)) ||
-            (p.code && p.code.toLowerCase().includes(query)) ||
-            (p.concentration && p.concentration.toLowerCase().includes(query))
-          );
+        if (this.selectedProduct !== null) {
+          this.selectedProduct = null;
+          this.getData();
+        }
+        if (!value.trim() || value.trim().length < 3) {
+          this.filteredProducts = [];
         }
       }
     });
@@ -314,17 +343,23 @@ export class DashboardComponent {
 
   clearThirdParty(event?: Event) {
     if (event) event.stopPropagation();
+    if (this.searchThirdPartySub) {
+      this.searchThirdPartySub.unsubscribe();
+    }
     this.thirdPartyCtrl.setValue('');
     this.selectedThirdParty = null;
-    this.filteredThirdParties = this.thirdParties;
+    this.filteredThirdParties = [];
     this.getData();
   }
 
   clearProduct(event?: Event) {
     if (event) event.stopPropagation();
+    if (this.searchProductSub) {
+      this.searchProductSub.unsubscribe();
+    }
     this.productCtrl.setValue('');
     this.selectedProduct = null;
-    this.filteredProducts = this.products;
+    this.filteredProducts = [];
     this.getData();
   }
 
