@@ -128,80 +128,44 @@
               </div>
             </ng-container>
 
-            <!-- Tabla Recetarios (5 Columnas) -->
+            <!-- Tabla Recetarios Dinámica -->
             <table *ngIf="isRecipeQuoteTemplate()"
                    class="quote-table recipe-interactive-section"
                    [class.active]="selectedSection?.id === 'sec-table'"
                    (click)="selectSectionById('sec-table')">
-              <colgroup>
-                <col class="qty">
-                <col class="unit">
-                <col class="subtotal">
-                <col class="iva">
-                <col class="total">
-              </colgroup>
               <thead>
                 <tr>
-                  <th>{{ getField('sec-table', 'headerQuantity', 'Cantidad') }}</th>
-                  <th>{{ getField('sec-table', 'headerPriceUnit', 'Valor Unitario') }}</th>
-                  <th>{{ getField('sec-table', 'headerSubtotal', 'Subtotal') }}</th>
-                  <th [innerHTML]="getField('sec-table', 'headerIva', 'Iva /<br>{{order.iva}}%')"></th>
-                  <th>{{ getField('sec-table', 'headerTotal', 'Valor Total') }}</th>
+                  <th *ngFor="let col of getTableColumns(); trackBy: trackByColIndex" [innerHTML]="col.header"></th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>{{ '{{ item.units }}' }}</td>
-                  <td>${{ '{{ item.priceUnit }}' }}</td>
-                  <td>${{ '{{ order.subtotal }}' }}</td>
-                  <td>$<br>{{ '{{ order.priceIva }}' }}</td>
-                  <td>${{ '{{ order.total }}' }}</td>
+                  <td *ngFor="let col of getTableColumns(); trackBy: trackByColIndex" [innerHTML]="col.variable"></td>
                 </tr>
                 <tr>
-                  <td colspan="4" class="grand-label">TOTAL</td>
-                  <td class="grand-total">${{ '{{ orderTotal }}' }}</td>
+                  <td [attr.colspan]="Math.max(1, getTableColumns().length - 1)" class="grand-label">TOTAL</td>
+                  <td class="grand-total">{{ getField('sec-table', 'grandTotalVar', '${{ orderTotal }}') }}</td>
                 </tr>
               </tbody>
             </table>
 
-            <!-- Tabla Medicamentos (7 Columnas) -->
+            <!-- Tabla Medicamentos Dinámica -->
             <table *ngIf="isMedicineQuoteTemplate()"
                    class="quote-table medicamentos recipe-interactive-section"
                    [class.active]="selectedSection?.id === 'sec-table'"
                    (click)="selectSectionById('sec-table')">
-              <colgroup>
-                <col class="col-batch">
-                <col class="col-name">
-                <col class="col-pres">
-                <col class="col-exp">
-                <col class="col-qty">
-                <col class="col-unit">
-                <col class="col-total">
-              </colgroup>
               <thead>
                 <tr>
-                  <th>{{ getField('sec-table', 'headerBatch', 'Lote') }}</th>
-                  <th>{{ getField('sec-table', 'headerProduct', 'Nombre') }}</th>
-                  <th>{{ getField('sec-table', 'headerPresentation', 'Presentación') }}</th>
-                  <th>{{ getField('sec-table', 'headerExpiration', 'Fecha Vencimiento') }}</th>
-                  <th>{{ getField('sec-table', 'headerQuantity', 'Cantidad') }}</th>
-                  <th>{{ getField('sec-table', 'headerPriceUnit', 'Valor Unitario') }}</th>
-                  <th>{{ getField('sec-table', 'headerTotal', 'Total') }}</th>
+                  <th *ngFor="let col of getTableColumns(); trackBy: trackByColIndex">{{ col.header }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>{{ '{{ item.inventory.batch.code }}' }}</td>
-                  <td>{{ '{{ item.inventory.product.name }}' }}</td>
-                  <td>{{ '{{ item.inventory.product.presentation }}' }}</td>
-                  <td>{{ '{{ item.inventory.expirationDate }}' }}</td>
-                  <td>{{ '{{ item.units }}' }}</td>
-                  <td>${{ '{{ item.priceUnit }}' }}</td>
-                  <td>${{ '{{ item.priceTotal }}' }}</td>
+                  <td *ngFor="let col of getTableColumns(); trackBy: trackByColIndex">{{ col.variable }}</td>
                 </tr>
                 <tr>
-                  <td colspan="6" class="grand-label">TOTAL</td>
-                  <td class="grand-total">${{ '{{ order.total }}' }}</td>
+                  <td [attr.colspan]="Math.max(1, getTableColumns().length - 1)" class="grand-label">TOTAL</td>
+                  <td class="grand-total">{{ getField('sec-table', 'grandTotalVar', '${{ order.total }}') }}</td>
                 </tr>
               </tbody>
             </table>
@@ -374,43 +338,22 @@
               <div class="recipient-intro-delivery">{{ getField('sec-recipient', 'introText', 'Sírvase ENTREGAR A {{ thirdParty.fullName }} cargo a salida de bienes, producto de la cotización No. {{ order.soldCode }} con abono mediante TRANSFERENCIA a DAVIVIENDA Cuenta de Ahorros# 379400001804 de fecha. {{ order.createdAt }}.') }}</div>
             </div>
 
-            <!-- Tabla de Medicamentos (7 Columnas con Precios y Total) -->
+            <!-- Tabla de Medicamentos Dinámica -->
             <table class="quote-table medicamentos recipe-interactive-section"
                    [class.active]="selectedSection?.id === 'sec-table'"
                    (click)="selectSectionById('sec-table')">
-              <colgroup>
-                <col class="col-batch">
-                <col class="col-name">
-                <col class="col-pres">
-                <col class="col-exp">
-                <col class="col-qty">
-                <col class="col-unit">
-                <col class="col-total">
-              </colgroup>
               <thead>
                 <tr>
-                  <th>{{ getField('sec-table', 'headerBatch', 'Lote') }}</th>
-                  <th>{{ getField('sec-table', 'headerProduct', 'Nombre') }}</th>
-                  <th>{{ getField('sec-table', 'headerPresentation', 'Presentación') }}</th>
-                  <th>{{ getField('sec-table', 'headerExpiration', 'Fecha Vencimiento') }}</th>
-                  <th>{{ getField('sec-table', 'headerQuantity', 'Cantidad') }}</th>
-                  <th>{{ getField('sec-table', 'headerPriceUnit', 'Valor Unitario') }}</th>
-                  <th>{{ getField('sec-table', 'headerTotal', 'Total') }}</th>
+                  <th *ngFor="let col of getTableColumns(); trackBy: trackByColIndex">{{ col.header }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>{{ '{{ item.inventory.batch.code }}' }}</td>
-                  <td>{{ '{{ item.inventory.product.name }}' }}</td>
-                  <td>{{ '{{ item.inventory.product.presentation }}' }}</td>
-                  <td>{{ '{{ item.inventory.expirationDate }}' }}</td>
-                  <td>{{ '{{ item.units }}' }}</td>
-                  <td>${{ '{{ item.priceUnit }}' }}</td>
-                  <td>${{ '{{ item.priceTotal }}' }}</td>
+                  <td *ngFor="let col of getTableColumns(); trackBy: trackByColIndex">{{ col.variable }}</td>
                 </tr>
                 <tr>
-                  <td colspan="6" class="grand-label">TOTAL</td>
-                  <td class="grand-total">${{ '{{ order.total }}' }}</td>
+                  <td [attr.colspan]="Math.max(1, getTableColumns().length - 1)" class="grand-label">TOTAL</td>
+                  <td class="grand-total">{{ getField('sec-table', 'grandTotalVar', '${{ order.total }}') }}</td>
                 </tr>
               </tbody>
             </table>
@@ -475,62 +418,22 @@
               <div class="recipient-intro-delivery">{{ getField('sec-recipient', 'introText', 'Sírvase ENTREGAR A {{ thirdParty.fullName }} cargo a salida de bienes, producto de la cotización No. {{ order.orderCode }} con abono mediante TRANSFERENCIA a DAVIVIENDA Cuenta de Ahorros# 379400001804 de fecha, {{ order.createdAt }}.') }}</div>
             </div>
 
-            <!-- Tabla Recetarios con o sin Precios según configuración -->
-            <!-- 1. Tabla sin precios (2 columnas: Cantidad y Descripción) -->
-            <table *ngIf="!getField('sec-table', 'showPrices', false)"
-                   class="quote-table recetarios-salida recipe-interactive-section"
+            <!-- Tabla Recetarios Dinámica -->
+            <table class="quote-table recipe-interactive-section"
                    [class.active]="selectedSection?.id === 'sec-table'"
                    (click)="selectSectionById('sec-table')">
-              <colgroup>
-                <col style="width: 25%;">
-                <col style="width: 75%;">
-              </colgroup>
               <thead>
                 <tr>
-                  <th style="text-align: center;">{{ getField('sec-table', 'headerQuantity', 'Cantidad') }}</th>
-                  <th style="text-align: left;">Descripción</th>
+                  <th *ngFor="let col of getTableColumns(); trackBy: trackByColIndex" style="text-align: center;">{{ col.header }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style="text-align: center;">{{ '{{ item.units }}' }}</td>
-                  <td style="text-align: left;">TALONARIOS DE RECETARIOS OFICIALES PARA LA PRESCRIPCIÓN DE MEDICAMENTOS DE CONTROL ESPECIAL</td>
+                  <td *ngFor="let col of getTableColumns(); trackBy: trackByColIndex" style="text-align: center;">{{ col.variable }}</td>
                 </tr>
-              </tbody>
-            </table>
-
-            <!-- 2. Tabla con precios (5 columnas) -->
-            <table *ngIf="getField('sec-table', 'showPrices', false)"
-                   class="quote-table recipe-interactive-section"
-                   [class.active]="selectedSection?.id === 'sec-table'"
-                   (click)="selectSectionById('sec-table')">
-              <colgroup>
-                <col class="qty">
-                <col class="unit">
-                <col class="subtotal">
-                <col class="iva">
-                <col class="total">
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>{{ getField('sec-table', 'headerQuantity', 'Cantidad') }}</th>
-                  <th>{{ getField('sec-table', 'headerPriceUnit', 'Valor Unitario') }}</th>
-                  <th>{{ getField('sec-table', 'headerSubtotal', 'Subtotal') }}</th>
-                  <th>{{ getField('sec-table', 'headerIva', 'Iva / {{ order.iva }}%') }}</th>
-                  <th>{{ getField('sec-table', 'headerTotal', 'Valor Total') }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="text-align: center;">{{ '{{ item.units }}' }}</td>
-                  <td style="text-align: right;">${{ '{{ item.priceUnit }}' }}</td>
-                  <td style="text-align: right;">${{ '{{ order.subtotal }}' }}</td>
-                  <td style="text-align: right;">${{ '{{ order.priceIva }}' }}</td>
-                  <td style="text-align: right;">${{ '{{ order.total }}' }}</td>
-                </tr>
-                <tr>
-                  <td colspan="4" class="grand-label">TOTAL</td>
-                  <td class="grand-total">${{ '{{ order.total }}' }}</td>
+                <tr *ngIf="getField('sec-table', 'grandTotalVar', '')">
+                  <td [attr.colspan]="Math.max(1, getTableColumns().length - 1)" class="grand-label">TOTAL</td>
+                  <td class="grand-total">{{ getField('sec-table', 'grandTotalVar', '${{ order.total }}') }}</td>
                 </tr>
               </tbody>
             </table>
@@ -687,65 +590,118 @@
             <input matInput [(ngModel)]="selectedSection.name">
           </mat-form-field>
 
-          <!-- Form fields dynamically rendered based on section field type -->
-          <div *ngFor="let field of selectedSection.fields" class="mb-3">
-
-            <mat-form-field appearance="outline" class="w-100" *ngIf="field.type === 'text'">
-              <mat-label>{{ field.label }}</mat-label>
-              <input matInput [(ngModel)]="field.value" (ngModelChange)="onFieldChange(selectedSection)">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-100" *ngIf="field.type === 'textarea'">
-              <mat-label>{{ field.label }}</mat-label>
-              <textarea matInput [(ngModel)]="field.value" rows="4"
-                (ngModelChange)="onFieldChange(selectedSection)"></textarea>
-            </mat-form-field>
-
-            <mat-slide-toggle [(ngModel)]="field.value" (ngModelChange)="onFieldChange(selectedSection)" color="primary"
-              *ngIf="field.type === 'checkbox'" class="mb-2 d-block">
-              <span class="fw-medium text-secondary">{{ field.label }}</span>
-            </mat-slide-toggle>
-
-            <!-- Image field (Base64 upload or template variable) -->
-            <div *ngIf="field.type === 'image'" class="border p-3 rounded bg-white mb-3">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="fw-semibold text-secondary small">{{ field.label }}</span>
-                <span class="badge bg-light text-dark border">Base64 / Variable</span>
-              </div>
-
-              <!-- Preview thumbnail if an image or base64 is set -->
-              <div class="preview-box border rounded mb-3 d-flex align-items-center justify-content-center p-2 bg-light"
-                style="min-height: 80px; max-height: 120px;" *ngIf="field.value && !field.value.startsWith('{{')">
-                <img [src]="formatImageSrc(field.value)" alt="Preview"
-                  style="max-height: 100px; max-width: 100%; object-fit: contain;" />
-              </div>
-
-              <div *ngIf="field.value && field.value.startsWith('{{')"
-                class="alert alert-secondary py-1 px-2 mb-2 small d-flex align-items-center gap-1">
-                <mat-icon style="font-size: 16px; width: 16px; height: 16px;">code</mat-icon>
-                <span>Variable: <strong>{{ field.value }}</strong></span>
-              </div>
-
-              <div class="d-flex gap-2 mb-2">
-                <button type="button" mat-flat-button color="primary" class="btn-sm" (click)="imageInput.click()">
-                  <mat-icon>upload</mat-icon> Subir Imagen
-                </button>
-                <input type="file" #imageInput (change)="onImageFileSelected($event, field, selectedSection)"
-                  accept="image/*" class="d-none" />
-
-                <button type="button" mat-stroked-button color="warn" *ngIf="field.value"
-                  (click)="clearImageField(field, selectedSection)">
-                  <mat-icon>delete</mat-icon> Quitar
-                </button>
-              </div>
-
-              <mat-form-field appearance="outline" class="w-100 mt-1">
-                <mat-label>Variable o Base64</mat-label>
-                <input matInput [(ngModel)]="field.value" (ngModelChange)="onFieldChange(selectedSection)"
-                  placeholder="Ej. base64">
-              </mat-form-field>
+          <!-- Specialized Table Editor: Column List + Add/Remove -->
+          <div *ngIf="selectedSection.type === 'table'" class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="fw-bold text-secondary">
+                Columnas de la Tabla ({{ getTableColumnPairs(selectedSection).length }})
+              </span>
+              <button type="button" mat-flat-button color="primary" class="btn-sm" (click)="addTableColumn(selectedSection)">
+                <mat-icon>add</mat-icon> Añadir Columna
+              </button>
             </div>
 
+            <div class="d-flex flex-column gap-3 mb-3">
+              <div *ngFor="let col of getTableColumnPairs(selectedSection); trackBy: trackByColIndex" class="border rounded p-3 bg-white shadow-sm position-relative">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge bg-primary text-white">Columna {{ col.index }}</span>
+                  <button type="button" mat-icon-button color="warn" 
+                          *ngIf="getTableColumnPairs(selectedSection).length > 1"
+                          (click)="removeTableColumn(selectedSection, col.index)" 
+                          matTooltip="Quitar Columna {{ col.index }}">
+                    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">delete</mat-icon>
+                  </button>
+                </div>
+
+                <mat-form-field appearance="outline" class="w-100 mb-2">
+                  <mat-label>Cabecera Columna {{ col.index }}</mat-label>
+                  <input matInput [(ngModel)]="col.headerField.value" (ngModelChange)="onFieldChange(selectedSection)" placeholder="Ej. Cantidad">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Variable Columna {{ col.index }}</mat-label>
+                  <input matInput [(ngModel)]="col.varField.value" (ngModelChange)="onFieldChange(selectedSection)" placeholder="Ej. {{ '{{' }} item.units {{ '}}' }}">
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- Non-column fields for table (e.g. grandTotalVar) -->
+            <div *ngIf="getNonColumnTableFields(selectedSection).length > 0" class="mt-4 pt-3 border-top">
+              <h6 class="fw-bold text-muted mb-3">Totales y Opciones de Tabla</h6>
+              <div *ngFor="let field of getNonColumnTableFields(selectedSection)" class="mb-3">
+                <mat-form-field appearance="outline" class="w-100" *ngIf="field.type === 'text'">
+                  <mat-label>{{ field.label }}</mat-label>
+                  <input matInput [(ngModel)]="field.value" (ngModelChange)="onFieldChange(selectedSection)">
+                </mat-form-field>
+                <mat-slide-toggle [(ngModel)]="field.value" (ngModelChange)="onFieldChange(selectedSection)" color="primary"
+                  *ngIf="field.type === 'checkbox'" class="mb-2 d-block">
+                  <span class="fw-medium text-secondary">{{ field.label }}</span>
+                </mat-slide-toggle>
+              </div>
+            </div>
+          </div>
+
+          <!-- Non-table sections standard fields rendering -->
+          <div *ngIf="selectedSection.type !== 'table'">
+            <div *ngFor="let field of selectedSection.fields" class="mb-3">
+
+              <mat-form-field appearance="outline" class="w-100" *ngIf="field.type === 'text'">
+                <mat-label>{{ field.label }}</mat-label>
+                <input matInput [(ngModel)]="field.value" (ngModelChange)="onFieldChange(selectedSection)">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-100" *ngIf="field.type === 'textarea'">
+                <mat-label>{{ field.label }}</mat-label>
+                <textarea matInput [(ngModel)]="field.value" rows="4"
+                  (ngModelChange)="onFieldChange(selectedSection)"></textarea>
+              </mat-form-field>
+
+              <mat-slide-toggle [(ngModel)]="field.value" (ngModelChange)="onFieldChange(selectedSection)" color="primary"
+                *ngIf="field.type === 'checkbox'" class="mb-2 d-block">
+                <span class="fw-medium text-secondary">{{ field.label }}</span>
+              </mat-slide-toggle>
+
+              <!-- Image field (Base64 upload or template variable) -->
+              <div *ngIf="field.type === 'image'" class="border p-3 rounded bg-white mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="fw-semibold text-secondary small">{{ field.label }}</span>
+                  <span class="badge bg-light text-dark border">Base64 / Variable</span>
+                </div>
+
+                <!-- Preview thumbnail if an image or base64 is set -->
+                <div class="preview-box border rounded mb-3 d-flex align-items-center justify-content-center p-2 bg-light"
+                  style="min-height: 80px; max-height: 120px;" *ngIf="field.value && !field.value.startsWith('{{')">
+                  <img [src]="formatImageSrc(field.value)" alt="Preview"
+                    style="max-height: 100px; max-width: 100%; object-fit: contain;" />
+                </div>
+
+                <div *ngIf="field.value && field.value.startsWith('{{')"
+                  class="alert alert-secondary py-1 px-2 mb-2 small d-flex align-items-center gap-1">
+                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;">code</mat-icon>
+                  <span>Variable: <strong>{{ field.value }}</strong></span>
+                </div>
+
+                <div class="d-flex gap-2 mb-2">
+                  <button type="button" mat-flat-button color="primary" class="btn-sm" (click)="imageInput.click()">
+                    <mat-icon>upload</mat-icon> Subir Imagen
+                  </button>
+                  <input type="file" #imageInput (change)="onImageFileSelected($event, field, selectedSection)"
+                    accept="image/*" class="d-none" />
+
+                  <button type="button" mat-stroked-button color="warn" *ngIf="field.value"
+                    (click)="clearImageField(field, selectedSection)">
+                    <mat-icon>delete</mat-icon> Quitar
+                  </button>
+                </div>
+
+                <mat-form-field appearance="outline" class="w-100 mt-1">
+                  <mat-label>Variable o Base64</mat-label>
+                  <input matInput [(ngModel)]="field.value" (ngModelChange)="onFieldChange(selectedSection)"
+                    placeholder="Ej. base64">
+                </mat-form-field>
+              </div>
+
+            </div>
           </div>
 
           <div class="alert alert-info mt-3 small">
@@ -784,21 +740,36 @@
         </div>
 
         <div *ngIf="isViewMode">
-          <div *ngFor="let field of selectedSection.fields" class="mb-3">
-            <strong class="text-muted d-block small mb-1">{{ field.label }}:</strong>
-            <div *ngIf="field.type === 'image'">
-              <div *ngIf="field.value && !field.value.startsWith('{{')" class="p-2 border rounded bg-light"
-                style="max-width: 200px;">
-                <img [src]="formatImageSrc(field.value)" alt="Imagen"
-                  style="max-height: 60px; max-width: 100%; object-fit: contain;" />
-              </div>
-              <span *ngIf="field.value && field.value.startsWith('{{')" class="badge bg-secondary">{{ field.value
-                }}</span>
-              <span *ngIf="!field.value" class="text-muted small">Sin imagen</span>
+          <div *ngIf="selectedSection.type === 'table'">
+            <h6 class="fw-bold text-muted mb-2">Columnas:</h6>
+            <div *ngFor="let col of getTableColumnPairs(selectedSection); trackBy: trackByColIndex" class="mb-2 p-2 border rounded bg-light">
+              <div class="fw-bold text-primary small">Columna {{ col.index }}</div>
+              <div class="small"><strong>Cabecera:</strong> {{ col.headerField.value }}</div>
+              <div class="small"><strong>Variable:</strong> {{ col.varField.value }}</div>
             </div>
-            <span *ngIf="field.type !== 'checkbox' && field.type !== 'image'">{{ field.value || 'N/A' }}</span>
-            <span *ngIf="field.type === 'checkbox'" class="badge" [class.bg-success]="field.value"
-              [class.bg-danger]="!field.value">{{ field.value ? 'Sí' : 'No' }}</span>
+            <div *ngFor="let field of getNonColumnTableFields(selectedSection)" class="mt-2">
+              <strong class="text-muted d-block small mb-1">{{ field.label }}:</strong>
+              <span>{{ field.value || 'N/A' }}</span>
+            </div>
+          </div>
+
+          <div *ngIf="selectedSection.type !== 'table'">
+            <div *ngFor="let field of selectedSection.fields" class="mb-3">
+              <strong class="text-muted d-block small mb-1">{{ field.label }}:</strong>
+              <div *ngIf="field.type === 'image'">
+                <div *ngIf="field.value && !field.value.startsWith('{{')" class="p-2 border rounded bg-light"
+                  style="max-width: 200px;">
+                  <img [src]="formatImageSrc(field.value)" alt="Imagen"
+                    style="max-height: 60px; max-width: 100%; object-fit: contain;" />
+                </div>
+                <span *ngIf="field.value && field.value.startsWith('{{')" class="badge bg-secondary">{{ field.value
+                  }}</span>
+                <span *ngIf="!field.value" class="text-muted small">Sin imagen</span>
+              </div>
+              <span *ngIf="field.type !== 'checkbox' && field.type !== 'image'">{{ field.value || 'N/A' }}</span>
+              <span *ngIf="field.type === 'checkbox'" class="badge" [class.bg-success]="field.value"
+                [class.bg-danger]="!field.value">{{ field.value ? 'Sí' : 'No' }}</span>
+            </div>
           </div>
         </div>
 

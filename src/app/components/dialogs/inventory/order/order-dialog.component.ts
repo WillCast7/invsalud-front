@@ -321,7 +321,6 @@ export class OrderDialogComponent implements OnInit {
               const matchedSupplier = this.suppliers.find(s => s.id === tpId);
               if (matchedSupplier) {
                 this.mainForm.get('thirdParty')?.setValue(matchedSupplier, { emitEvent: false });
-                this.loadAuthorizedProducts(tpId);
               }
 
               // Cargamos los items en el formulario

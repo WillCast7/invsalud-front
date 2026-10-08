@@ -175,16 +175,64 @@ export class ReportDialogComponent {
   }
 
   inventoryColumns: ColumnTableInterface[] = [
-    { key: 'id', label: 'ID', isSortable: true },
-    { key: 'product', label: 'Producto', isSortable: true },
-    { key: 'batch', label: 'Lote', isSortable: true },
-    { key: 'purchasePrice', label: 'P. Compra', isSortable: true },
-    { key: 'salePrice', label: 'P. Venta', isSortable: true },
-    { key: 'totalUnits', label: 'Unid. Totales', isSortable: true },
-    { key: 'availableUnits', label: 'Unid. Disp.', isSortable: true },
-    { key: 'expirationDate', label: 'Fecha Venc.', isSortable: true, pipe: 'date' },
-    { key: 'isActive', label: 'Estado', isSortable: false, pipe: 'status' }
+    { key: 'batch', label: 'LOTE', isSortable: true },
+    { key: 'product', label: 'MEDICAMENTOS', isSortable: true },
+    { key: 'presentation', label: 'PRESENTACION', isSortable: true },
+    { key: 'pharmaceuticalForm', label: 'FORMA', isSortable: true },
+    { key: 'totalUnits', label: 'UNIDADES FISICAS', isSortable: true },
+    { key: 'availableUnits', label: 'UNIDADES DISPONIBLES', isSortable: true },
+    { key: 'purchasePrice', label: 'PRECIO COMPRA', isSortable: true, pipe: 'currency' },
+    { key: 'salePrice', label: 'PRECIO VENTA', isSortable: true, pipe: 'currency' },
+    { key: 'expirationDate', label: 'FECHA DE VENCIMIENTO', isSortable: true, pipe: 'date' }
   ];
+
+  soldColumns: ColumnTableInterface[] = [
+    { key: 'code', label: 'ORDEN DE SALIDA', isSortable: true },
+    { key: 'batch', label: 'LOTE', isSortable: true },
+    { key: 'product', label: 'MEDICAMENTO', isSortable: true },
+    { key: 'expirationDate', label: 'FECHA VENCIMIENTO', isSortable: true, pipe: 'date' },
+    { key: 'totalUnits', label: 'CANTIDAD', isSortable: true },
+    { key: 'client', label: 'CLIENTE', isSortable: true },
+    { key: 'date', label: 'FECHA VENTA', isSortable: true, pipe: 'date' },
+    { key: 'totalPrice', label: 'PRECIO', isSortable: true, pipe: 'currency' }
+  ];
+
+  orderColumns: ColumnTableInterface[] = [
+    { key: 'code', label: 'COTIZACION', isSortable: true },
+    { key: 'batch', label: 'LOTE', isSortable: true },
+    { key: 'product', label: 'MEDICAMENTO', isSortable: true },
+    { key: 'expirationDate', label: 'FECHA VENCIMIENTO', isSortable: true, pipe: 'date' },
+    { key: 'totalUnits', label: 'CANTIDAD', isSortable: true },
+    { key: 'client', label: 'CLIENTE', isSortable: true },
+    { key: 'date', label: 'FECHA COTIZACION', isSortable: true, pipe: 'date' },
+    { key: 'totalPrice', label: 'PRECIO', isSortable: true, pipe: 'currency' }
+  ];
+
+  purchasingColumns: ColumnTableInterface[] = [
+    { key: 'code', label: 'ORDEN DE COMPRA', isSortable: true },
+    { key: 'batch', label: 'LOTE', isSortable: true },
+    { key: 'product', label: 'MEDICAMENTO', isSortable: true },
+    { key: 'expirationDate', label: 'FECHA VENCIMIENTO', isSortable: true, pipe: 'date' },
+    { key: 'totalUnits', label: 'CANTIDAD', isSortable: true },
+    { key: 'client', label: 'PROVEEDOR', isSortable: true },
+    { key: 'date', label: 'FECHA COMPRA', isSortable: true, pipe: 'date' },
+    { key: 'purchasePrice', label: 'PRECIO COMPRA', isSortable: true, pipe: 'currency' },
+    { key: 'salePrice', label: 'PRECIO VENTA', isSortable: true, pipe: 'currency' }
+  ];
+
+  get currentColumns(): ColumnTableInterface[] {
+    const type = this.data?.data?.type;
+    if (type === 'sold') {
+      return this.soldColumns;
+    }
+    if (type === 'order') {
+      return this.orderColumns;
+    }
+    if (type === 'purchasing') {
+      return this.purchasingColumns;
+    }
+    return this.inventoryColumns;
+  }
 
   onPrintReport() {
     const rawFilters = this.data?.data || {};
@@ -210,7 +258,17 @@ export class ReportDialogComponent {
         const fileURL = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = fileURL;
-        a.download = `reporte_${filters.type || 'inventario'}.csv`;
+        let filename = 'reporte_inventario.xlsx';
+        if (filters.type === 'sold') {
+          filename = 'reporte_salidas.xlsx';
+        } else if (filters.type === 'order') {
+          filename = 'reporte_cotizaciones.xlsx';
+        } else if (filters.type === 'purchasing') {
+          filename = 'reporte_ingresos.xlsx';
+        } else if (filters.type) {
+          filename = `reporte_${filters.type}.xlsx`;
+        }
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

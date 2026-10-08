@@ -29,6 +29,11 @@ export enum TemplateMode {
   CREATE = 'create'
 }
 
+export interface TableColumn {
+  header: string;
+  variable: string;
+}
+
 export interface SectionField {
   key: string;
   label: string;
@@ -122,15 +127,22 @@ export const BASE_COTIZACION_MEDICAMENTOS: SectionsJson = {
       name: 'Tabla de Medicamentos',
       type: 'table',
       fields: [
-        { key: 'tableType', label: 'Tipo de Tabla (medicamentos/recetarios)', type: 'text', value: 'medicamentos' },
-        { key: 'headerBatch', label: 'Columna Lote', type: 'text', value: 'Lote' },
-        { key: 'headerProduct', label: 'Columna Nombre', type: 'text', value: 'Nombre' },
-        { key: 'headerPresentation', label: 'Columna Presentación', type: 'text', value: 'Presentación' },
-        { key: 'headerExpiration', label: 'Columna Vencimiento', type: 'text', value: 'Fecha Vencimiento' },
-        { key: 'headerQuantity', label: 'Columna Cantidad', type: 'text', value: 'Cantidad' },
-        { key: 'headerPriceUnit', label: 'Columna Valor Unitario', type: 'text', value: 'Valor Unitario' },
-        { key: 'headerTotal', label: 'Columna Total', type: 'text', value: 'Total' },
-        { key: 'showPrices', label: 'Mostrar Precios y Totales', type: 'checkbox', value: true }
+        { key: 'tableType', label: 'Tipo de Tabla', type: 'text', value: 'medicamentos' },
+        { key: 'header_1', label: 'Cabecera Columna 1', type: 'text', value: 'Lote' },
+        { key: 'var_1', label: 'Variable Columna 1', type: 'text', value: '{{ item.inventory.batch.code }}' },
+        { key: 'header_2', label: 'Cabecera Columna 2', type: 'text', value: 'Nombre' },
+        { key: 'var_2', label: 'Variable Columna 2', type: 'text', value: '{{ item.inventory.product.name }}' },
+        { key: 'header_3', label: 'Cabecera Columna 3', type: 'text', value: 'Presentación' },
+        { key: 'var_3', label: 'Variable Columna 3', type: 'text', value: '{{ item.inventory.product.presentation }}' },
+        { key: 'header_4', label: 'Cabecera Columna 4', type: 'text', value: 'Fecha Vencimiento' },
+        { key: 'var_4', label: 'Variable Columna 4', type: 'text', value: '{{ item.inventory.expirationDate }}' },
+        { key: 'header_5', label: 'Cabecera Columna 5', type: 'text', value: 'Cantidad' },
+        { key: 'var_5', label: 'Variable Columna 5', type: 'text', value: '{{ item.units }}' },
+        { key: 'header_6', label: 'Cabecera Columna 6', type: 'text', value: 'Valor Unitario' },
+        { key: 'var_6', label: 'Variable Columna 6', type: 'text', value: '{{ item.priceUnit }}' },
+        { key: 'header_7', label: 'Cabecera Columna 7', type: 'text', value: 'Total' },
+        { key: 'var_7', label: 'Variable Columna 7', type: 'text', value: '{{ item.priceTotal }}' },
+        { key: 'grandTotalVar', label: 'Variable Total General', type: 'text', value: '{{ order.total }}' }
       ],
       html_template: ''
     },
@@ -206,12 +218,17 @@ export const BASE_COTIZACION_RECETARIOS: SectionsJson = {
       type: 'table',
       fields: [
         { key: 'tableType', label: 'Tipo de Tabla', type: 'text', value: 'recetarios' },
-        { key: 'headerQuantity', label: 'Columna Cantidad', type: 'text', value: 'Cantidad' },
-        { key: 'headerPriceUnit', label: 'Columna Valor Unitario', type: 'text', value: 'Valor Unitario' },
-        { key: 'headerSubtotal', label: 'Columna Subtotal', type: 'text', value: 'Subtotal' },
-        { key: 'headerIva', label: 'Columna IVA', type: 'text', value: 'Iva /<br>{{order.iva}}%' },
-        { key: 'headerTotal', label: 'Columna Valor Total', type: 'text', value: 'Valor Total' },
-        { key: 'showPrices', label: 'Mostrar Precios y Totales', type: 'checkbox', value: true }
+        { key: 'header_1', label: 'Cabecera Columna 1', type: 'text', value: 'Cantidad' },
+        { key: 'var_1', label: 'Variable Columna 1', type: 'text', value: '{{ item.units }}' },
+        { key: 'header_2', label: 'Cabecera Columna 2', type: 'text', value: 'Valor Unitario' },
+        { key: 'var_2', label: 'Variable Columna 2', type: 'text', value: '{{ item.priceUnit }}' },
+        { key: 'header_3', label: 'Cabecera Columna 3', type: 'text', value: 'Subtotal' },
+        { key: 'var_3', label: 'Variable Columna 3', type: 'text', value: '{{ order.subtotal }}' },
+        { key: 'header_4', label: 'Cabecera Columna 4', type: 'text', value: 'Iva /<br>{{order.iva}}%' },
+        { key: 'var_4', label: 'Variable Columna 4', type: 'text', value: '{{ order.priceIva }}' },
+        { key: 'header_5', label: 'Cabecera Columna 5', type: 'text', value: 'Valor Total' },
+        { key: 'var_5', label: 'Variable Columna 5', type: 'text', value: '{{ order.total }}' },
+        { key: 'grandTotalVar', label: 'Variable Total General', type: 'text', value: '{{ orderTotal }}' }
       ],
       html_template: ''
     },
@@ -287,15 +304,22 @@ export const BASE_ORDEN_SALIDA_MEDICAMENTOS: SectionsJson = {
       name: 'Tabla de Medicamentos',
       type: 'table',
       fields: [
-        { key: 'tableType', label: 'Tipo de Tabla (medicamentos/recetarios)', type: 'text', value: 'medicamentos' },
-        { key: 'headerBatch', label: 'Columna Lote', type: 'text', value: 'Lote' },
-        { key: 'headerProduct', label: 'Columna Nombre', type: 'text', value: 'Nombre' },
-        { key: 'headerPresentation', label: 'Columna Presentación', type: 'text', value: 'Presentación' },
-        { key: 'headerExpiration', label: 'Columna Vencimiento', type: 'text', value: 'Fecha Vencimiento' },
-        { key: 'headerQuantity', label: 'Columna Cantidad', type: 'text', value: 'Cantidad' },
-        { key: 'headerPriceUnit', label: 'Columna Valor Unitario', type: 'text', value: 'Valor Unitario' },
-        { key: 'headerTotal', label: 'Columna Total', type: 'text', value: 'Total' },
-        { key: 'showPrices', label: 'Mostrar Precios y Totales', type: 'checkbox', value: true }
+        { key: 'tableType', label: 'Tipo de Tabla', type: 'text', value: 'medicamentos' },
+        { key: 'header_1', label: 'Cabecera Columna 1', type: 'text', value: 'Lote' },
+        { key: 'var_1', label: 'Variable Columna 1', type: 'text', value: '{{ item.inventory.batch.code }}' },
+        { key: 'header_2', label: 'Cabecera Columna 2', type: 'text', value: 'Nombre' },
+        { key: 'var_2', label: 'Variable Columna 2', type: 'text', value: '{{ item.inventory.product.name }}' },
+        { key: 'header_3', label: 'Cabecera Columna 3', type: 'text', value: 'Presentación' },
+        { key: 'var_3', label: 'Variable Columna 3', type: 'text', value: '{{ item.inventory.product.presentation }}' },
+        { key: 'header_4', label: 'Cabecera Columna 4', type: 'text', value: 'Fecha Vencimiento' },
+        { key: 'var_4', label: 'Variable Columna 4', type: 'text', value: '{{ item.inventory.expirationDate }}' },
+        { key: 'header_5', label: 'Cabecera Columna 5', type: 'text', value: 'Cantidad' },
+        { key: 'var_5', label: 'Variable Columna 5', type: 'text', value: '{{ item.units }}' },
+        { key: 'header_6', label: 'Cabecera Columna 6', type: 'text', value: 'Valor Unitario' },
+        { key: 'var_6', label: 'Variable Columna 6', type: 'text', value: '{{ item.priceUnit }}' },
+        { key: 'header_7', label: 'Cabecera Columna 7', type: 'text', value: 'Total' },
+        { key: 'var_7', label: 'Variable Columna 7', type: 'text', value: '{{ item.priceTotal }}' },
+        { key: 'grandTotalVar', label: 'Variable Total General', type: 'text', value: '{{ order.total }}' }
       ],
       html_template: ''
     },
@@ -361,12 +385,17 @@ export const BASE_ORDEN_SALIDA_RECETARIOS: SectionsJson = {
       type: 'table',
       fields: [
         { key: 'tableType', label: 'Tipo de Tabla', type: 'text', value: 'recetarios' },
-        { key: 'headerQuantity', label: 'Columna Cantidad', type: 'text', value: 'Cantidad' },
-        { key: 'headerPriceUnit', label: 'Columna Valor Unitario', type: 'text', value: 'Valor Unitario' },
-        { key: 'headerSubtotal', label: 'Columna Subtotal', type: 'text', value: 'Subtotal' },
-        { key: 'headerIva', label: 'Columna IVA', type: 'text', value: 'Iva / {{ order.iva }}%' },
-        { key: 'headerTotal', label: 'Columna Valor Total', type: 'text', value: 'Valor Total' },
-        { key: 'showPrices', label: 'Mostrar Precios y Totales', type: 'checkbox', value: false }
+        { key: 'header_1', label: 'Cabecera Columna 1', type: 'text', value: 'Cantidad' },
+        { key: 'var_1', label: 'Variable Columna 1', type: 'text', value: '{{ item.units }}' },
+        { key: 'header_2', label: 'Cabecera Columna 2', type: 'text', value: 'Valor Unitario' },
+        { key: 'var_2', label: 'Variable Columna 2', type: 'text', value: '{{ item.priceUnit }}' },
+        { key: 'header_3', label: 'Cabecera Columna 3', type: 'text', value: 'Subtotal' },
+        { key: 'var_3', label: 'Variable Columna 3', type: 'text', value: '{{ order.subtotal }}' },
+        { key: 'header_4', label: 'Cabecera Columna 4', type: 'text', value: 'Iva / {{ order.iva }}%' },
+        { key: 'var_4', label: 'Variable Columna 4', type: 'text', value: '{{ order.priceIva }}' },
+        { key: 'header_5', label: 'Cabecera Columna 5', type: 'text', value: 'Valor Total' },
+        { key: 'var_5', label: 'Variable Columna 5', type: 'text', value: '{{ order.total }}' },
+        { key: 'grandTotalVar', label: 'Variable Total General', type: 'text', value: '{{ order.total }}' }
       ],
       html_template: ''
     },
@@ -380,6 +409,157 @@ export const BASE_ORDEN_SALIDA_RECETARIOS: SectionsJson = {
         { key: 'dateReceived', label: 'Fecha de recepción', type: 'text', value: 'FECHA: Día _____ Mes _________ Año ____________' },
         { key: 'phoneContact', label: 'Teléfono o Contacto', type: 'text', value: 'Teléfono – Contacto: __________________________' },
         { key: 'signFooter', label: 'Pie de Firma Entrega', type: 'textarea', value: 'Fondo Rotatorio de Estupefacientes del Valle del Cauca\nSecretaría Departamental de Salud' }
+      ],
+      html_template: ''
+    },
+    {
+      id: 'sec-footer',
+      name: 'Pie de Página Institucional',
+      type: 'footer',
+      fields: [
+        { key: 'footerUrl', label: 'Logo / Banner Pie de Página', type: 'image', value: '{{ companyEntity.footer }}' },
+        { key: 'entity', label: 'Entidad', type: 'text', value: 'Gobernación Departamento del Valle del Cauca' },
+        { key: 'address', label: 'Dirección Complejo', type: 'text', value: 'Carrera 76 # 4 - 30 edificio complejo integral de servicios de salud pública "Aníbal Patiño Rodríguez"' },
+        { key: 'email', label: 'Correo de Contacto', type: 'text', value: 'fre@valledelcauca.gov.co' },
+        { key: 'phone', label: 'Teléfono', type: 'text', value: '3104683988' }
+      ],
+      html_template: ''
+    }
+  ]
+};
+
+export const BASE_COMPRA_MEDICAMENTOS: SectionsJson = {
+  sections: [
+    {
+      id: 'sec-header',
+      name: 'Cabecera Institucional',
+      type: 'header',
+      fields: [
+        { key: 'showLogo', label: 'Mostrar Logo', type: 'checkbox', value: true },
+        { key: 'logoUrl', label: 'Logo Cabecera', type: 'image', value: '{{ companyEntity.logoOrder }}' },
+        { key: 'docCode', label: 'Código Formato', type: 'text', value: 'FO-M9-P3-02- V04' },
+        { key: 'docSubcode', label: 'Subcódigo Consecutivo', type: 'text', value: '1.220.30 - 27.39' },
+        { key: 'docNumber', label: 'Número de Entrada / Compra', type: 'text', value: 'ORDEN DE COMPRA Nº {{ purchasing.code }}' },
+        { key: 'cityDate', label: 'Ciudad y Fecha', type: 'text', value: 'Santiago de Cali, {{ purchasing.createdAt }}' }
+      ],
+      html_template: ''
+    },
+    {
+      id: 'sec-recipient',
+      name: 'Proveedor y Datos de Compra',
+      type: 'subtitle',
+      fields: [
+        { key: 'recipientTitle', label: 'Proveedor', type: 'text', value: 'Proveedor:' },
+        { key: 'recipientName', label: 'Nombre Proveedor', type: 'text', value: '{{ thirdParty.fullName }}' },
+        { key: 'subject', label: 'Referencia Documento', type: 'text', value: 'Orden de Entrada / Compra de Medicamentos' },
+        { key: 'introText', label: 'Observaciones / Detalle', type: 'textarea', value: 'Entrada de medicamentos a almacén FRE Valle.' }
+      ],
+      html_template: ''
+    },
+    {
+      id: 'sec-table',
+      name: 'Tabla de Compra Medicamentos',
+      type: 'table',
+      fields: [
+        { key: 'header_1', label: 'Cabecera Columna 1', type: 'text', value: 'Código' },
+        { key: 'var_1', label: 'Variable Columna 1', type: 'text', value: '{{ item.product.code }}' },
+        { key: 'header_2', label: 'Cabecera Columna 2', type: 'text', value: 'Descripción' },
+        { key: 'var_2', label: 'Variable Columna 2', type: 'text', value: '{{ item.product.name }}' },
+        { key: 'header_3', label: 'Cabecera Columna 3', type: 'text', value: 'Cantidad' },
+        { key: 'var_3', label: 'Variable Columna 3', type: 'text', value: '{{ item.units }}' },
+        { key: 'header_4', label: 'Cabecera Columna 4', type: 'text', value: 'Precio Unitario' },
+        { key: 'var_4', label: 'Variable Columna 4', type: 'text', value: '{{ item.priceUnit }}' },
+        { key: 'header_5', label: 'Cabecera Columna 5', type: 'text', value: 'Total' },
+        { key: 'var_5', label: 'Variable Columna 5', type: 'text', value: '{{ item.priceTotal }}' },
+        { key: 'grandTotalVar', label: 'Variable Total General', type: 'text', value: '{{ purchasing.total }}' }
+      ],
+      html_template: ''
+    },
+    {
+      id: 'sec-signatures',
+      name: 'Firmas de Recepción',
+      type: 'signatures',
+      fields: [
+        { key: 'receivedBy', label: 'Recibido por', type: 'text', value: 'RECIBÍ CONFORME: _____________________________' },
+        { key: 'documentId', label: 'Identificación', type: 'text', value: 'CC: _____________________ de ________________' },
+        { key: 'dateReceived', label: 'Fecha de recepción', type: 'text', value: 'FECHA: Día _______ Mes _________ Año _________' },
+        { key: 'signFooter', label: 'Responsable Almacén', type: 'textarea', value: 'Fondo Rotatorio de Estupefacientes del Valle del Cauca' }
+      ],
+      html_template: ''
+    },
+    {
+      id: 'sec-footer',
+      name: 'Pie de Página Institucional',
+      type: 'footer',
+      fields: [
+        { key: 'footerUrl', label: 'Logo / Banner Pie de Página', type: 'image', value: '{{ companyEntity.footer }}' },
+        { key: 'entity', label: 'Entidad', type: 'text', value: 'Gobernación Departamento del Valle del Cauca' },
+        { key: 'address', label: 'Dirección Complejo', type: 'text', value: 'Carrera 76 # 4 - 30 edificio complejo integral de servicios de salud pública "Aníbal Patiño Rodríguez"' },
+        { key: 'email', label: 'Correo de Contacto', type: 'text', value: 'fre@valledelcauca.gov.co' },
+        { key: 'phone', label: 'Teléfono', type: 'text', value: '3104683988' }
+      ],
+      html_template: ''
+    }
+  ]
+};
+
+export const BASE_COMPRA_RECETARIOS: SectionsJson = {
+  sections: [
+    {
+      id: 'sec-header',
+      name: 'Cabecera Institucional',
+      type: 'header',
+      fields: [
+        { key: 'showLogo', label: 'Mostrar Logo', type: 'checkbox', value: true },
+        { key: 'logoUrl', label: 'Logo Cabecera', type: 'image', value: '{{ companyEntity.logoOrder }}' },
+        { key: 'docCode', label: 'Código Formato', type: 'text', value: 'FO-M9-P3-02- V04' },
+        { key: 'docSubcode', label: 'Subcódigo Consecutivo', type: 'text', value: '1.220.30 - 27.39' },
+        { key: 'docNumber', label: 'Número de Entrada / Compra', type: 'text', value: 'ORDEN DE COMPRA RECETARIOS Nº {{ purchasing.code }}' },
+        { key: 'cityDate', label: 'Ciudad y Fecha', type: 'text', value: 'Santiago de Cali, {{ purchasing.createdAt }}' }
+      ],
+      html_template: ''
+    },
+    {
+      id: 'sec-recipient',
+      name: 'Proveedor y Referencia',
+      type: 'subtitle',
+      fields: [
+        { key: 'recipientTitle', label: 'Proveedor', type: 'text', value: 'Proveedor:' },
+        { key: 'recipientName', label: 'Nombre Proveedor', type: 'text', value: '{{ thirdParty.fullName }}' },
+        { key: 'subject', label: 'Referencia Documento', type: 'text', value: 'Entrada Talonarios Recetarios Oficiales' }
+      ],
+      html_template: ''
+    },
+    {
+      id: 'sec-table',
+      name: 'Tabla de Recetarios (Entrada)',
+      type: 'table',
+      fields: [
+        { key: 'header_1', label: 'Cabecera Columna 1', type: 'text', value: 'Cantidad' },
+        { key: 'var_1', label: 'Variable Columna 1', type: 'text', value: '{{ item.units }}' },
+        { key: 'header_2', label: 'Cabecera Columna 2', type: 'text', value: 'Descripción' },
+        { key: 'var_2', label: 'Variable Columna 2', type: 'text', value: 'TALONARIOS DE RECETARIOS OFICIALES' },
+        { key: 'header_3', label: 'Cabecera Columna 3', type: 'text', value: 'Serial Inicial' },
+        { key: 'var_3', label: 'Variable Columna 3', type: 'text', value: '{{ item.serialInit }}' },
+        { key: 'header_4', label: 'Cabecera Columna 4', type: 'text', value: 'Serial Final' },
+        { key: 'var_4', label: 'Variable Columna 4', type: 'text', value: '{{ item.serialFinal }}' },
+        { key: 'header_5', label: 'Cabecera Columna 5', type: 'text', value: 'Valor Unitario' },
+        { key: 'var_5', label: 'Variable Columna 5', type: 'text', value: '{{ item.priceUnit }}' },
+        { key: 'header_6', label: 'Cabecera Columna 6', type: 'text', value: 'Total' },
+        { key: 'var_6', label: 'Variable Columna 6', type: 'text', value: '{{ item.priceTotal }}' },
+        { key: 'grandTotalVar', label: 'Variable Total General', type: 'text', value: '{{ purchasing.total }}' }
+      ],
+      html_template: ''
+    },
+    {
+      id: 'sec-signatures',
+      name: 'Firmas de Recepción',
+      type: 'signatures',
+      fields: [
+        { key: 'receivedBy', label: 'Recibido por', type: 'text', value: 'RECIBÍ CONFORME: _____________________________' },
+        { key: 'documentId', label: 'Identificación', type: 'text', value: 'CC: _____________________ de ________________' },
+        { key: 'dateReceived', label: 'Fecha de recepción', type: 'text', value: 'FECHA: Día _______ Mes _________ Año _________' },
+        { key: 'signFooter', label: 'Responsable Almacén', type: 'textarea', value: 'Fondo Rotatorio de Estupefacientes del Valle del Cauca' }
       ],
       html_template: ''
     },
@@ -454,7 +634,9 @@ export class BillEditorComponent implements OnInit {
     { key: 'COTIZACION_MEDICAMENTOS', label: 'Cotización Medicamentos', category: 'MEDICAMENTOS', docType: 'COTIZACION', defaultName: 'Cotización Medicamentos' },
     { key: 'COTIZACION_RECETARIOS', label: 'Cotización Recetarios', category: 'RECETARIOS', docType: 'COTIZACION', defaultName: 'Cotización Recetarios' },
     { key: 'ORDEN_SALIDA_MEDICAMENTOS', label: 'Orden de Salida Medicamentos', category: 'MEDICAMENTOS', docType: 'VENTA', defaultName: 'Orden de Salida Medicamentos' },
-    { key: 'ORDEN_SALIDA_RECETARIOS', label: 'Orden de Salida Recetarios', category: 'RECETARIOS', docType: 'VENTA', defaultName: 'Orden de Salida Recetarios' }
+    { key: 'ORDEN_SALIDA_RECETARIOS', label: 'Orden de Salida Recetarios', category: 'RECETARIOS', docType: 'VENTA', defaultName: 'Orden de Salida Recetarios' },
+    { key: 'COMPRA_MEDICAMENTOS', label: 'Orden de Compra Medicamentos', category: 'MEDICAMENTOS', docType: 'COMPRA', defaultName: 'Orden de Compra Medicamentos' },
+    { key: 'COMPRA_RECETARIOS', label: 'Orden de Compra Recetarios', category: 'RECETARIOS', docType: 'COMPRA', defaultName: 'Orden de Compra Recetarios' }
   ];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { mode: string, type: string, data?: any }) {
@@ -482,13 +664,8 @@ export class BillEditorComponent implements OnInit {
       isDefault: [false]
     });
 
-    // Listen to document type changes to regenerate the table html accordingly
+    // Listen to document type changes ONLY to check combination default status
     this.mainForm.get('documentType')?.valueChanges.subscribe((newDocType) => {
-      this.templateData.sections.forEach(sec => {
-        if (sec.type === 'table') {
-          sec.html_template = this.generateHtmlForSection(sec);
-        }
-      });
       this.checkCombinationDefaultStatus(this.mainForm.get('category')?.value, newDocType);
     });
 
@@ -524,6 +701,12 @@ export class BillEditorComponent implements OnInit {
         break;
       case 'ORDEN_SALIDA_RECETARIOS':
         templateJson = JSON.parse(JSON.stringify(BASE_ORDEN_SALIDA_RECETARIOS));
+        break;
+      case 'COMPRA_MEDICAMENTOS':
+        templateJson = JSON.parse(JSON.stringify(BASE_COMPRA_MEDICAMENTOS));
+        break;
+      case 'COMPRA_RECETARIOS':
+        templateJson = JSON.parse(JSON.stringify(BASE_COMPRA_RECETARIOS));
         break;
       default:
         templateJson = JSON.parse(JSON.stringify(BASE_COTIZACION_MEDICAMENTOS));
@@ -561,6 +744,10 @@ export class BillEditorComponent implements OnInit {
         this.templateData = JSON.parse(JSON.stringify(BASE_ORDEN_SALIDA_RECETARIOS));
         this.mainForm.patchValue({ name: 'Orden de Salida Recetarios' });
         this.ensureRecipeSaleOrderTemplateFields();
+      } else if (initCat === 'RECETARIOS' && initDocType === 'COMPRA') {
+        this.selectedStandardTemplateKey = 'COMPRA_RECETARIOS';
+        this.templateData = JSON.parse(JSON.stringify(BASE_COMPRA_RECETARIOS));
+        this.mainForm.patchValue({ name: 'Orden de Compra Recetarios' });
       } else if (initCat === 'RECETARIOS') {
         this.selectedStandardTemplateKey = 'COTIZACION_RECETARIOS';
         this.templateData = JSON.parse(JSON.stringify(BASE_COTIZACION_RECETARIOS));
@@ -571,6 +758,10 @@ export class BillEditorComponent implements OnInit {
         this.templateData = JSON.parse(JSON.stringify(BASE_ORDEN_SALIDA_MEDICAMENTOS));
         this.mainForm.patchValue({ name: 'Orden de Salida Medicamentos' });
         this.ensureMedicineSaleOrderTemplateFields();
+      } else if ((initCat === 'MEDICAMENTOS' || initCat === 'MEDICAMENTOS_SP') && initDocType === 'COMPRA') {
+        this.selectedStandardTemplateKey = 'COMPRA_MEDICAMENTOS';
+        this.templateData = JSON.parse(JSON.stringify(BASE_COMPRA_MEDICAMENTOS));
+        this.mainForm.patchValue({ name: 'Orden de Compra Medicamentos' });
       } else {
         this.selectedStandardTemplateKey = 'COTIZACION_MEDICAMENTOS';
         this.templateData = JSON.parse(JSON.stringify(BASE_COTIZACION_MEDICAMENTOS));
@@ -605,10 +796,14 @@ export class BillEditorComponent implements OnInit {
         this.selectedStandardTemplateKey = 'COTIZACION_RECETARIOS';
       } else if (this.data.data.category === 'RECETARIOS' && this.data.data.documentType === 'VENTA') {
         this.selectedStandardTemplateKey = 'ORDEN_SALIDA_RECETARIOS';
+      } else if (this.data.data.category === 'RECETARIOS' && this.data.data.documentType === 'COMPRA') {
+        this.selectedStandardTemplateKey = 'COMPRA_RECETARIOS';
       } else if ((this.data.data.category === 'MEDICAMENTOS' || this.data.data.category === 'MEDICAMENTOS_SP') && this.data.data.documentType === 'COTIZACION') {
         this.selectedStandardTemplateKey = 'COTIZACION_MEDICAMENTOS';
       } else if ((this.data.data.category === 'MEDICAMENTOS' || this.data.data.category === 'MEDICAMENTOS_SP') && this.data.data.documentType === 'VENTA') {
         this.selectedStandardTemplateKey = 'ORDEN_SALIDA_MEDICAMENTOS';
+      } else if ((this.data.data.category === 'MEDICAMENTOS' || this.data.data.category === 'MEDICAMENTOS_SP') && this.data.data.documentType === 'COMPRA') {
+        this.selectedStandardTemplateKey = 'COMPRA_MEDICAMENTOS';
       }
       if (this.isViewMode) {
         this.mainForm.disable();
@@ -755,6 +950,9 @@ export class BillEditorComponent implements OnInit {
   }
 
   selectSection(section: SectionItem) {
+    if (section && section.type === 'table') {
+      this.migrateTableSectionIfNeeded(section);
+    }
     this.selectedSection = section;
   }
 
@@ -797,67 +995,19 @@ export class BillEditorComponent implements OnInit {
   }
 
   isRecipeQuoteTemplate(): boolean {
-    if (this.selectedStandardTemplateKey === 'COTIZACION_RECETARIOS') {
-      return true;
-    }
-    const cat = this.mainForm?.get('category')?.value;
-    const docType = this.mainForm?.get('documentType')?.value;
-    const name = (this.mainForm?.get('name')?.value || '').toLowerCase();
-    if (cat === 'RECETARIOS' && docType === 'COTIZACION') {
-      return true;
-    }
-    if (name.includes('recetario') && (docType === 'COTIZACION' || !docType)) {
-      return true;
-    }
-    return false;
+    return this.selectedStandardTemplateKey === 'COTIZACION_RECETARIOS';
   }
 
   isMedicineQuoteTemplate(): boolean {
-    if (this.selectedStandardTemplateKey === 'COTIZACION_MEDICAMENTOS') {
-      return true;
-    }
-    const cat = this.mainForm?.get('category')?.value;
-    const docType = this.mainForm?.get('documentType')?.value;
-    const name = (this.mainForm?.get('name')?.value || '').toLowerCase();
-    if ((cat === 'MEDICAMENTOS' || cat === 'MEDICAMENTOS_SP') && docType === 'COTIZACION') {
-      return true;
-    }
-    if (name.includes('medicamento') && (docType === 'COTIZACION' || !docType)) {
-      return true;
-    }
-    return false;
+    return this.selectedStandardTemplateKey === 'COTIZACION_MEDICAMENTOS';
   }
 
   isMedicineSaleOrderTemplate(): boolean {
-    if (this.selectedStandardTemplateKey === 'ORDEN_SALIDA_MEDICAMENTOS') {
-      return true;
-    }
-    const cat = this.mainForm?.get('category')?.value;
-    const docType = this.mainForm?.get('documentType')?.value;
-    const name = (this.mainForm?.get('name')?.value || '').toLowerCase();
-    if ((cat === 'MEDICAMENTOS' || cat === 'MEDICAMENTOS_SP') && docType === 'VENTA') {
-      return true;
-    }
-    if ((name.includes('orden') || name.includes('salida')) && (name.includes('medicamento') || cat === 'MEDICAMENTOS' || cat === 'MEDICAMENTOS_SP')) {
-      return true;
-    }
-    return false;
+    return this.selectedStandardTemplateKey === 'ORDEN_SALIDA_MEDICAMENTOS';
   }
 
   isRecipeSaleOrderTemplate(): boolean {
-    if (this.selectedStandardTemplateKey === 'ORDEN_SALIDA_RECETARIOS') {
-      return true;
-    }
-    const cat = this.mainForm?.get('category')?.value;
-    const docType = this.mainForm?.get('documentType')?.value;
-    const name = (this.mainForm?.get('name')?.value || '').toLowerCase();
-    if (cat === 'RECETARIOS' && docType === 'VENTA') {
-      return true;
-    }
-    if ((name.includes('orden') || name.includes('salida')) && (name.includes('recetario') || cat === 'RECETARIOS')) {
-      return true;
-    }
-    return false;
+    return this.selectedStandardTemplateKey === 'ORDEN_SALIDA_RECETARIOS';
   }
 
   isOfficialLetterQuoteTemplate(): boolean {
@@ -1013,6 +1163,201 @@ export class BillEditorComponent implements OnInit {
     return OFFICIAL_RECIPE_FOOTER_BANNER;
   }
 
+  Math = Math;
+
+  trackByColIndex(index: number, item: any): number {
+    return item?.index !== undefined ? item.index : index;
+  }
+
+  migrateTableSectionIfNeeded(section: SectionItem): void {
+    if (!section || section.type !== 'table' || !section.fields) return;
+    const hasIndexed = section.fields.some(f => f.key.startsWith('header_') || f.key.startsWith('var_'));
+    if (!hasIndexed) {
+      const cols = this.getTableColumns(section);
+      this.syncTableColumnsToFields(section, cols);
+    }
+  }
+
+  getTableColumnPairs(section?: SectionItem | null): { index: number; headerField: SectionField; varField: SectionField }[] {
+    if (!section || section.type !== 'table') {
+      section = this.getSectionById('sec-table') || this.templateData.sections.find(s => s.type === 'table') || null;
+    }
+    if (!section || !section.fields) return [];
+
+    const pairsMap: { [index: number]: { headerField?: SectionField; varField?: SectionField } } = {};
+
+    section.fields.forEach(f => {
+      const headerMatch = f.key.match(/^header_(\d+)$/);
+      const varMatch = f.key.match(/^var_(\d+)$/);
+      if (headerMatch) {
+        const idx = parseInt(headerMatch[1], 10);
+        if (!pairsMap[idx]) pairsMap[idx] = {};
+        pairsMap[idx].headerField = f;
+      } else if (varMatch) {
+        const idx = parseInt(varMatch[1], 10);
+        if (!pairsMap[idx]) pairsMap[idx] = {};
+        pairsMap[idx].varField = f;
+      }
+    });
+
+    const indices = Object.keys(pairsMap).map(k => parseInt(k, 10)).sort((a, b) => a - b);
+    const result: { index: number; headerField: SectionField; varField: SectionField }[] = [];
+
+    indices.forEach(idx => {
+      let h = pairsMap[idx].headerField;
+      let v = pairsMap[idx].varField;
+      if (!h) {
+        h = { key: `header_${idx}`, label: `Cabecera Columna ${idx}`, type: 'text', value: `Columna ${idx}` };
+        section!.fields.push(h);
+      }
+      if (!v) {
+        v = { key: `var_${idx}`, label: `Variable Columna ${idx}`, type: 'text', value: '{{ item.units }}' };
+        section!.fields.push(v);
+      }
+      result.push({ index: idx, headerField: h, varField: v });
+    });
+
+    return result;
+  }
+
+  getTableColumns(section?: SectionItem | null): TableColumn[] {
+    if (!section || section.type !== 'table') {
+      section = this.getSectionById('sec-table') || this.templateData.sections.find(s => s.type === 'table') || null;
+    }
+    if (!section || !section.fields) return [];
+
+    // Check if we already have indexed fields
+    const indexedCols: { [index: number]: TableColumn } = {};
+    const legacyHeaders: { key: string; label: string; val: string }[] = [];
+    const legacyVars: { key: string; label: string; val: string }[] = [];
+
+    section.fields.forEach(f => {
+      const headerMatch = f.key.match(/^header_(\d+)$/);
+      const varMatch = f.key.match(/^var_(\d+)$/);
+
+      if (headerMatch) {
+        const idx = parseInt(headerMatch[1], 10);
+        if (!indexedCols[idx]) indexedCols[idx] = { header: '', variable: '' };
+        indexedCols[idx].header = f.value || '';
+      } else if (varMatch) {
+        const idx = parseInt(varMatch[1], 10);
+        if (!indexedCols[idx]) indexedCols[idx] = { header: '', variable: '' };
+        indexedCols[idx].variable = f.value || '';
+      } else if (f.key.startsWith('header') && f.key !== 'headerTitle') {
+        legacyHeaders.push({ key: f.key, label: f.label, val: f.value });
+      } else if (f.key.startsWith('var') && f.key !== 'grandTotalVar') {
+        legacyVars.push({ key: f.key, label: f.label, val: f.value });
+      }
+    });
+
+    const indexedKeys = Object.keys(indexedCols).map(k => parseInt(k, 10)).sort((a, b) => a - b);
+    if (indexedKeys.length > 0) {
+      return indexedKeys.map(k => indexedCols[k]);
+    }
+
+    if (legacyHeaders.length > 0) {
+      return legacyHeaders.map((h, i) => {
+        const suffix = h.key.replace(/^header/, '');
+        const matchedVar = legacyVars.find(v => v.key === 'var' + suffix) || legacyVars[i];
+        return {
+          header: h.val || '',
+          variable: matchedVar ? matchedVar.val : ''
+        };
+      });
+    }
+
+    return [
+      { header: 'Columna 1', variable: '{{ item.units }}' }
+    ];
+  }
+
+  addTableColumn(section: SectionItem): void {
+    this.migrateTableSectionIfNeeded(section);
+    const columns = this.getTableColumns(section);
+    const nextNum = columns.length + 1;
+    columns.push({
+      header: `Columna ${nextNum}`,
+      variable: '{{ item.units }}'
+    });
+    this.syncTableColumnsToFields(section, columns);
+  }
+
+  removeTableColumn(section: SectionItem, colIndex: number): void {
+    this.migrateTableSectionIfNeeded(section);
+    const columns = this.getTableColumns(section);
+    if (columns.length <= 1) {
+      this.alertService.infoMixin.fire({
+        icon: 'warning',
+        title: 'La tabla debe tener al menos una columna.'
+      });
+      return;
+    }
+    const idxToRemove = colIndex - 1;
+    if (idxToRemove >= 0 && idxToRemove < columns.length) {
+      columns.splice(idxToRemove, 1);
+      this.syncTableColumnsToFields(section, columns);
+    }
+  }
+
+  getNonColumnTableFields(section?: SectionItem | null): SectionField[] {
+    if (!section || section.type !== 'table') return [];
+    return section.fields.filter(f => 
+      !f.key.startsWith('header_') && 
+      !f.key.startsWith('var_') && 
+      !f.key.startsWith('headerBatch') &&
+      !f.key.startsWith('headerProduct') &&
+      !f.key.startsWith('headerPresentation') &&
+      !f.key.startsWith('headerExpiration') &&
+      !f.key.startsWith('headerQuantity') &&
+      !f.key.startsWith('headerPriceUnit') &&
+      !f.key.startsWith('headerSubtotal') &&
+      !f.key.startsWith('headerIva') &&
+      !f.key.startsWith('headerTotal') &&
+      !f.key.startsWith('headerDescription') &&
+      !f.key.startsWith('headerCode') &&
+      !f.key.startsWith('headerPrice') &&
+      !f.key.startsWith('varBatch') &&
+      !f.key.startsWith('varProduct') &&
+      !f.key.startsWith('varPresentation') &&
+      !f.key.startsWith('varExpiration') &&
+      !f.key.startsWith('varQuantity') &&
+      !f.key.startsWith('varPriceUnit') &&
+      !f.key.startsWith('varSubtotal') &&
+      !f.key.startsWith('varIva') &&
+      !f.key.startsWith('varTotal') &&
+      !f.key.startsWith('varDescription') &&
+      !f.key.startsWith('varCode') &&
+      !f.key.startsWith('varPrice') &&
+      f.key !== 'tableType'
+    );
+  }
+
+  syncTableColumnsToFields(section: SectionItem, columns: TableColumn[]): void {
+    if (!section) return;
+
+    const nonColFields = this.getNonColumnTableFields(section);
+
+    const newColFields: SectionField[] = [];
+    columns.forEach((col, idx) => {
+      const num = idx + 1;
+      newColFields.push({
+        key: `header_${num}`,
+        label: `Cabecera Columna ${num}`,
+        type: 'text',
+        value: col.header
+      });
+      newColFields.push({
+        key: `var_${num}`,
+        label: `Variable Columna ${num}`,
+        type: 'text',
+        value: col.variable
+      });
+    });
+
+    section.fields = [...newColFields, ...nonColFields];
+    section.html_template = this.generateHtmlForSection(section);
+  }
+
   ensureRecipeTemplateFields(): void {
     if (!this.isRecipeQuoteTemplate()) return;
     const base = BASE_COTIZACION_RECETARIOS;
@@ -1022,9 +1367,16 @@ export class BillEditorComponent implements OnInit {
         this.templateData.sections.push(JSON.parse(JSON.stringify(baseSec)));
       } else {
         baseSec.fields.forEach(bf => {
-          const ef = existingSec!.fields.find(f => f.key === bf.key);
-          if (!ef) {
-            existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+          if (baseSec.type === 'table' && (bf.key.startsWith('header_') || bf.key.startsWith('var_') || bf.key.startsWith('header') || bf.key.startsWith('var'))) {
+            const hasAnyCols = existingSec!.fields.some(f => f.key.startsWith('header_') || f.key.startsWith('var_') || f.key.startsWith('header') || f.key.startsWith('var'));
+            if (!hasAnyCols) {
+              existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+            }
+          } else {
+            const ef = existingSec!.fields.find(f => f.key === bf.key);
+            if (!ef) {
+              existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+            }
           }
         });
       }
@@ -1040,9 +1392,16 @@ export class BillEditorComponent implements OnInit {
         this.templateData.sections.push(JSON.parse(JSON.stringify(baseSec)));
       } else {
         baseSec.fields.forEach(bf => {
-          const ef = existingSec!.fields.find(f => f.key === bf.key);
-          if (!ef) {
-            existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+          if (baseSec.type === 'table' && (bf.key.startsWith('header_') || bf.key.startsWith('var_') || bf.key.startsWith('header') || bf.key.startsWith('var'))) {
+            const hasAnyCols = existingSec!.fields.some(f => f.key.startsWith('header_') || f.key.startsWith('var_') || f.key.startsWith('header') || f.key.startsWith('var'));
+            if (!hasAnyCols) {
+              existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+            }
+          } else {
+            const ef = existingSec!.fields.find(f => f.key === bf.key);
+            if (!ef) {
+              existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+            }
           }
         });
       }
@@ -1058,9 +1417,16 @@ export class BillEditorComponent implements OnInit {
         this.templateData.sections.push(JSON.parse(JSON.stringify(baseSec)));
       } else {
         baseSec.fields.forEach(bf => {
-          const ef = existingSec!.fields.find(f => f.key === bf.key);
-          if (!ef) {
-            existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+          if (baseSec.type === 'table' && (bf.key.startsWith('header_') || bf.key.startsWith('var_') || bf.key.startsWith('header') || bf.key.startsWith('var'))) {
+            const hasAnyCols = existingSec!.fields.some(f => f.key.startsWith('header_') || f.key.startsWith('var_') || f.key.startsWith('header') || f.key.startsWith('var'));
+            if (!hasAnyCols) {
+              existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+            }
+          } else {
+            const ef = existingSec!.fields.find(f => f.key === bf.key);
+            if (!ef) {
+              existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+            }
           }
         });
       }
@@ -1076,9 +1442,16 @@ export class BillEditorComponent implements OnInit {
         this.templateData.sections.push(JSON.parse(JSON.stringify(baseSec)));
       } else {
         baseSec.fields.forEach(bf => {
-          const ef = existingSec!.fields.find(f => f.key === bf.key);
-          if (!ef) {
-            existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+          if (baseSec.type === 'table' && (bf.key.startsWith('header_') || bf.key.startsWith('var_') || bf.key.startsWith('header') || bf.key.startsWith('var'))) {
+            const hasAnyCols = existingSec!.fields.some(f => f.key.startsWith('header_') || f.key.startsWith('var_') || f.key.startsWith('header') || f.key.startsWith('var'));
+            if (!hasAnyCols) {
+              existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+            }
+          } else {
+            const ef = existingSec!.fields.find(f => f.key === bf.key);
+            if (!ef) {
+              existingSec!.fields.push(JSON.parse(JSON.stringify(bf)));
+            }
           }
         });
       }
@@ -1097,11 +1470,12 @@ export class BillEditorComponent implements OnInit {
     const recipientName = this.getField('sec-recipient', 'recipientName', '{{ thirdParty.fullName }}');
     const subject = this.getField('sec-recipient', 'subject', 'Ref: COTIZACION RECETARIOS OFICIALES PARA LA PRESCRIPCION DE MCE');
 
-    const hQty = this.getField('sec-table', 'headerQuantity', 'Cantidad');
-    const hUnit = this.getField('sec-table', 'headerPriceUnit', 'Valor Unitario');
-    const hSubtotal = this.getField('sec-table', 'headerSubtotal', 'Subtotal');
-    const hIva = this.getField('sec-table', 'headerIva', 'Iva /<br>{{order.iva}}%');
-    const hTotal = this.getField('sec-table', 'headerTotal', 'Valor Total');
+    const tableSec = this.getSectionById('sec-table') || this.templateData.sections.find(s => s.type === 'table');
+    const cols = this.getTableColumns(tableSec);
+    const grandTotal = this.getField('sec-table', 'grandTotalVar', '${{orderTotal}}');
+    const ths = cols.map(c => `<th>${c.header}</th>`).join('\n          ');
+    const tds = cols.map(c => `<td>${c.variable}</td>`).join('\n          ');
+    const colSpan = Math.max(1, cols.length - 1);
 
     const note1Title = this.getField('sec-conditions', 'note1Title', 'Nota: 1.   Para reclamar los recetarios por primera vez, favor:');
     const note1Page1Items = this.getNote1Page1Items();
@@ -1157,34 +1531,20 @@ ${RECIPE_QUOTE_CSS}
     </div>
 
     <table class="quote-table">
-      <colgroup>
-        <col class="qty">
-        <col class="unit">
-        <col class="subtotal">
-        <col class="iva">
-        <col class="total">
-      </colgroup>
       <thead>
         <tr>
-          <th>${hQty}</th>
-          <th>${hUnit}</th>
-          <th>${hSubtotal}</th>
-          <th>${hIva}</th>
-          <th>${hTotal}</th>
+          ${ths}
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>{{item.units}}</td>
-          <td>\${{item.priceUnit}}</td>
-          <td>\${{order.subtotal}}</td>
-          <td>$<br>{{order.priceIva}}</td>
-          <td>\${{order.total}}</td>
+          ${tds}
         </tr>
+        ${grandTotal ? `
         <tr>
-          <td colspan="4" class="grand-label">TOTAL</td>
-          <td class="grand-total">\${{orderTotal}}</td>
-        </tr>
+          <td colspan="${colSpan}" class="grand-label">TOTAL</td>
+          <td class="grand-total">${grandTotal}</td>
+        </tr>` : ''}
       </tbody>
     </table>
 
@@ -1250,13 +1610,12 @@ ${RECIPE_QUOTE_CSS}
     const subject = this.getField('sec-recipient', 'subject', 'Asunto: Cotización.');
     const introText = this.getField('sec-recipient', 'introText', 'De acuerdo a su solicitud, remitimos cotización acorde a la disponibilidad del Fondo Rotatorio de Estupefacientes FRE Valle:');
 
-    const hBatch = this.getField('sec-table', 'headerBatch', 'Lote');
-    const hName = this.getField('sec-table', 'headerProduct', 'Nombre');
-    const hPres = this.getField('sec-table', 'headerPresentation', 'Presentación');
-    const hExp = this.getField('sec-table', 'headerExpiration', 'Fecha Vencimiento');
-    const hQty = this.getField('sec-table', 'headerQuantity', 'Cantidad');
-    const hUnit = this.getField('sec-table', 'headerPriceUnit', 'Valor Unitario');
-    const hTotal = this.getField('sec-table', 'headerTotal', 'Total');
+    const tableSec = this.getSectionById('sec-table') || this.templateData.sections.find(s => s.type === 'table');
+    const cols = this.getTableColumns(tableSec);
+    const grandTotal = this.getField('sec-table', 'grandTotalVar', '${{order.total}}');
+    const ths = cols.map(c => `<th>${c.header}</th>`).join('\n          ');
+    const tds = cols.map(c => `<td>${c.variable}</td>`).join('\n          ');
+    const colSpan = Math.max(1, cols.length - 1);
 
     const notesTitle = this.getField('sec-conditions', 'notesTitle', 'Nota:');
     const legalizeIntro = this.getField('sec-conditions', 'legalizeIntro', '1. Con el fin de legalizar la cuenta, favor:');
@@ -1319,40 +1678,20 @@ ${RECIPE_QUOTE_CSS}
     </div>
 
     <table class="quote-table medicamentos">
-      <colgroup>
-        <col class="col-batch">
-        <col class="col-name">
-        <col class="col-pres">
-        <col class="col-exp">
-        <col class="col-qty">
-        <col class="col-unit">
-        <col class="col-total">
-      </colgroup>
       <thead>
         <tr>
-          <th>${hBatch}</th>
-          <th>${hName}</th>
-          <th>${hPres}</th>
-          <th>${hExp}</th>
-          <th>${hQty}</th>
-          <th>${hUnit}</th>
-          <th>${hTotal}</th>
+          ${ths}
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>{{item.inventory.batch.code}}</td>
-          <td>{{item.inventory.product.name}}</td>
-          <td>{{item.inventory.product.presentation}}</td>
-          <td>{{item.inventory.expirationDate}}</td>
-          <td>{{item.units}}</td>
-          <td>\${{item.priceUnit}}</td>
-          <td>\${{item.priceTotal}}</td>
+          ${tds}
         </tr>
+        ${grandTotal ? `
         <tr>
-          <td colspan="6" class="grand-label">TOTAL</td>
-          <td class="grand-total">\${{order.total}}</td>
-        </tr>
+          <td colspan="${colSpan}" class="grand-label">TOTAL</td>
+          <td class="grand-total">${grandTotal}</td>
+        </tr>` : ''}
       </tbody>
     </table>
 
@@ -1434,13 +1773,12 @@ ${RECIPE_QUOTE_CSS}
     const recipientName = this.getField('sec-recipient', 'recipientName', 'Secretaría Departamental de Salud del Valle del Cauca');
     const introText = this.getField('sec-recipient', 'introText', 'Sírvase ENTREGAR A {{ thirdParty.fullName }} cargo a salida de bienes, producto de la cotización No. {{ order.soldCode }} con abono mediante TRANSFERENCIA a DAVIVIENDA Cuenta de Ahorros# 379400001804 de fecha. {{ order.createdAt }}.');
 
-    const hBatch = this.getField('sec-table', 'headerBatch', 'Lote');
-    const hName = this.getField('sec-table', 'headerProduct', 'Nombre');
-    const hPres = this.getField('sec-table', 'headerPresentation', 'Presentación');
-    const hExp = this.getField('sec-table', 'headerExpiration', 'Fecha Vencimiento');
-    const hQty = this.getField('sec-table', 'headerQuantity', 'Cantidad');
-    const hUnit = this.getField('sec-table', 'headerPriceUnit', 'Valor Unitario');
-    const hTotal = this.getField('sec-table', 'headerTotal', 'Total');
+    const tableSec = this.getSectionById('sec-table') || this.templateData.sections.find(s => s.type === 'table');
+    const cols = this.getTableColumns(tableSec);
+    const grandTotal = this.getField('sec-table', 'grandTotalVar', '${{order.total}}');
+    const ths = cols.map(c => `<th>${c.header}</th>`).join('\n          ');
+    const tds = cols.map(c => `<td>${c.variable}</td>`).join('\n          ');
+    const colSpan = Math.max(1, cols.length - 1);
 
     const receivedBy = this.getField('sec-signatures', 'receivedBy', 'RECIBÍ: ________________________________________');
     const documentId = this.getField('sec-signatures', 'documentId', 'CC: ____________________ de ____________________');
@@ -1481,40 +1819,20 @@ ${RECIPE_QUOTE_CSS}
     </div>
 
     <table class="quote-table medicamentos">
-      <colgroup>
-        <col class="col-batch">
-        <col class="col-name">
-        <col class="col-pres">
-        <col class="col-exp">
-        <col class="col-qty">
-        <col class="col-unit">
-        <col class="col-total">
-      </colgroup>
       <thead>
         <tr>
-          <th>${hBatch}</th>
-          <th>${hName}</th>
-          <th>${hPres}</th>
-          <th>${hExp}</th>
-          <th>${hQty}</th>
-          <th>${hUnit}</th>
-          <th>${hTotal}</th>
+          ${ths}
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>{{item.inventory.batch.code}}</td>
-          <td>{{item.inventory.product.name}}</td>
-          <td>{{item.inventory.product.presentation}}</td>
-          <td>{{item.inventory.expirationDate}}</td>
-          <td>{{item.units}}</td>
-          <td>\${{item.priceUnit}}</td>
-          <td>\${{item.priceTotal}}</td>
+          ${tds}
         </tr>
+        ${grandTotal ? `
         <tr>
-          <td colspan="6" class="grand-label">TOTAL</td>
-          <td class="grand-total">\${{order.total}}</td>
-        </tr>
+          <td colspan="${colSpan}" class="grand-label">TOTAL</td>
+          <td class="grand-total">${grandTotal}</td>
+        </tr>` : ''}
       </tbody>
     </table>
 
@@ -1552,12 +1870,12 @@ ${RECIPE_QUOTE_CSS}
     const recipientName = this.getField('sec-recipient', 'recipientName', 'Secretaría Departamental de Salud del Valle del Cauca');
     const introText = this.getField('sec-recipient', 'introText', 'Sírvase ENTREGAR A {{ thirdParty.fullName }} cargo a salida de bienes, producto de la cotización No. {{ order.orderCode }} con abono mediante TRANSFERENCIA a DAVIVIENDA Cuenta de Ahorros# 379400001804 de fecha, {{ order.createdAt }}.');
 
-    const showPrices = this.getField('sec-table', 'showPrices', false) !== false;
-    const hQty = this.getField('sec-table', 'headerQuantity', 'Cantidad');
-    const hPrice = this.getField('sec-table', 'headerPriceUnit', 'Valor Unitario');
-    const hSubtotal = this.getField('sec-table', 'headerSubtotal', 'Subtotal');
-    const hIva = this.getField('sec-table', 'headerIva', 'Iva / {{ order.iva }}%');
-    const hTotal = this.getField('sec-table', 'headerTotal', 'Valor Total');
+    const tableSec = this.getSectionById('sec-table') || this.templateData.sections.find(s => s.type === 'table');
+    const cols = this.getTableColumns(tableSec);
+    const grandTotal = this.getField('sec-table', 'grandTotalVar', '${{order.total}}');
+    const ths = cols.map(c => `<th>${c.header}</th>`).join('\n          ');
+    const tds = cols.map(c => `<td>${c.variable}</td>`).join('\n          ');
+    const colSpan = Math.max(1, cols.length - 1);
 
     const receivedBy = this.getField('sec-signatures', 'receivedBy', 'RECIBÍ: ________________________________________');
     const documentId = this.getField('sec-signatures', 'documentId', 'CC: ____________________ de ____________________');
@@ -1570,57 +1888,6 @@ ${RECIPE_QUOTE_CSS}
     const formatSignaturesHtml = (lines: string[]) => {
       return lines.map(l => `<div>${l}</div>`).join('\n');
     };
-
-    const tableHtml = showPrices ? `
-    <table class="quote-table">
-      <colgroup>
-        <col class="qty">
-        <col class="unit">
-        <col class="subtotal">
-        <col class="iva">
-        <col class="total">
-      </colgroup>
-      <thead>
-        <tr>
-          <th>${hQty}</th>
-          <th>${hPrice}</th>
-          <th>${hSubtotal}</th>
-          <th>${hIva}</th>
-          <th>${hTotal}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="text-align: center;">{{item.units}}</td>
-          <td style="text-align: right;">\${{item.priceUnit}}</td>
-          <td style="text-align: right;">\${{order.subtotal}}</td>
-          <td style="text-align: right;">\${{order.priceIva}}</td>
-          <td style="text-align: right;">\${{order.total}}</td>
-        </tr>
-        <tr>
-          <td colspan="4" class="grand-label">TOTAL</td>
-          <td class="grand-total">\${{order.total}}</td>
-        </tr>
-      </tbody>
-    </table>` : `
-    <table class="quote-table recetarios-salida">
-      <colgroup>
-        <col style="width: 25%;">
-        <col style="width: 75%;">
-      </colgroup>
-      <thead>
-        <tr>
-          <th style="text-align: center;">${hQty}</th>
-          <th style="text-align: left;">Descripción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="text-align: center;">{{item.units}}</td>
-          <td style="text-align: left;">TALONARIOS DE RECETARIOS OFICIALES PARA LA PRESCRIPCIÓN DE MEDICAMENTOS DE CONTROL ESPECIAL</td>
-        </tr>
-      </tbody>
-    </table>`;
 
     return `
 <style>
@@ -1648,7 +1915,23 @@ ${RECIPE_QUOTE_CSS}
       <div class="recipient-intro-delivery">${introText}</div>
     </div>
 
-    ${tableHtml}
+    <table class="quote-table recetarios-salida">
+      <thead>
+        <tr>
+          ${ths}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          ${tds}
+        </tr>
+        ${grandTotal ? `
+        <tr>
+          <td colspan="${colSpan}" class="grand-label">TOTAL</td>
+          <td class="grand-total">${grandTotal}</td>
+        </tr>` : ''}
+      </tbody>
+    </table>
 
     <div class="sale-order-signatures">
       <div class="receipt-data">
@@ -1668,7 +1951,6 @@ ${RECIPE_QUOTE_CSS}
   <div class="footer">
     <img src="${footerBanner}" alt="Información de contacto">
   </div>
-</section>
     `.trim();
   }
 
@@ -1836,213 +2118,33 @@ ${RECIPE_QUOTE_CSS}
   }
 
   private generateTableHtml(fields: any): string {
-    if (this.isRecipeQuoteTemplate()) {
-      const hQty = fields.headerQuantity || 'Cantidad';
-      const hPrice = fields.headerPriceUnit || 'Valor Unitario';
-      const hSubtotal = fields.headerSubtotal || 'Subtotal';
-      const hIva = fields.headerIva || 'Iva /<br>{{order.iva}}%';
-      const hTotal = fields.headerTotal || 'Valor Total';
-
-      return `
-      <table class="quote-table">
-        <colgroup>
-          <col class="qty">
-          <col class="unit">
-          <col class="subtotal">
-          <col class="iva">
-          <col class="total">
-        </colgroup>
-        <thead>
-          <tr>
-            <th>${hQty}</th>
-            <th>${hPrice}</th>
-            <th>${hSubtotal}</th>
-            <th>${hIva}</th>
-            <th>${hTotal}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{item.units}}</td>
-            <td>\${{item.priceUnit}}</td>
-            <td>\${{order.subtotal}}</td>
-            <td>$<br>{{order.priceIva}}</td>
-            <td>\${{order.total}}</td>
-          </tr>
-          <tr>
-            <td colspan="4" class="grand-label">TOTAL</td>
-            <td class="grand-total">\${{orderTotal}}</td>
-          </tr>
-        </tbody>
-      </table>`;
-    }
-
-    const tableType = fields.tableType || 'medicamentos';
-    const docType = this.mainForm?.get('documentType')?.value;
-    const showPrices = fields.showPrices !== false;
-
-    if (tableType === 'recetarios') {
-      const hQty = fields.headerQuantity || 'Cantidad';
-      const hPrice = fields.headerPriceUnit || 'Valor Unitario';
-      const hSubtotal = fields.headerSubtotal || 'Subtotal';
-      const hIva = fields.headerIva || 'Iva / {{ order.iva }}%';
-      const hTotal = fields.headerTotal || 'Valor Total';
-
-      if (showPrices) {
-        return `
-<div style="margin-top: 15px; font-family: Arial, sans-serif; width: 100%; box-sizing: border-box;">
-  <table width="100%" border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; border: 1px solid #333; table-layout: fixed; word-wrap: break-word; word-break: break-word;">
-    <thead>
-      <tr style="background-color: #f2f2f2;">
-        <th style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: center; width: 15%; box-sizing: border-box;">${hQty}</th>
-        <th style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: right; width: 20%; box-sizing: border-box;">${hPrice}</th>
-        <th style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: right; width: 20%; box-sizing: border-box;">${hSubtotal}</th>
-        <th style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: right; width: 20%; box-sizing: border-box;">${hIva}</th>
-        <th style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: right; width: 25%; box-sizing: border-box;">${hTotal}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: center; box-sizing: border-box;">{{ item.units }}</td>
-        <td style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: right; box-sizing: border-box;">{{ item.priceUnit }}</td>
-        <td style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: right; box-sizing: border-box;">{{ order.subtotal }}</td>
-        <td style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: right; box-sizing: border-box;">{{ order.priceIva }}</td>
-        <td style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: right; font-weight: bold; box-sizing: border-box;">{{ order.total }}</td>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr style="background-color: #fafafa; font-weight: bold;">
-        <td colspan="4" style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: right; box-sizing: border-box;">TOTAL</td>
-        <td style="border: 1px solid #333; padding: 6px 4px; font-size: 10.5px; text-align: right; color: #000; box-sizing: border-box;">{{ order.total }}</td>
-      </tr>
-    </tfoot>
-  </table>
-</div>`;
-      } else {
-        return `
-<div style="margin-top: 15px; font-family: Arial, sans-serif; width: 100%; box-sizing: border-box;">
-  <table width="100%" border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; border: 1px solid #333; table-layout: fixed; word-wrap: break-word; word-break: break-word;">
-    <thead>
-      <tr style="background-color: #f2f2f2;">
-        <th style="border: 1px solid #333; padding: 6px; font-size: 11px; text-align: center; width: 25%; box-sizing: border-box;">${hQty}</th>
-        <th style="border: 1px solid #333; padding: 6px; font-size: 11px; text-align: left; width: 75%; box-sizing: border-box;">Descripción</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="border: 1px solid #333; padding: 6px; font-size: 11px; text-align: center; box-sizing: border-box;">{{ item.units }}</td>
-        <td style="border: 1px solid #333; padding: 6px; font-size: 11px; box-sizing: border-box;">TALONARIOS DE RECETARIOS OFICIALES PARA LA PRESCRIPCIÓN DE MEDICAMENTOS DE CONTROL ESPECIAL</td>
-      </tr>
-    </tbody>
-  </table>
-</div>`;
-      }
-    }
-
-    if (tableType === 'medicamentos') {
-      const hBatch = fields.headerBatch || 'Lote';
-      const hProduct = fields.headerProduct || 'Nombre';
-      const hPresentation = fields.headerPresentation || 'Presentación';
-      const hExpiration = fields.headerExpiration || 'Fecha Vencimiento';
-      const hQty = fields.headerQuantity || 'Cantidad';
-      const hPriceUnit = fields.headerPriceUnit || 'Valor Unitario';
-      const hTotal = fields.headerTotal || 'Total';
-
-      if (showPrices) {
-        return `
-<div style="margin-top: 15px; font-family: Arial, sans-serif; width: 100%; box-sizing: border-box;">
-  <table width="100%" border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; border: 1px solid #333; table-layout: fixed; word-wrap: break-word; word-break: break-word;">
-    <thead>
-      <tr style="background-color: #f2f2f2;">
-        <th style="border: 1px solid #333; padding: 5px 3px; font-size: 9.5px; text-align: left; width: 12%; box-sizing: border-box;">${hBatch}</th>
-        <th style="border: 1px solid #333; padding: 5px 3px; font-size: 9.5px; text-align: left; width: 26%; box-sizing: border-box;">${hProduct}</th>
-        <th style="border: 1px solid #333; padding: 5px 3px; font-size: 9.5px; text-align: left; width: 16%; box-sizing: border-box;">${hPresentation}</th>
-        <th style="border: 1px solid #333; padding: 5px 3px; font-size: 9.5px; text-align: center; width: 16%; box-sizing: border-box;">${hExpiration}</th>
-        <th style="border: 1px solid #333; padding: 5px 3px; font-size: 9.5px; text-align: center; width: 8%; box-sizing: border-box;">${hQty}</th>
-        <th style="border: 1px solid #333; padding: 5px 3px; font-size: 9.5px; text-align: right; width: 11%; box-sizing: border-box;">${hPriceUnit}</th>
-        <th style="border: 1px solid #333; padding: 5px 3px; font-size: 9.5px; text-align: right; width: 11%; box-sizing: border-box;">${hTotal}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="border: 1px solid #333; padding: 5px 3px; font-size: 9px; box-sizing: border-box;">{{ item.inventory.batch.code }}</td>
-        <td style="border: 1px solid #333; padding: 5px 3px; font-size: 9px; box-sizing: border-box;">{{ item.inventory.product.name }}</td>
-        <td style="border: 1px solid #333; padding: 5px 3px; font-size: 9px; box-sizing: border-box;">{{ item.inventory.product.presentation }}</td>
-        <td style="border: 1px solid #333; padding: 5px 3px; font-size: 9px; text-align: center; box-sizing: border-box;">{{ item.inventory.expirationDate }}</td>
-        <td style="border: 1px solid #333; padding: 5px 3px; font-size: 9px; text-align: center; box-sizing: border-box;">{{ item.units }}</td>
-        <td style="border: 1px solid #333; padding: 5px 3px; font-size: 9px; text-align: right; box-sizing: border-box;">{{ item.priceUnit }}</td>
-        <td style="border: 1px solid #333; padding: 5px 3px; font-size: 9px; text-align: right; box-sizing: border-box;">{{ item.priceTotal }}</td>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr style="background-color: #fafafa; font-weight: bold;">
-        <td colspan="6" style="border: 1px solid #333; padding: 5px 3px; font-size: 9.5px; text-align: right; box-sizing: border-box;">TOTAL</td>
-        <td style="border: 1px solid #333; padding: 5px 3px; font-size: 9.5px; text-align: right; color: #000; box-sizing: border-box;">{{ order.total }}</td>
-      </tr>
-    </tfoot>
-  </table>
-</div>`;
-      } else {
-        return `
-<div style="margin-top: 15px; font-family: Arial, sans-serif; width: 100%; box-sizing: border-box;">
-  <table width="100%" border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; border: 1px solid #333; table-layout: fixed; word-wrap: break-word; word-break: break-word;">
-    <thead>
-      <tr style="background-color: #f2f2f2;">
-        <th style="border: 1px solid #333; padding: 6px 5px; font-size: 10.5px; text-align: left; width: 16%; box-sizing: border-box;">${hBatch}</th>
-        <th style="border: 1px solid #333; padding: 6px 5px; font-size: 10.5px; text-align: left; width: 38%; box-sizing: border-box;">${hProduct}</th>
-        <th style="border: 1px solid #333; padding: 6px 5px; font-size: 10.5px; text-align: left; width: 20%; box-sizing: border-box;">${hPresentation}</th>
-        <th style="border: 1px solid #333; padding: 6px 5px; font-size: 10.5px; text-align: center; width: 16%; box-sizing: border-box;">${hExpiration}</th>
-        <th style="border: 1px solid #333; padding: 6px 5px; font-size: 10.5px; text-align: center; width: 10%; box-sizing: border-box;">${hQty}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="border: 1px solid #333; padding: 6px 5px; font-size: 10px; box-sizing: border-box;">{{ item.inventory.batch.code }}</td>
-        <td style="border: 1px solid #333; padding: 6px 5px; font-size: 10px; box-sizing: border-box;">{{ item.inventory.product.name }}</td>
-        <td style="border: 1px solid #333; padding: 6px 5px; font-size: 10px; box-sizing: border-box;">{{ item.inventory.product.presentation }}</td>
-        <td style="border: 1px solid #333; padding: 6px 5px; font-size: 10px; text-align: center; box-sizing: border-box;">{{ item.inventory.expirationDate }}</td>
-        <td style="border: 1px solid #333; padding: 6px 5px; font-size: 10px; text-align: center; box-sizing: border-box;">{{ item.units }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>`;
-      }
-    }
-
-    // Default / Compras
-    const isCompra = docType === 'COMPRA';
-    const codeHeader = fields.headerCode || 'Código';
-    const descHeader = fields.headerDescription || 'Descripción';
-    const qtyHeader = fields.headerQuantity || 'Cantidad';
-    const priceHeader = fields.headerPrice || 'Precio Unitario';
-    const totalHeader = fields.headerTotal || 'Total';
-    const totalSumVar = isCompra ? '{{ purchasing.total }}' : '{{ order.total }}';
+    const fakeSec = {
+      fields: Object.entries(fields).map(([k, v]) => ({ key: k, value: v, label: '', type: 'text' as const })),
+      type: 'table' as const
+    };
+    const cols = this.getTableColumns(fakeSec as any);
+    const grandTotal = fields.grandTotalVar || '{{ order.total }}';
+    const ths = cols.map(c => `<th style="border: 1px solid #333; padding: 6px 4px; font-size: 10px; text-align: center; box-sizing: border-box;">${c.header}</th>`).join('\n        ');
+    const tds = cols.map(c => `<td style="border: 1px solid #333; padding: 6px 4px; font-size: 10px; text-align: center; box-sizing: border-box;">${c.variable}</td>`).join('\n        ');
+    const colSpan = Math.max(1, cols.length - 1);
 
     return `
 <div style="margin-top: 15px; font-family: Arial, sans-serif; width: 100%; box-sizing: border-box;">
-  <table width="100%" border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; border: 1px solid #ddd; table-layout: fixed; word-wrap: break-word; word-break: break-word;">
+  <table width="100%" border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; border: 1px solid #333; table-layout: fixed; word-wrap: break-word; word-break: break-word;">
     <thead>
-      <tr style="background-color: #f3f4f6;">
-        <th style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; width: 15%; box-sizing: border-box;">${codeHeader}</th>
-        <th style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; width: 45%; box-sizing: border-box;">${descHeader}</th>
-        <th style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; text-align: center; width: 12%; box-sizing: border-box;">${qtyHeader}</th>
-        <th style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; text-align: right; width: 14%; box-sizing: border-box;">${priceHeader}</th>
-        <th style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; text-align: right; width: 14%; box-sizing: border-box;">${totalHeader}</th>
+      <tr style="background-color: #f2f2f2;">
+        ${ths}
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; box-sizing: border-box;">${isCompra ? '{{ item.product.code }}' : '{{ item.inventory.product.code }}'}</td>
-        <td style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; box-sizing: border-box;">${isCompra ? '{{ item.product.name }}' : '{{ item.inventory.product.name }}'}</td>
-        <td style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; text-align: center; box-sizing: border-box;">{{ item.units }}</td>
-        <td style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; text-align: right; box-sizing: border-box;">{{ item.priceUnit }}</td>
-        <td style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; text-align: right; box-sizing: border-box;">{{ item.priceTotal }}</td>
+        ${tds}
       </tr>
     </tbody>
     <tfoot>
-      <tr style="background-color: #f9fafb; font-weight: bold;">
-        <td colspan="4" style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; text-align: right; box-sizing: border-box;">TOTAL:</td>
-        <td style="border: 1px solid #ddd; padding: 8px 5px; font-size: 11px; text-align: right; color: #0d6efd; box-sizing: border-box;">${totalSumVar}</td>
+      <tr style="background-color: #fafafa; font-weight: bold;">
+        <td colspan="${colSpan}" style="border: 1px solid #333; padding: 6px 4px; font-size: 10px; text-align: right; box-sizing: border-box;">TOTAL</td>
+        <td style="border: 1px solid #333; padding: 6px 4px; font-size: 10px; text-align: right; color: #000; box-sizing: border-box;">${grandTotal}</td>
       </tr>
     </tfoot>
   </table>
@@ -2301,9 +2403,15 @@ ${RECIPE_QUOTE_CSS}
           vars: [
             { name: '{{ purchasingRecipe.startSerial }}', desc: 'Serial inicial de talonarios comprados' },
             { name: '{{ purchasingRecipe.finalSerial }}', desc: 'Serial final de talonarios comprados' },
+            { name: '{{ purchasingRecipe.serials }}', desc: 'Rango de seriales comprados (ej: 0001 - 0050)' },
+            { name: '{{ purchasingRecipe.serialRange }}', desc: 'Rango de seriales comprados (alias)' },
             { name: '{{ purchasingRecipe.units }}', desc: 'Cantidad de recetarios comprados' },
             { name: '{{ purchasingRecipe.priceUnit }}', desc: 'Precio unitario de compra de recetarios' },
-            { name: '{{ purchasingRecipe.priceTotal }}', desc: 'Total compra de recetarios' }
+            { name: '{{ purchasingRecipe.priceTotal }}', desc: 'Total compra de recetarios' },
+            { name: '{{ item.startSerial }}', desc: 'Serial inicial de recetarios' },
+            { name: '{{ item.finalSerial }}', desc: 'Serial final de recetarios' },
+            { name: '{{ item.serials }}', desc: 'Rango de seriales de recetarios' },
+            { name: '{{ item.serialRange }}', desc: 'Rango de seriales de recetarios (alias)' }
           ]
         }
       ];
@@ -2357,6 +2465,12 @@ ${RECIPE_QUOTE_CSS}
           vars: [
             { name: '{{ item.units }}', desc: 'Cantidad de talonarios de recetarios' },
             { name: '{{ item.priceUnit }}', desc: 'Valor unitario del talonario' },
+            { name: '{{ item.startSerialSold }}', desc: 'Serial inicial vendido / despachado' },
+            { name: '{{ item.endSerialSold }}', desc: 'Serial final vendido / despachado' },
+            { name: '{{ item.startSerial }}', desc: 'Serial inicial (alias)' },
+            { name: '{{ item.finalSerial }}', desc: 'Serial final (alias)' },
+            { name: '{{ item.serials }}', desc: 'Rango completo de seriales (ej: 0001 - 0050)' },
+            { name: '{{ item.serialRange }}', desc: 'Rango de seriales (alias)' },
             { name: '{{ order.subtotal }}', desc: 'Subtotal cotizado' },
             { name: '{{ order.iva }}', desc: 'Porcentaje de IVA cotizado' },
             { name: '{{ order.priceIva }}', desc: 'Precio del IVA' },
@@ -2536,15 +2650,21 @@ ${RECIPE_QUOTE_CSS}
           name: 'Tabla de Medicamentos',
           type: 'table',
           fields: [
-            { key: 'tableType', label: 'Tipo de Tabla (medicamentos/recetarios)', type: 'text', value: 'medicamentos' },
-            { key: 'headerBatch', label: 'Columna Lote', type: 'text', value: 'Lote' },
-            { key: 'headerProduct', label: 'Columna Nombre', type: 'text', value: 'Nombre' },
-            { key: 'headerPresentation', label: 'Columna Presentación', type: 'text', value: 'Presentación' },
-            { key: 'headerExpiration', label: 'Columna Vencimiento', type: 'text', value: 'Fecha Vencimiento' },
-            { key: 'headerQuantity', label: 'Columna Cantidad', type: 'text', value: 'Cantidad' },
-            { key: 'headerPriceUnit', label: 'Columna Valor Unitario', type: 'text', value: 'Valor Unitario' },
-            { key: 'headerTotal', label: 'Columna Total', type: 'text', value: 'Total' },
-            { key: 'showPrices', label: 'Mostrar Precios y Totales', type: 'checkbox', value: true }
+            { key: 'header_1', label: 'Cabecera Columna 1', type: 'text', value: 'Lote' },
+            { key: 'var_1', label: 'Variable Columna 1', type: 'text', value: '{{ item.inventory.batch.code }}' },
+            { key: 'header_2', label: 'Cabecera Columna 2', type: 'text', value: 'Nombre' },
+            { key: 'var_2', label: 'Variable Columna 2', type: 'text', value: '{{ item.inventory.product.name }}' },
+            { key: 'header_3', label: 'Cabecera Columna 3', type: 'text', value: 'Presentación' },
+            { key: 'var_3', label: 'Variable Columna 3', type: 'text', value: '{{ item.inventory.product.presentation }}' },
+            { key: 'header_4', label: 'Cabecera Columna 4', type: 'text', value: 'Fecha Vencimiento' },
+            { key: 'var_4', label: 'Variable Columna 4', type: 'text', value: '{{ item.inventory.expirationDate }}' },
+            { key: 'header_5', label: 'Cabecera Columna 5', type: 'text', value: 'Cantidad' },
+            { key: 'var_5', label: 'Variable Columna 5', type: 'text', value: '{{ item.units }}' },
+            { key: 'header_6', label: 'Cabecera Columna 6', type: 'text', value: 'Valor Unitario' },
+            { key: 'var_6', label: 'Variable Columna 6', type: 'text', value: '{{ item.priceUnit }}' },
+            { key: 'header_7', label: 'Cabecera Columna 7', type: 'text', value: 'Total' },
+            { key: 'var_7', label: 'Variable Columna 7', type: 'text', value: '{{ item.priceTotal }}' },
+            { key: 'grandTotalVar', label: 'Variable Total General', type: 'text', value: '{{ order.total }}' }
           ],
           html_template: ''
         };

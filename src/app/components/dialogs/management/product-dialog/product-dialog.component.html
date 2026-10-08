@@ -120,7 +120,7 @@
               }
             </mat-select>
           </mat-form-field>
-
+          @if (productForm.get('isPublicHealth')?.value) {
           <mat-form-field appearance="outline" class="col-3" subscriptSizing="dynamic">
             <input matInput type="text" formControlName="concNumber2" placeholder="Número" class="text-uppercase">
           </mat-form-field>
@@ -133,6 +133,7 @@
               }
             </mat-select>
           </mat-form-field>
+          }
         </div>
       </div>
 
@@ -141,6 +142,7 @@
         <label class="form-section-label d-block mb-1 text-muted fw-semibold">PRESENTACIÓN DEL MEDICAMENTO*</label>
         <div class="d-flex align-items-center gap-2">
           <mat-form-field appearance="outline" class="flex-grow-1" subscriptSizing="dynamic">
+            <mat-label>Presentación</mat-label>
             <mat-select formControlName="presType" placeholder="presentación">
               <mat-option [value]="''">Ninguna</mat-option>
               @for (type of presentationTypes; track type) {
@@ -156,7 +158,8 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="flex-grow-1" subscriptSizing="dynamic">
-            <mat-select formControlName="presForm" placeholder="forma">
+            <mat-label>Forma Farmacéutica</mat-label>
+            <mat-select formControlName="presForm" placeholder="forma Farmacéutica">
               <mat-option [value]="''">Ninguna</mat-option>
               @for (form of pharmaceuticalForms; track form.id) {
               <mat-option [value]="form.name">{{ form.name }}</mat-option>

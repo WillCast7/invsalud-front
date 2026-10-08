@@ -79,7 +79,7 @@ export class ConfigParamsComponent {
   buttonAction(event: { type: string, row: any }) {
     switch (event.type) {
       case 'create':
-        this.openModal("create", event.row);
+        this.openModal("create");
         break;
       case 'search':
         this.search(event.row);
@@ -111,10 +111,12 @@ export class ConfigParamsComponent {
     );
   }
 
-  openModal(mode: string, row: ConfigparamsInterface) {
-    row.isActive = row.active ? true : false;
+  openModal(mode: string, row?: ConfigparamsInterface) {
+    if (row) {
+      row.isActive = row.active ? true : false;
+    }
     const dialogRef: MatDialogRef<any> = this.dialog.open(ConfigParamsDialogComponent,
-      { ...SizemodalInitializer, data: { data: row, mode: mode } });
+      { ...SizemodalInitializer, data: { data: row, mode: mode, configParams: this.dataValue.content } });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {

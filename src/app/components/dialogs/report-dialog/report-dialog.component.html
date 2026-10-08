@@ -22,7 +22,7 @@
     </div>
     }
 
-    <app-table [columns]="inventoryColumns" [pageable]="dataValue" (pageChange)="onPageChange($event)" />
+    <app-table [columns]="currentColumns" [pageable]="dataValue" (pageChange)="onPageChange($event)" />
 </mat-dialog-content>
 <mat-dialog-actions align="end" class="p-3">
     <div class="container-fluid py-2">

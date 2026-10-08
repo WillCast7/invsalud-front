@@ -58,7 +58,7 @@
             <div class="col-md-6 mb-3">
                 <mat-form-field appearance="outline" class="w-100">
                     <mat-label>Nombre Corto (Shortname)</mat-label>
-                    <input matInput formControlName="shortname">
+                    <input matInput formControlName="shortname" (input)="onShortnameInput($event)">
                     @if (configParamForm.get('shortname')?.hasError('required')) {
                     <mat-error>El nombre corto es obligatorio</mat-error>
                     }
@@ -68,7 +68,7 @@
             <div class="col-md-6 mb-3">
                 <mat-form-field appearance="outline" class="w-100">
                     <mat-label>Nombre</mat-label>
-                    <input matInput formControlName="name">
+                    <input matInput formControlName="name" (input)="onNameInput($event)" style="text-transform: uppercase;">
                     @if (configParamForm.get('name')?.hasError('required')) {
                     <mat-error>El nombre es obligatorio</mat-error>
                     }
@@ -78,7 +78,11 @@
             <div class="col-md-6 mb-3">
                 <mat-form-field appearance="outline" class="w-100">
                     <mat-label>Padre</mat-label>
-                    <input matInput formControlName="parent">
+                    <mat-select formControlName="parent" (selectionChange)="onParentChange($event.value)">
+                        @for (parent of parentList; track parent) {
+                            <mat-option [value]="parent">{{ parent }}</mat-option>
+                        }
+                    </mat-select>
                     @if (configParamForm.get('parent')?.hasError('required')) {
                     <mat-error>El padre es obligatorio</mat-error>
                     }
@@ -91,16 +95,6 @@
                     <input matInput type="number" formControlName="order">
                     @if (configParamForm.get('order')?.hasError('required')) {
                     <mat-error>El orden es obligatorio</mat-error>
-                    }
-                </mat-form-field>
-            </div>
-
-            <div class="col-12 mb-3">
-                <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>Definición</mat-label>
-                    <textarea matInput formControlName="definition" rows="3"></textarea>
-                    @if (configParamForm.get('definition')?.hasError('required')) {
-                    <mat-error>La definición es obligatoria</mat-error>
                     }
                 </mat-form-field>
             </div>

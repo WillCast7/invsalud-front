@@ -28,7 +28,7 @@ export const routes: Routes = [
     { path: 'configuracion/notificaciones', component: NotificationsComponent, title: "Historial de Notificaciones" },
     { path: 'administracion/terceros', component: ThirdPartyComponent, title: "Terceros" },
     { path: 'administracion/usuarios', component: UserComponent, title: "Usuarios" },
-    { path: 'administracion/primarios', component: PrimaryComponent, title: "Primarios" },
+    { path: 'administracion/primarios', component: PrimaryComponent, title: "Catálogos" },
     { path: 'administracion/resoluciones', component: ResolutionsComponent, title: "Resoluciones" },
     { path: 'administracion/audits-logs', component: AuditLogsComponent, title: "Logs de Auditoría" },
     { path: 'audit-logs', component: AuditLogsComponent, title: "Logs de Auditoría" },
