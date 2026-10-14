@@ -55,7 +55,7 @@ export class ResolutionsComponent {
     { key: 'id', label: 'ID', isSortable: true },
     { key: 'code', label: 'Código', isSortable: true },
     { key: 'numberResolution', label: 'N° Resolución', isSortable: true },
-    { key: 'thirdParty', label: 'Tercero', isSortable: true },
+    { key: 'thirdParty', label: 'Terceros', isSortable: true },
     { key: 'startDate', label: 'F. Inicio', isSortable: true, pipe: 'date' },
     { key: 'expirationDate', label: 'F. Expiración', isSortable: true, pipe: 'date' },
     { key: 'description', label: 'Descripción', isSortable: false },

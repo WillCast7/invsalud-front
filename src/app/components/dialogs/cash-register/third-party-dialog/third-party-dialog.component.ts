@@ -132,7 +132,8 @@ export class ThirdPartyDialogComponent {
       next: (objData) => {
         this.dialogRef.close({
           success: true,
-          message: this.data.mode === 'edit' ? 'Tercero actualizado exitosamente' : 'Tercero registrado exitosamente'
+          message: this.data.mode === 'edit' ? 'Tercero actualizado exitosamente' : 'Tercero registrado exitosamente',
+          data: objData.data || objData
         });
       },
       error: (error) => {

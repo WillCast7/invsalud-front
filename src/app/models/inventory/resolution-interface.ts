@@ -3,7 +3,8 @@ import { ThirdPartyExample, ThirdPartyInterface } from "./thirdparty-interface"
 
 export interface ResolutionInterface {
     id: number,
-    thirdParty: ThirdPartyInterface,
+    thirdParty?: any,
+    thirdParties?: ThirdPartyInterface[],
     code: string,
     numberResolution?: string,
     startDate: string,
@@ -18,6 +19,7 @@ export interface ResolutionInterface {
 export const ResolutionInitializer: ResolutionInterface = {
     id: 0,
     thirdParty: ThirdPartyExample,
+    thirdParties: [],
     code: '',
     numberResolution: '',
     startDate: '',

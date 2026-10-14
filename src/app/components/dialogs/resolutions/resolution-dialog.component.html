@@ -16,19 +16,26 @@
 <mat-dialog-content class="pt-4">
   <div class="container-fluid">
     <div class="row mb-4">
-      <div class="col-md-4">
+      <div class="col-md-6">
         <label class="text-muted small d-block">Código</label>
         <span class="fs-5 fw-medium text-dark">{{ resolutionSearched.code || '-' }}</span>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-6">
         <label class="text-muted small d-block">N° de Resolución</label>
         <span class="fs-5 fw-medium text-dark">{{ resolutionSearched.numberResolution || '-' }}</span>
       </div>
-      <div class="col-md-4">
-        <label class="text-muted small d-block">Tercero</label>
-        <span class="fs-6 fw-bold">
-          {{ resolutionSearched.thirdParty.fullName || 'Sin asignar' }}
-        </span>
+      <div class="col-12 mt-3">
+        <label class="text-muted small d-block mb-2">Terceros / Clientes Asociados</label>
+        <mat-chip-set>
+          @for (tp of selectedThirdParties; track tp.id) {
+          <mat-chip class="small">
+            <mat-icon matChipAvatar style="font-size: 18px; width: 18px; height: 18px;">business</mat-icon>
+            {{ tp.fullName }} ({{ tp.documentNumber }})
+          </mat-chip>
+          } @empty {
+          <span class="text-muted italic small">Sin terceros asignados.</span>
+          }
+        </mat-chip-set>
       </div>
     </div>
 
@@ -85,7 +92,7 @@
 <mat-dialog-content>
   <form [formGroup]="form" class="container-fluid mt-2">
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Código (Serial)</mat-label>
           <input matInput formControlName="code" readonly placeholder="RES-Automático">
@@ -94,23 +101,48 @@
           <mat-hint>Generado automáticamente</mat-hint>
         </mat-form-field>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>N° de Resolución</mat-label>
           <input matInput formControlName="numberResolution" placeholder="Ej: 0123-2024">
         </mat-form-field>
       </div>
-      <div class="col-md-4">
+
+      <div class="col-12 mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <label class="text-secondary fw-semibold small">Terceros / Clientes Asociados</label>
+          <button mat-stroked-button color="primary" type="button" (click)="openCreateThirdPartyDialog()">
+            <mat-icon>person_add</mat-icon> Nuevo Tercero
+          </button>
+        </div>
         <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Tercero (Opcional)</mat-label>
-          <input matInput type="text" placeholder="Escriba para buscar (mín 3 letras)..." formControlName="thirdParty"
-            [matAutocomplete]="autoTp">
-          <mat-autocomplete #autoTp="matAutocomplete" [displayWith]="displayThirdParty">
+          <mat-label>Buscar y asociar terceros (Clientes)</mat-label>
+          <input matInput type="text" placeholder="Escriba mín 3 letras para buscar..." [formControl]="thirdPartySearchControl"
+            [matAutocomplete]="autoTp" (keyup)="findSuppliers($event)">
+          <mat-icon matSuffix class="text-muted">search</mat-icon>
+          <mat-autocomplete #autoTp="matAutocomplete" (optionSelected)="onThirdPartySelected($event)">
             @for (tp of thirdPartiesList; track tp.id) {
             <mat-option [value]="tp">{{ tp.fullName }} - {{ tp.documentNumber }}</mat-option>
             }
           </mat-autocomplete>
+          <mat-hint>Busque y seleccione uno o varios terceros para vincularlos a esta resolución</mat-hint>
         </mat-form-field>
+
+        @if (selectedThirdParties.length > 0) {
+        <div class="mt-2">
+          <mat-chip-set>
+            @for (tp of selectedThirdParties; track tp.id) {
+            <mat-chip (removed)="removeThirdParty(tp)" class="small">
+              <mat-icon matChipAvatar style="font-size: 18px; width: 18px; height: 18px;">business</mat-icon>
+              {{ tp.fullName }} ({{ tp.documentNumber }})
+              <button matChipRemove aria-label="Remover tercero">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip>
+            }
+          </mat-chip-set>
+        </div>
+        }
       </div>
 
       <div class="col-md-6">

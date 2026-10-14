@@ -1,7 +1,7 @@
 import { Component, inject, Inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -13,13 +13,13 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { CommonModule } from '@angular/common';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { RestApiService } from '../../../services/rest-api.service';
 import { AlertService } from '../../../services/alerts.service';
 import { ProductInterface } from '../../../models/inventory/product-interface';
 import { ResolutionInterface, ResolutionInitializer } from '../../../models/inventory/resolution-interface';
 import { ThirdPartyInterface } from '../../../models/inventory/thirdparty-interface';
+import { ThirdPartyDialogComponent } from '../cash-register/third-party-dialog/third-party-dialog.component';
 
 @Component({
   selector: 'app-resolution-dialog',
@@ -51,18 +51,21 @@ export class ResolutionDialogComponent implements OnInit {
   today: Date = new Date(new Date().setHours(0, 0, 0, 0));
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<ResolutionDialogComponent>);
+  private dialog = inject(MatDialog);
   private restService = inject(RestApiService);
   private alertService = inject(AlertService);
 
   public data: { mode: string, data: ResolutionInterface | undefined } = inject(MAT_DIALOG_DATA, { optional: true }) ?? { mode: 'create', data: undefined };
   title = signal("Crear Resolución");
   productsList: ProductInterface[] = [];
+  suppliers: ThirdPartyInterface[] = [];
   thirdPartiesList: ThirdPartyInterface[] = [];
+  selectedThirdParties: ThirdPartyInterface[] = [];
+  thirdPartySearchControl = new FormControl('');
   resolutionSearched: ResolutionInterface = ResolutionInitializer;
 
   form: FormGroup = this.fb.group({
     id: [null],
-    thirdParty: [null],
     code: [''],
     numberResolution: [''],
     startDate: [this.today, [Validators.required, this.validateStartDate.bind(this)]],
@@ -86,22 +89,37 @@ export class ResolutionDialogComponent implements OnInit {
 
   ngOnInit() {
     this.loadProducts();
+    this.loadSuppliers();
     this.getData();
-
-    this.form.get('thirdParty')?.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(value => {
-      const term = typeof value === 'string' ? value : (value as any)?.fullName;
-      if (term && term.length >= 3) {
-        this.searchThirdParties(term);
-      } else {
-        this.thirdPartiesList = [];
-      }
-    });
 
     this.form.get('startDate')?.valueChanges.subscribe(() => {
       this.form.get('expirationDate')?.updateValueAndValidity();
+    });
+  }
+
+  loadSuppliers() {
+    this.restService.getRequest('/thirdparty', { page: 0, size: 1000 }).subscribe({
+      next: (res) => {
+        this.suppliers = res.pageable?.content || res.data?.content || res.data || [];
+      }
+    });
+  }
+
+  findSuppliers(event: any) {
+    const value = typeof event === 'string' ? event : event?.target?.value;
+    if (!value || value.length < 3) {
+      this.thirdPartiesList = [];
+      return;
+    }
+    this.restService.getRequest('/thirdparty/' + value).subscribe({
+      next: (res) => {
+        this.thirdPartiesList = res.data || [];
+      },
+      error: () => {
+        this.thirdPartiesList = this.suppliers.filter((s: ThirdPartyInterface) =>
+          s.documentNumber?.includes(value) || s.fullName?.toLowerCase().includes(value.toLowerCase())
+        );
+      }
     });
   }
 
@@ -136,6 +154,42 @@ export class ResolutionDialogComponent implements OnInit {
 
   displayThirdParty(tp: any): string {
     return tp && tp.fullName ? `${tp.fullName} - ${tp.documentNumber}` : '';
+  }
+
+  onThirdPartySelected(event: MatAutocompleteSelectedEvent) {
+    const tp: ThirdPartyInterface = event.option.value;
+    if (tp && !this.selectedThirdParties.some(item => item.id === tp.id)) {
+      this.selectedThirdParties.push(tp);
+    }
+    this.thirdPartySearchControl.setValue('');
+    this.thirdPartiesList = [];
+  }
+
+  removeThirdParty(tp: ThirdPartyInterface) {
+    this.selectedThirdParties = this.selectedThirdParties.filter(item => item.id !== tp.id);
+  }
+
+  openCreateThirdPartyDialog() {
+    const ref = this.dialog.open(ThirdPartyDialogComponent, {
+      width: '60%',
+      disableClose: true,
+      data: { mode: 'create', data: undefined }
+    });
+
+    ref.afterClosed().subscribe((res: any) => {
+      if (res && res.success) {
+        this.alertService.infoMixin.fire({
+          icon: 'success',
+          title: res.message || 'Tercero creado exitosamente'
+        });
+        if (res.data && res.data.id) {
+          const newTp: ThirdPartyInterface = res.data;
+          if (!this.selectedThirdParties.some(item => item.id === newTp.id)) {
+            this.selectedThirdParties.push(newTp);
+          }
+        }
+      }
+    });
   }
 
   compareWithId(o1: any, o2: any): boolean {
@@ -185,11 +239,7 @@ export class ResolutionDialogComponent implements OnInit {
         });
       }
 
-      if (payload.thirdParty && payload.thirdParty.id) {
-        payload.thirdParty = { id: payload.thirdParty.id };
-      } else {
-        payload.thirdParty = null;
-      }
+      payload.thirdParties = this.selectedThirdParties.map((tp: any) => ({ id: tp.id }));
 
       const method = this.data.mode === 'edit' && payload.id
         ? this.restService.putRequest(`/resolutions/${payload.id}`, payload)
@@ -232,6 +282,15 @@ export class ResolutionDialogComponent implements OnInit {
     });
   }
 
+  syncSelectedThirdParties() {
+    this.selectedThirdParties = [];
+    if (this.resolutionSearched?.thirdParties && Array.isArray(this.resolutionSearched.thirdParties)) {
+      this.selectedThirdParties = [...this.resolutionSearched.thirdParties];
+    } else if (this.resolutionSearched?.thirdParty && typeof this.resolutionSearched.thirdParty === 'object' && this.resolutionSearched.thirdParty.id) {
+      this.selectedThirdParties = [this.resolutionSearched.thirdParty];
+    }
+  }
+
   getData() {
     if (!this.data || this.data.mode === "create") {
       this.title.set("Crear Resolución");
@@ -247,16 +306,17 @@ export class ResolutionDialogComponent implements OnInit {
 
       if (this.data.data) {
         this.resolutionSearched = { ...this.resolutionSearched, ...this.data.data };
+        this.syncSelectedThirdParties();
       }
 
       this.restService.getRequest("/resolutions/" + this.data.data.id).subscribe({
         next: (objData) => {
           this.resolutionSearched = objData.data || objData;
+          this.syncSelectedThirdParties();
 
           if (this.data?.mode === "edit") {
             this.form.patchValue({
               id: this.resolutionSearched.id,
-              thirdParty: this.resolutionSearched.thirdParty,
               code: this.resolutionSearched.code,
               numberResolution: this.resolutionSearched.numberResolution || '',
               startDate: this.resolutionSearched.startDate,
@@ -281,25 +341,10 @@ export class ResolutionDialogComponent implements OnInit {
       });
     } else if (this.data.data) {
       this.resolutionSearched = { ...this.resolutionSearched, ...this.data.data };
+      this.syncSelectedThirdParties();
       if (this.data.mode === "view") {
         this.title.set("Información de la Resolución");
       }
     }
-  }
-
-  searchThirdParties(term: string) {
-    this.restService.getRequest('/thirdparty', { page: 0, size: 50, searchValue: term }).subscribe({
-      next: (res) => {
-        if (res.pageable && res.pageable.content) {
-          this.thirdPartiesList = res.pageable.content;
-        } else if (res.data && res.data.content) {
-          this.thirdPartiesList = res.data.content;
-        } else if (res.data) {
-          this.thirdPartiesList = res.data;
-        } else {
-          this.thirdPartiesList = Array.isArray(res) ? res : [];
-        }
-      }
-    });
   }
 }
