@@ -16,6 +16,8 @@ import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-int
 import { PrescriptionInventoryInterface } from '../../../../models/inventory/prescription-inventory';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DocumentTemplateViewerComponent } from '../../../../shared/document-template-viewer/document-template-viewer.component';
+import { NgxMaskPipe } from 'ngx-mask';
+import { config } from '../../../../../environment/aurea';
 
 @Component({
   selector: 'app-sale-dialog',
@@ -32,11 +34,13 @@ import { DocumentTemplateViewerComponent } from '../../../../shared/document-tem
     MatInputModule,
     MatSelectModule,
     MatAutocompleteModule,
-    DocumentTemplateViewerComponent
+    DocumentTemplateViewerComponent,
+    NgxMaskPipe
   ],
   templateUrl: './sale-dialog.component.html'
 })
 export class SaleDialogComponent implements OnInit {
+  config = config;
   private dialogRef = inject(MatDialogRef<SaleDialogComponent>);
   private fb = inject(FormBuilder);
 

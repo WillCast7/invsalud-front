@@ -12,12 +12,12 @@
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Método de Pago*</mat-label>
       <mat-select formControlName="paymentMethod" placeholder="Seleccione un método de pago">
-        @for (method of methods; track method.value) {
-          <mat-option [value]="method.value">{{ method.label }}</mat-option>
+        @for (method of methods; track method.name) {
+        <mat-option [value]="method.name">{{ method.name }}</mat-option>
         }
       </mat-select>
       @if (paymentForm.get('paymentMethod')?.hasError('required')) {
-        <mat-error>El método de pago es requerido</mat-error>
+      <mat-error>El método de pago es requerido</mat-error>
       }
     </mat-form-field>
   </form>

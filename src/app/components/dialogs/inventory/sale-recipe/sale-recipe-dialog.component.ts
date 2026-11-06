@@ -13,6 +13,8 @@ import { AlertService } from '../../../../services/alerts.service';
 import { ThirdPartyInterface } from '../../../../models/inventory/thirdparty-interface';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DocumentTemplateViewerComponent } from '../../../../shared/document-template-viewer/document-template-viewer.component';
+import { NgxMaskPipe } from 'ngx-mask';
+import { config } from '../../../../../environment/aurea';
 
 @Component({
   selector: 'app-order-recipe-dialog',
@@ -28,11 +30,13 @@ import { DocumentTemplateViewerComponent } from '../../../../shared/document-tem
     MatDividerModule,
     FormsModule,
     ReactiveFormsModule,
-    DocumentTemplateViewerComponent
+    DocumentTemplateViewerComponent,
+    NgxMaskPipe
   ],
   templateUrl: './sale-recipe-dialog.component.html'
 })
 export class SaleRecipeDialogComponent implements OnInit {
+  config = config;
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<SaleRecipeDialogComponent>);
   private restService = inject(RestApiService);

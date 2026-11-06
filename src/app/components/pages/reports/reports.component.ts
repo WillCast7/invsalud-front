@@ -19,6 +19,8 @@ import { AlertService } from '../../../services/alerts.service';
 import { MatAutocomplete, MatAutocompleteTrigger } from "@angular/material/autocomplete";
 import { ReportDialogComponent } from '../../dialogs/report-dialog/report-dialog.component';
 import { SizemodalInitializer } from '../../../models/modal/sizemodal-interface';
+import { NgxMaskPipe } from 'ngx-mask';
+import { config } from '../../../../environment/aurea';
 
 interface ReportData {
   id: string;
@@ -48,12 +50,14 @@ interface ReportData {
     MatIconModule,
     MatTableModule,
     MatAutocomplete,
-    MatAutocompleteTrigger
+    MatAutocompleteTrigger,
+    NgxMaskPipe
   ],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.css',
 })
 export class ReportsComponent implements OnInit {
+  config = config;
   mainForm!: FormGroup;
   suppliersFinded: ThirdPartyInterface[] = [];
   productsFinded: ProductInterface[] = [];

@@ -98,7 +98,7 @@
             (optionSelected)="onSupplierSelected($event)">
             @for (supplier of suppliersFinded; track supplier.id) {
             <mat-option [value]="supplier">
-              <span class="fw-medium">{{supplier.documentNumber}}</span> -
+              <span class="fw-medium">{{supplier.documentNumber | mask: config.maskDni}}</span> -
               <small class="text-muted">{{supplier.fullName}}</small>
             </mat-option>
             }
@@ -114,7 +114,7 @@
           </span>
           <span><strong>Documento:</strong>
             <br>
-            {{ mainForm.get('thirdParty')?.value?.documentType }} {{mainForm.get('thirdParty')?.value?.documentNumber }}
+            {{ mainForm.get('thirdParty')?.value?.documentType }} {{ mainForm.get('thirdParty')?.value?.documentNumber | mask: config.maskDni }}
           </span>
           <span><strong>Email:</strong>
             <br>
@@ -126,7 +126,7 @@
           </span>
           <span><strong>Teléfono:</strong>
             <br>
-            {{ mainForm.get('thirdParty')?.value?.phoneNumber || 'N/A' }}
+            {{ (mainForm.get('thirdParty')?.value?.phoneNumber | mask: config.maskPhone) || 'N/A' }}
           </span>
         </div>
         }
@@ -148,7 +148,7 @@
         <div class="col-md-3">
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>Precio Unidad</mat-label>
-            <input matInput type="number" min="0" formControlName="priceUnit">
+            <input matInput [mask]="config.maskMoney" [thousandSeparator]="config.thousandSeparator" [decimalMarker]="config.decimalMarker" inputmode="numeric" formControlName="priceUnit">
             <span matTextPrefix>$&nbsp;</span>
           </mat-form-field>
         </div>
@@ -170,7 +170,7 @@
         <div class="col-md-2">
           <mat-form-field appearance="outline" class="w-100 bg-light rounded">
             <mat-label>Total</mat-label>
-            <input matInput formControlName="total" readonly class="fw-bold text-success">
+            <input matInput [mask]="config.maskMoney" [thousandSeparator]="config.thousandSeparator" [decimalMarker]="config.decimalMarker" formControlName="total" readonly class="fw-bold text-success">
             <span matTextPrefix>$&nbsp;</span>
           </mat-form-field>
         </div>

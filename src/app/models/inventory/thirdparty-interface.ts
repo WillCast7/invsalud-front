@@ -8,6 +8,7 @@ export interface ThirdPartyInterface {
     fullName: string,
     email: string,
     phoneNumber: string,
+    phone?: string,
     address: string,
     createdAt: Date,
     createdBySystemUserId: number,
@@ -23,6 +24,7 @@ export const ThirdPartyExample: ThirdPartyInterface = {
     email: '',
     address: '',
     phoneNumber: '',
+    phone: '',
     createdAt: new Date(),
     createdBySystemUserId: 0,
     roles: new Set<ThirdpartyRoleInterface>()

@@ -17,6 +17,8 @@ import { PrescriptionInventoryInterface } from '../../../../models/inventory/pre
 import { HttpErrorResponse } from '@angular/common/http';
 import { QuotePrintService } from '../../../../services/quote-print.service';
 import { DocumentTemplateViewerComponent } from '../../../../shared/document-template-viewer/document-template-viewer.component';
+import { NgxMaskPipe } from 'ngx-mask';
+import { config } from '../../../../../environment/aurea';
 
 @Component({
   selector: 'app-order-dialog',
@@ -33,11 +35,13 @@ import { DocumentTemplateViewerComponent } from '../../../../shared/document-tem
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    DocumentTemplateViewerComponent
+    DocumentTemplateViewerComponent,
+    NgxMaskPipe
   ],
   templateUrl: './order-dialog.component.html'
 })
 export class OrderDialogComponent implements OnInit {
+  config = config;
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<OrderDialogComponent>);
   private restService = inject(RestApiService);

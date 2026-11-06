@@ -60,11 +60,11 @@
               <div class="row g-4">
                 <div class="col-md-6">
                   <label class="text-muted small d-block text-uppercase fw-bold">Identificación</label>
-                  <p class="fs-6">{{ user().person.documentType }} - {{ user().person.documentNumber }}</p>
+                  <p class="fs-6">{{ user().person.documentType }} - {{ user().person.documentNumber | mask: config.maskDni }}</p>
                 </div>
                 <div class="col-md-6">
                   <label class="text-muted small d-block text-uppercase fw-bold">Teléfono</label>
-                  <p class="fs-6">{{ user().person.phoneNumber || 'No registrado' }}</p>
+                  <p class="fs-6">{{ (user().person.phoneNumber | mask: config.maskPhone) || 'No registrado' }}</p>
                 </div>
                 <div class="col-12">
                   <label class="text-muted small d-block text-uppercase fw-bold">Dirección</label>

@@ -216,12 +216,13 @@
 
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Número documento</mat-label>
-            <input matInput formControlName="documentNumber" [matAutocomplete]="auto" (keyup)="findSuppliers()"
-              maxlength="20">
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSupplierSelected($event)">
+            <input matInput formControlName="documentNumber" [matAutocomplete]="auto"
+              (input)="onDocumentInput($event)" (keyup)="findSuppliers()" maxlength="20">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayDocumentNumber"
+              (optionSelected)="onSupplierSelected($event)">
               @for (option of suppliersFinded; track option.id) {
               <mat-option [value]="option.documentNumber">
-                <span class="fw-medium">{{option.documentNumber}}</span> - <small>{{option.fullName}}</small>
+                <span class="fw-medium">{{option.documentNumber | mask: config.maskDni}}</span> - <small>{{option.fullName}}</small>
               </mat-option>
               }
             </mat-autocomplete>
@@ -234,7 +235,7 @@
 
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Teléfono</mat-label>
-            <input matInput mask="000 000 0000" formControlName="phoneNumber">
+            <input matInput [mask]="config.maskPhone" formControlName="phoneNumber">
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-4">
@@ -328,7 +329,8 @@
               <div class="col-md-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Precio Unidad (Compra)</mat-label>
-                  <input matInput type="number" min="0" formControlName="priceUnit">
+                  <input matInput [mask]="config.maskMoney" [thousandSeparator]="config.thousandSeparator" [decimalMarker]="config.decimalMarker"
+                    inputmode="numeric" formControlName="priceUnit">
                   <span matTextPrefix>$&nbsp;</span>
                 </mat-form-field>
               </div>
@@ -337,7 +339,8 @@
               <div class="col-md-3">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Precio de Venta</mat-label>
-                  <input matInput type="number" min="0" formControlName="sellPrice"
+                  <input matInput [mask]="config.maskMoney" [thousandSeparator]="config.thousandSeparator" [decimalMarker]="config.decimalMarker"
+                    inputmode="numeric" formControlName="sellPrice"
                     [errorStateMatcher]="parentErrorMatcher">
                   <span matTextPrefix>$&nbsp;</span>
                   @if (detailCtrl.hasError('priceLow')) {
@@ -350,7 +353,8 @@
               <div class="col-md-3">
                 <mat-form-field appearance="outline" class="w-100 bg-light rounded">
                   <mat-label>Subtotal (Compra)</mat-label>
-                  <input matInput formControlName="priceTotal" readonly class="fw-bold text-success">
+                  <input matInput [mask]="config.maskMoney" [thousandSeparator]="config.thousandSeparator" [decimalMarker]="config.decimalMarker"
+                    formControlName="priceTotal" readonly class="fw-bold text-success">
                   <span matTextPrefix>$&nbsp;</span>
                 </mat-form-field>
               </div>

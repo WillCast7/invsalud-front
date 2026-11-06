@@ -60,7 +60,7 @@ export class OrdersComponent {
   orderColumns: ColumnTableInterface[] = [
     { key: 'orderCode', label: 'Cod. Cotización', isSortable: true },
     { key: 'thirdParty', label: 'Tercero', isSortable: true },
-    { key: 'total', label: 'Total', isSortable: true },
+    { key: 'total', label: 'Total', isSortable: true, pipe: 'currency' },
     { key: 'createdAt', label: 'F. Creación', isSortable: true, pipe: 'date' },
     { key: 'expirateAt', label: 'F. Expiración', isSortable: true, pipe: 'date' },
     { key: 'status', label: 'Estado', pipe: 'status', isSortable: true }

@@ -15,6 +15,8 @@ import { PurchaseTableInterface } from '../../../../models/inventory/purchase-in
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DocumentTemplateViewerComponent } from '../../../../shared/document-template-viewer/document-template-viewer.component';
+import { NgxMaskDirective, NgxMaskPipe } from 'ngx-mask';
+import { config } from '../../../../../environment/aurea';
 
 @Component({
   selector: 'app-purchasing-recipe-dialog',
@@ -31,11 +33,14 @@ import { DocumentTemplateViewerComponent } from '../../../../shared/document-tem
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    DocumentTemplateViewerComponent
+    DocumentTemplateViewerComponent,
+    NgxMaskDirective,
+    NgxMaskPipe
   ],
   templateUrl: './purchasing-recipe-dialog.component.html'
 })
 export class PurchasingRecipeDialogComponent implements OnInit {
+  config = config;
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<PurchasingRecipeDialogComponent>);
   private restService = inject(RestApiService);
@@ -186,11 +191,11 @@ export class PurchasingRecipeDialogComponent implements OnInit {
     const payload = {
       thirdParty: value.thirdParty,
       type: 'recipe',
-      total: value.total,
+      total: Number(value.total) || 0,
       recipe: {
         units: value.units,
-        priceUnit: value.priceUnit,
-        priceTotal: value.total,
+        priceUnit: Number(value.priceUnit) || 0,
+        priceTotal: Number(value.total) || 0,
         startSerial: value.initialSerial,
         finalSerial: value.finalSerial
       }

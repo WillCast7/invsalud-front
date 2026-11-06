@@ -15,12 +15,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RestApiService } from '../../../services/rest-api.service';
 import { AlertService } from '../../../services/alerts.service';
 import { ConfigparamsInterface } from '../../../models/configparams-interface';
-import { provideNgxMask } from 'ngx-mask';
+import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { UserInitializer, UserInterface, UserTableInterface } from '../../../models/user-interface';
 import { MatChipsModule } from '@angular/material/chips';
 import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { RoleInterface } from '../../../models/role-interface';
+import { config, ngxMaskOptions } from '../../../../environment/aurea';
 
 interface Food {
   value: string;
@@ -47,12 +48,14 @@ interface Food {
     MatButtonToggleModule,
     MatCheckboxModule,
     MatChipsModule,
-    CommonModule
+    CommonModule,
+    NgxMaskDirective,
+    NgxMaskPipe
   ],
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
-    provideNgxMask()
+    provideNgxMask(ngxMaskOptions)
   ],
 
   templateUrl: './user-dialog.component.html',
@@ -60,6 +63,7 @@ interface Food {
 })
 
 export class UserDialogComponent {
+  config = config;
   today: Date = new Date(new Date().setHours(0, 0, 0, 0));
   hidePassword = true;
   private fb = inject(FormBuilder);

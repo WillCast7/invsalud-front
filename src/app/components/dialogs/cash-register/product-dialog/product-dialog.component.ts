@@ -20,6 +20,7 @@ import { CommonModule } from '@angular/common';
 import { ProductInterface } from '../../../../models/inventory/product-interface';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import {  NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { config, ngxMaskOptions } from '../../../../../environment/aurea';
 
 interface Food {
   value: string;
@@ -49,13 +50,14 @@ interface Food {
     CommonModule,
     MatSelectModule
   ],
-  providers: [provideNgxMask()],
+  providers: [provideNgxMask(ngxMaskOptions)],
  
   templateUrl: './product-dialog.component.html',
   styleUrl: './product-dialog.component.css'
 })
 
 export class ProductDialogComponent {
+  config = config;
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<ProductDialogComponent>);
   thirdPartyTypes : ThirdpartyRoleInterface[] = [];

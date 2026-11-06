@@ -3,8 +3,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { CommonModule, CurrencyPipe } from '@angular/common'; // Imprescindible para el @for y @if
+import { CommonModule } from '@angular/common'; // Imprescindible para el @for y @if
 import { MatButtonModule } from '@angular/material/button';
+import { NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { config, ngxMaskOptions } from '../../../environment/aurea';
 import { ColumnTableInterface } from '../../models/table/column-table-interface';
 import { PageableInitializer, PageableInterface } from '../../models/table/pageable-interface';
 import { TableOption } from '../../models/table/table-options-interface';
@@ -17,14 +19,16 @@ import { TableOption } from '../../models/table/table-options-interface';
     MatIconModule,
     MatTableModule,
     FormsModule,
-    CurrencyPipe,
     MatPaginatorModule,
-    MatButtonModule
+    MatButtonModule,
+    NgxMaskPipe
   ],
+  providers: [provideNgxMask(ngxMaskOptions)],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css'
 })
 export class TableComponent {
+  config = config;
   
   clickedRows = new Set<any>(); 
   

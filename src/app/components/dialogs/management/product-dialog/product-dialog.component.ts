@@ -99,7 +99,7 @@ export class ProductDialogComponent {
   getData() {
 
     if (this.data.mode === "create") {
-      this.restService.getRequest("/configparams/parent/pharmaceuticalForm").subscribe({
+      this.restService.getRequest("/configparams/active/parent/pharmaceuticalForm").subscribe({
         next: (objData) => {
           this.pharmaceuticalForms = objData.data;
         },

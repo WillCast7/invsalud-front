@@ -8,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { RestApiService } from '../../../services/rest-api.service';
 import { AlertService } from '../../../services/alerts.service';
+import { NgxMaskDirective } from 'ngx-mask';
+import { config } from '../../../../environment/aurea';
 
 @Component({
   selector: 'app-remember-pass-dialog',
@@ -19,12 +21,14 @@ import { AlertService } from '../../../services/alerts.service';
     MatButtonModule,
     MatIconModule,
     ReactiveFormsModule,
-    CommonModule
+    CommonModule,
+    NgxMaskDirective
   ],
   templateUrl: './remember-pass-dialog.component.html',
   styleUrl: './remember-pass-dialog.component.css',
 })
 export class RememberPassDialogComponent {
+  config = config;
   recoveryForm: FormGroup;
   private dialogRef = inject(MatDialogRef<RememberPassDialogComponent>);
 

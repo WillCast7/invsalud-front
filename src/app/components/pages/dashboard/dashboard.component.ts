@@ -23,6 +23,8 @@ import { CashSessionSummaryInterface } from '../../../models/cash-session-summar
 import { ThirdPartyInterface } from '../../../models/inventory/thirdparty-interface';
 import { ProductInterface } from '../../../models/inventory/product-interface';
 import { SessionService } from '../../../services/session.service';
+import { NgxMaskPipe } from 'ngx-mask';
+import { config } from '../../../../environment/aurea';
 
 @Component({
   selector: 'app-dashboard',
@@ -42,12 +44,14 @@ import { SessionService } from '../../../services/session.service';
     RouterModule,
     MatNativeDateModule,
     MatDatepickerModule,
-    MatMenuModule
+    MatMenuModule,
+    NgxMaskPipe
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent {
+  config = config;
   readonly dialog = inject(MatDialog);
   private readonly menuService = inject(MenuService);
   private readonly restService = inject(RestApiService);

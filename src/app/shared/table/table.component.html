@@ -8,10 +8,15 @@
       <td mat-cell *matCellDef="let element">
         @switch (column.pipe) {
         @case ('currency') {
-        {{ element[column.key] | currency: "COP" : "symbol-narrow" : "1.0-2" }}
+        @if (element[column.key] !== null && element[column.key] !== undefined && element[column.key] !== '') {
+        $ {{ element[column.key] | mask: config.maskMoney : { thousandSeparator: config.thousandSeparator, decimalMarker: config.decimalMarker } }}
+        }
         }
         @case ('date') {
         {{ element[column.key] | date: (column.pipeArgs || 'dd/MM/yyyy') }}
+        }
+        @case ('mask') {
+        {{ element[column.key] | mask: (column.pipeArgs || '') }}
         }
 
         @case ('status') {

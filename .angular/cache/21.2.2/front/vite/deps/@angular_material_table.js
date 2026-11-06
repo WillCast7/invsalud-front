@@ -2,12 +2,11 @@ import {
   _DisposeViewRepeaterStrategy
 } from "./chunk-ETHN2ZWD.js";
 import "./chunk-PLJ2QXBA.js";
-import "./chunk-N4DOILP3.js";
 import {
   CDK_VIRTUAL_SCROLL_VIEWPORT,
   ScrollingModule,
   ViewportRuler
-} from "./chunk-ENBIGDWV.js";
+} from "./chunk-6GWM5CFZ.js";
 import {
   DataSource,
   _RecycleViewRepeaterStrategy,
@@ -15,18 +14,19 @@ import {
   isDataSource
 } from "./chunk-BBOZITVB.js";
 import "./chunk-GUGIMSVJ.js";
-import {
-  _isNumberValue
-} from "./chunk-NMG3ZRHV.js";
-import {
-  Platform
-} from "./chunk-RODSRFG6.js";
-import "./chunk-XJC6SEPO.js";
-import "./chunk-B66IRT2Z.js";
+import "./chunk-N4DOILP3.js";
 import {
   BidiModule,
   Directionality
 } from "./chunk-JLBUACPJ.js";
+import {
+  Platform
+} from "./chunk-RODSRFG6.js";
+import {
+  _isNumberValue
+} from "./chunk-NMG3ZRHV.js";
+import "./chunk-XJC6SEPO.js";
+import "./chunk-B66IRT2Z.js";
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -83,13 +83,13 @@ import {
   inject,
   ɵɵdefineInjector
 } from "./chunk-2A52RMPU.js";
+import "./chunk-JRFR6BLO.js";
 import {
   animationFrameScheduler,
   asapScheduler,
   isObservable,
   merge
 } from "./chunk-HWYXSU2G.js";
-import "./chunk-JRFR6BLO.js";
 import {
   BehaviorSubject,
   Subject,

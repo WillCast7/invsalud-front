@@ -21,74 +21,61 @@
         <!-- Tercero Autocomplete -->
         <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
           <mat-label>Tercero</mat-label>
-          <input matInput
-                 [formControl]="thirdPartyCtrl"
-                 [matAutocomplete]="autoThirdParty"
-                 (keyup)="findThirdParties($event)"
-                 placeholder="Buscar por nombre o documento..." />
+          <input matInput [formControl]="thirdPartyCtrl" [matAutocomplete]="autoThirdParty"
+            (keyup)="findThirdParties($event)" placeholder="Buscar por nombre o documento..." />
           @if (selectedThirdParty || thirdPartyCtrl.value) {
-          <button mat-icon-button matSuffix (click)="clearThirdParty($event)" aria-label="Limpiar tercero" type="button">
+          <button mat-icon-button matSuffix (click)="clearThirdParty($event)" aria-label="Limpiar tercero"
+            type="button">
             <mat-icon style="font-size: 18px; width: 18px; height: 18px;">close</mat-icon>
           </button>
           }
-          <mat-autocomplete #autoThirdParty="matAutocomplete"
-                            [displayWith]="displayThirdParty"
-                            (optionSelected)="onThirdPartySelected($event)">
+          <mat-autocomplete #autoThirdParty="matAutocomplete" [displayWith]="displayThirdParty"
+            (optionSelected)="onThirdPartySelected($event)">
             @for (tp of filteredThirdParties; track tp.id) {
             <mat-option [value]="tp">
               <div class="d-flex flex-column py-1" style="line-height: 1.2;">
                 <span class="fw-medium">{{ tp.fullName }}</span>
                 <span class="text-muted" style="font-size: 11px;">
-                  {{ tp.documentType }} {{ tp.documentNumber }}
+                  {{ tp.documentType }} {{ tp.documentNumber | mask: config.maskDni }}
                 </span>
               </div>
             </mat-option>
             } @empty {
             <mat-option disabled>
-              @if (getFilterLength(thirdPartyCtrl.value) < 3) {
-                Digite al menos 3 caracteres para buscar...
-              } @else {
-                No se encontraron terceros
-              }
-            </mat-option>
-            }
+              @if (getFilterLength(thirdPartyCtrl.value) < 3) { Digite al menos 3 caracteres para buscar... } @else { No
+                se encontraron terceros } </mat-option>
+                }
           </mat-autocomplete>
         </mat-form-field>
 
         <!-- Medicamento Autocomplete -->
         <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
           <mat-label>Medicamento</mat-label>
-          <input matInput
-                 [formControl]="productCtrl"
-                 [matAutocomplete]="autoProduct"
-                 (keyup)="findProducts($event)"
-                 placeholder="Buscar por nombre o código..." />
+          <input matInput [formControl]="productCtrl" [matAutocomplete]="autoProduct" (keyup)="findProducts($event)"
+            placeholder="Buscar por nombre o código..." />
           @if (selectedProduct || productCtrl.value) {
-          <button mat-icon-button matSuffix (click)="clearProduct($event)" aria-label="Limpiar medicamento" type="button">
+          <button mat-icon-button matSuffix (click)="clearProduct($event)" aria-label="Limpiar medicamento"
+            type="button">
             <mat-icon style="font-size: 18px; width: 18px; height: 18px;">close</mat-icon>
           </button>
           }
-          <mat-autocomplete #autoProduct="matAutocomplete"
-                            [displayWith]="displayProduct"
-                            (optionSelected)="onProductSelected($event)">
+          <mat-autocomplete #autoProduct="matAutocomplete" [displayWith]="displayProduct"
+            (optionSelected)="onProductSelected($event)">
             @for (prod of filteredProducts; track prod.id) {
             <mat-option [value]="prod">
               <div class="d-flex flex-column py-1" style="line-height: 1.2;">
                 <span class="fw-medium">{{ prod.name }}</span>
                 <span class="text-muted" style="font-size: 11px;">
-                  {{ prod.code ? prod.code + ' - ' : '' }}{{ prod.concentration || '' }} {{ prod.pharmaceuticalForm ? '(' + prod.pharmaceuticalForm + ')' : '' }}
+                  {{ prod.code ? prod.code + ' - ' : '' }}{{ prod.concentration || '' }} {{ prod.pharmaceuticalForm ?
+                  '(' + prod.pharmaceuticalForm + ')' : '' }}
                 </span>
               </div>
             </mat-option>
             } @empty {
             <mat-option disabled>
-              @if (getFilterLength(productCtrl.value) < 3) {
-                Digite al menos 3 caracteres para buscar...
-              } @else {
-                No se encontraron medicamentos
-              }
-            </mat-option>
-            }
+              @if (getFilterLength(productCtrl.value) < 3) { Digite al menos 3 caracteres para buscar... } @else { No se
+                encontraron medicamentos } </mat-option>
+                }
           </mat-autocomplete>
         </mat-form-field>
 

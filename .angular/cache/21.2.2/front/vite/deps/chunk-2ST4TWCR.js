@@ -1,15 +1,9 @@
 import {
-  isFakeMousedownFromScreenReader,
-  isFakeTouchstartFromScreenReader
-} from "./chunk-G3QK3M7F.js";
-import {
   normalizePassiveListenerOptions
 } from "./chunk-3EQIYMO2.js";
 import {
-  _getEventTarget,
-  _getFocusedElementPierceShadowDom,
-  _getShadowRoot
-} from "./chunk-EE4Q3I4S.js";
+  BreakpointObserver
+} from "./chunk-JEJXT6BY.js";
 import {
   _VisuallyHiddenLoader,
   _setInnerHtml
@@ -18,18 +12,24 @@ import {
   DomSanitizer
 } from "./chunk-AYGN46MO.js";
 import {
+  isFakeMousedownFromScreenReader,
+  isFakeTouchstartFromScreenReader
+} from "./chunk-G3QK3M7F.js";
+import {
+  _getEventTarget,
+  _getFocusedElementPierceShadowDom,
+  _getShadowRoot
+} from "./chunk-EE4Q3I4S.js";
+import {
   _CdkPrivateStyleLoader
 } from "./chunk-TH5FZGM6.js";
 import {
-  BreakpointObserver
-} from "./chunk-JEJXT6BY.js";
+  Platform
+} from "./chunk-RODSRFG6.js";
 import {
   coerceElement,
   coerceNumberProperty
 } from "./chunk-NMG3ZRHV.js";
-import {
-  Platform
-} from "./chunk-RODSRFG6.js";
 import {
   APP_ID,
   Directive,
@@ -2470,4 +2470,4 @@ export {
   FOCUS_TRAP_INERT_STRATEGY,
   ConfigurableFocusTrapFactory
 };
-//# sourceMappingURL=chunk-SHVIFRWA.js.map
+//# sourceMappingURL=chunk-2ST4TWCR.js.map

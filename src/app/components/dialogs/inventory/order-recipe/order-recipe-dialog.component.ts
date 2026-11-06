@@ -15,6 +15,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { HttpErrorResponse } from '@angular/common/http';
 import { QuotePrintService } from '../../../../services/quote-print.service';
 import { DocumentTemplateViewerComponent } from '../../../../shared/document-template-viewer/document-template-viewer.component';
+import { NgxMaskPipe } from 'ngx-mask';
+import { config } from '../../../../../environment/aurea';
 
 @Component({
   selector: 'app-order-recipe-dialog',
@@ -31,11 +33,13 @@ import { DocumentTemplateViewerComponent } from '../../../../shared/document-tem
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    DocumentTemplateViewerComponent
+    DocumentTemplateViewerComponent,
+    NgxMaskPipe
   ],
   templateUrl: './order-recipe-dialog.component.html'
 })
 export class OrderRecipeDialogComponent implements OnInit {
+  config = config;
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<OrderRecipeDialogComponent>);
   private restService = inject(RestApiService);
@@ -51,6 +55,7 @@ export class OrderRecipeDialogComponent implements OnInit {
   suppliers: ThirdPartyInterface[] = [];
   suppliersFinded: ThirdPartyInterface[] = [];
   salePrice: number = 2000;
+  availableUnits: number = 0;
   useIva: boolean = false;
   ivaPercent: number = 0;
 
@@ -85,7 +90,7 @@ export class OrderRecipeDialogComponent implements OnInit {
   initForm() {
     this.mainForm = this.fb.group({
       thirdParty: [null, Validators.required],
-      units: [1, [Validators.required, Validators.min(1)]]
+      units: [null, [Validators.required, Validators.min(1)]]
     });
 
     this.sellForm = this.fb.group({
@@ -140,8 +145,18 @@ export class OrderRecipeDialogComponent implements OnInit {
           recipeData = payload;
         }
 
-        if (recipeData && recipeData.salePrice) {
-          this.salePrice = recipeData.salePrice;
+        if (recipeData) {
+          if (recipeData.salePrice || recipeData.priceUnit) {
+            this.salePrice = recipeData.salePrice || recipeData.priceUnit;
+          }
+          this.availableUnits = recipeData.avaliableUnits ?? recipeData.availableUnits ?? recipeData.total ?? 0;
+          const unitsCtrl = this.mainForm.get('units');
+          unitsCtrl?.setValidators([
+            Validators.required,
+            Validators.min(1),
+            Validators.max(this.availableUnits)
+          ]);
+          unitsCtrl?.updateValueAndValidity({ emitEvent: false });
         }
       },
       error: (err) => {
@@ -217,6 +232,14 @@ export class OrderRecipeDialogComponent implements OnInit {
   onSubmit() {
     if (this.mainForm.invalid) {
       this.mainForm.markAllAsTouched();
+      const unitsCtrl = this.mainForm.get('units');
+      if (unitsCtrl?.hasError('max')) {
+        this.alertService.infoMixin.fire({
+          icon: 'warning',
+          title: `La cantidad de unidades no puede superar las disponibles (${this.availableUnits}).`,
+        });
+        return;
+      }
       this.alertService.infoMixin.fire({
         icon: 'warning',
         title: 'Por favor complete todos los campos requeridos correctamente.',
@@ -225,7 +248,7 @@ export class OrderRecipeDialogComponent implements OnInit {
     }
 
     const value = this.mainForm.value;
-    const units = value.units || 1;
+    const units = value.units || 0;
     const subtotal = units * this.salePrice;
     const ivaVal = this.useIva ? this.ivaPercent : 0;
     const priceIvaVal = this.useIva ? (subtotal * (ivaVal / 100)) : 0;

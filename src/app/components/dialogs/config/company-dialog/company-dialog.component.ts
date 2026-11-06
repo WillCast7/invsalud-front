@@ -11,6 +11,8 @@ import { CommonModule } from '@angular/common';
 import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { CompanyInterface, CompanyInitializer } from '../../../../models/company-interface';
+import { NgxMaskDirective } from 'ngx-mask';
+import { config } from '../../../../../environment/aurea';
 
 @Component({
   selector: 'app-company-dialog',
@@ -24,12 +26,14 @@ import { CompanyInterface, CompanyInitializer } from '../../../../models/company
     ReactiveFormsModule,
     MatDividerModule,
     MatCheckboxModule,
-    CommonModule
+    CommonModule,
+    NgxMaskDirective
   ],
   templateUrl: './company-dialog.component.html',
   styleUrl: './company-dialog.component.css'
 })
 export class CompanyDialogComponent implements OnInit {
+  config = config;
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<CompanyDialogComponent>);
   private restService = inject(RestApiService);
@@ -44,7 +48,10 @@ export class CompanyDialogComponent implements OnInit {
   ngOnInit() {
     this.initializeForm();
     if (this.data && this.data.data) {
-      this.companyForm.patchValue(this.data.data);
+      this.companyForm.patchValue({
+        ...this.data.data,
+        price: Math.trunc(Number(this.data.data.price || 0))
+      });
     }
   }
 
@@ -70,6 +77,7 @@ export class CompanyDialogComponent implements OnInit {
       isActive: [true],
       useIva: [false],
       iva: [0],
+      price: [0, [Validators.required, Validators.min(0)]],
       footer: [''],
       daysLimitResolution: [0, [Validators.min(0)]]
     });
@@ -106,6 +114,7 @@ export class CompanyDialogComponent implements OnInit {
 
     const payload = {
       ...this.companyForm.value,
+      price: Number(this.companyForm.value.price) || 0,
       subscriptionPlan: '' // Not used but keeps model complete
     };
 

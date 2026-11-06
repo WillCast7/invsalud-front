@@ -3,4 +3,5 @@ export interface RecipeInterface {
     total: number;
     units: number;
     priceUnit: number;
+    avaliableUnits?: number;
 }

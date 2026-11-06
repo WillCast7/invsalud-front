@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { config } from '../../../../../environment/aurea';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -56,10 +57,10 @@ export class ThirdPartyComponent {
   displayedColumns: ColumnTableInterface[] = [
     { key: 'id', label: 'id', isSortable: true },
     { key: 'documentType', label: 'Tipo doc.', isSortable: true },
-    { key: 'documentNumber', label: 'Número de documento', isSortable: true },
+    { key: 'documentNumber', label: 'Número de documento', isSortable: true, pipe: 'mask', pipeArgs: config.maskDni },
     { key: 'fullName', label: 'Nombres', isSortable: true },
     { key: 'email', label: 'Correo', isSortable: true },
-    { key: 'phoneNumber', label: 'Telefono', isSortable: false },
+    { key: 'phoneNumber', label: 'Telefono', isSortable: false, pipe: 'mask', pipeArgs: config.maskPhone },
     { key: 'address', label: 'Dirección', isSortable: false }
   ];
 
@@ -116,6 +117,13 @@ export class ThirdPartyComponent {
     this.dataValue = PageableInitializer;
     this.restService.getRequest("/thirdparty", { page: page, size: size, searchValue: searchValue }).subscribe({
       next: (objData) => {
+        if (objData?.pageable?.content && Array.isArray(objData.pageable.content)) {
+          objData.pageable.content = objData.pageable.content.map((item: any) => ({
+            ...item,
+            phoneNumber: item.phoneNumber ?? item.phone ?? '',
+            phone: item.phone ?? item.phoneNumber ?? ''
+          }));
+        }
         this.dataValue = objData.pageable;
 
       },

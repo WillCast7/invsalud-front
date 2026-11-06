@@ -56,9 +56,9 @@ export class SalesComponent {
   pageMode = signal<string>('special');
 
   orderColumns: ColumnTableInterface[] = [
-    { key: 'orderCode', label: 'Cod. Venta', isSortable: true },
+    { key: 'soldCode', label: 'Cod. Venta', isSortable: true },
     { key: 'thirdParty', label: 'Tercero', isSortable: true },
-    { key: 'total', label: 'Total', isSortable: true },
+    { key: 'total', label: 'Total', isSortable: true, pipe: 'currency' },
     { key: 'createdAt', label: 'F. Creación', isSortable: true, pipe: 'date' }
   ];
 

@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { ProductInterface } from '../../../../models/inventory/product-interface';
@@ -25,6 +25,7 @@ import { BatchDialogComponent } from '../../management/batch-dialog/batch-dialog
 import { HttpErrorResponse } from '@angular/common/http';
 import { SizemodalInitializer } from '../../../../models/modal/sizemodal-interface';
 import { DocumentTemplateViewerComponent } from '../../../../shared/document-template-viewer/document-template-viewer.component';
+import { config, ngxMaskOptions } from '../../../../../environment/aurea';
 
 export class ParentErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -55,23 +56,27 @@ export class ParentErrorStateMatcher implements ErrorStateMatcher {
     FormsModule,
     ReactiveFormsModule,
     NgxMaskDirective,
+    NgxMaskPipe,
     DocumentTemplateViewerComponent
   ],
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
-    provideNgxMask()
+    provideNgxMask(ngxMaskOptions),
+    NgxMaskPipe
   ],
   templateUrl: './purchasing-dialog.component.html',
   styleUrl: './purchasing-dialog.component.css'
 })
 export class PurchasingDialogComponent implements OnInit {
+  config = config;
   today: Date = new Date(new Date().setHours(0, 0, 0, 0));
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<PurchasingDialogComponent>);
   private dialog = inject(MatDialog);
   private restService = inject(RestApiService);
   private alertService = inject(AlertService);
+  private maskPipe = inject(NgxMaskPipe);
 
   title = signal('Registrar Compra / Ingreso');
   isPublicHealth = false;
@@ -262,6 +267,20 @@ export class PurchasingDialogComponent implements OnInit {
     }
   }
 
+  displayDocumentNumber = (value: string | number | null | undefined): string => {
+    if (!value) return '';
+    const raw = String(value).replace(/\D/g, '');
+    return raw ? this.maskPipe.transform(raw, this.config.maskDni) : '';
+  };
+
+  onDocumentInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const raw = input.value.replace(/\D/g, '').slice(0, 10);
+    const masked = raw ? this.maskPipe.transform(raw, this.config.maskDni) : '';
+    input.value = masked;
+    this.mainForm.get('providerData.documentNumber')?.setValue(raw, { emitEvent: false });
+  }
+
   displayProduct(product: ProductInterface): string {
     return product ? `${product.name} (${product.code})` : '';
   }
@@ -352,7 +371,7 @@ export class PurchasingDialogComponent implements OnInit {
       }
 
       if (!this.isPublicHealth) {
-        if (detailsArray[i].get('priceUnit')?.value < 0 || detailsArray[i].get('sellPrice')?.value < 0) {
+        if (Number(detailsArray[i].get('priceUnit')?.value) < 0 || Number(detailsArray[i].get('sellPrice')?.value) < 0) {
           this.alertService.reCallMixin.fire({
             title: 'Atención',
             text: `El precio de compra o venta en la fila ${i + 1} no puede ser negativo.`,
@@ -361,7 +380,7 @@ export class PurchasingDialogComponent implements OnInit {
           return;
         }
 
-        if (detailsArray[i].get('sellPrice')?.value < detailsArray[i].get('priceUnit')?.value) {
+        if (Number(detailsArray[i].get('sellPrice')?.value) < Number(detailsArray[i].get('priceUnit')?.value)) {
           this.alertService.reCallMixin.fire({
             title: 'Atención',
             text: `El precio de venta debe superar el costo de compra en la fila ${i + 1}.`,
@@ -415,11 +434,11 @@ export class PurchasingDialogComponent implements OnInit {
       items: value.details.map((d: any) => ({
         product: d.product,
         batch: d.batch,
-        priceUnit: d.priceUnit,
-        sellPrice: this.isPublicHealth ? 0 : d.sellPrice,
+        priceUnit: Number(d.priceUnit) || 0,
+        sellPrice: this.isPublicHealth ? 0 : Number(d.sellPrice) || 0,
         units: d.units,
         expirationDate: d.expirationDate,
-        priceTotal: d.priceTotal
+        priceTotal: Number(d.priceTotal) || 0
       }))
     };
 

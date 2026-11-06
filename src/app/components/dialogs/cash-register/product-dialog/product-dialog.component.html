@@ -77,8 +77,8 @@
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>Precio Base</mat-label>
             <input matInput formControlName="basePrice"
-              mask="separator.0"
-              thousandSeparator="."
+              [mask]="config.maskMoney"
+              [thousandSeparator]="config.thousandSeparator" [decimalMarker]="config.decimalMarker"
               prefix="$ "
               inputmode="numeric">
             @if (productForm.get('basePrice')?.hasError('min')) {

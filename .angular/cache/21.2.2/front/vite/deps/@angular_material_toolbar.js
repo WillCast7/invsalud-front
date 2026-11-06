@@ -1,16 +1,16 @@
 import "./chunk-RDSFSWQ7.js";
 import "./chunk-VON75VBJ.js";
+import "./chunk-GUGIMSVJ.js";
 import "./chunk-3EQIYMO2.js";
 import "./chunk-EE4Q3I4S.js";
-import "./chunk-GUGIMSVJ.js";
+import {
+  BidiModule
+} from "./chunk-JLBUACPJ.js";
 import {
   Platform
 } from "./chunk-RODSRFG6.js";
 import "./chunk-XJC6SEPO.js";
 import "./chunk-B66IRT2Z.js";
-import {
-  BidiModule
-} from "./chunk-JLBUACPJ.js";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -37,8 +37,8 @@ import {
   inject,
   ɵɵdefineInjector
 } from "./chunk-2A52RMPU.js";
-import "./chunk-HWYXSU2G.js";
 import "./chunk-JRFR6BLO.js";
+import "./chunk-HWYXSU2G.js";
 import "./chunk-MARUHEWW.js";
 import "./chunk-3OV72XIM.js";
 

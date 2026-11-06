@@ -21,6 +21,7 @@ export interface CompanyInterface {
     isActive: boolean;
     useIva: boolean;
     iva: number;
+    price: number;
     footer: string;
     daysLimitResolution: number;
 }
@@ -48,6 +49,7 @@ export const CompanyInitializer: CompanyInterface = {
     isActive: true,
     useIva: false,
     iva: 0,
+    price: 0,
     footer: '',
     daysLimitResolution: 0
 }

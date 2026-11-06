@@ -5,6 +5,8 @@ import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { SpinnerInterceptor } from './shared/interceptor/spinner.interceptor';
+import { provideNgxMask } from 'ngx-mask';
+import { ngxMaskOptions } from '../environment/aurea';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,6 +15,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    provideNgxMask(ngxMaskOptions)
   ]
 };

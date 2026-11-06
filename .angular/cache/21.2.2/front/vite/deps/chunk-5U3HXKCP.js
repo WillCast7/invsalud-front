@@ -2,7 +2,7 @@ import {
   createFlexibleConnectedPositionStrategy,
   createOverlayRef,
   createRepositionScrollStrategy
-} from "./chunk-WE7A33Q7.js";
+} from "./chunk-NIAYQBB5.js";
 import {
   ComponentPortal
 } from "./chunk-CDWRXH75.js";
@@ -13,26 +13,26 @@ import {
   _animationsDisabled
 } from "./chunk-3LH6JVZA.js";
 import {
+  ScrollDispatcher
+} from "./chunk-6GWM5CFZ.js";
+import {
   AriaDescriber,
   ESCAPE,
   FocusMonitor,
   hasModifierKey
-} from "./chunk-SHVIFRWA.js";
+} from "./chunk-2ST4TWCR.js";
 import {
   MediaMatcher
 } from "./chunk-JEJXT6BY.js";
 import {
-  ScrollDispatcher
-} from "./chunk-ENBIGDWV.js";
-import {
-  coerceNumberProperty
-} from "./chunk-NMG3ZRHV.js";
+  Directionality
+} from "./chunk-JLBUACPJ.js";
 import {
   Platform
 } from "./chunk-RODSRFG6.js";
 import {
-  Directionality
-} from "./chunk-JLBUACPJ.js";
+  coerceNumberProperty
+} from "./chunk-NMG3ZRHV.js";
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -906,4 +906,4 @@ export {
   MatTooltip,
   TooltipComponent
 };
-//# sourceMappingURL=chunk-AEQUR2PE.js.map
+//# sourceMappingURL=chunk-5U3HXKCP.js.map

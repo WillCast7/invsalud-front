@@ -1,1 +1,5 @@
-/* Estilos específicos para PurchasingDialogComponent */ 
+/* Estilos específicos para PurchasingDialogComponent */
+.badge {
+    font-weight: 450;
+    letter-spacing: 0.3px;
+}

@@ -11,6 +11,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ChangePasswordComponent } from '../../../dialogs/config/change-password/change-password.component';
 import { SizemodalInitializer } from '../../../../models/modal/sizemodal-interface';
 import { UserDialogComponent } from '../../../dialogs/user-dialog/user-dialog.component';
+import { NgxMaskPipe } from 'ngx-mask';
+import { config } from '../../../../../environment/aurea';
 
 @Component({
   selector: 'app-account',
@@ -19,12 +21,14 @@ import { UserDialogComponent } from '../../../dialogs/user-dialog/user-dialog.co
     MatIconModule,
     MatTableModule,
     CommonModule,
-    MatCardModule
+    MatCardModule,
+    NgxMaskPipe
   ],
   templateUrl: './account.component.html',
   styleUrl: './account.component.css'
 })
 export class AccountComponent implements OnInit {
+  config = config;
   user = signal<UserInterface>(UserInitializer);
   myUsername: string = "";
   title: string = "Informacion de mi Cuenta";

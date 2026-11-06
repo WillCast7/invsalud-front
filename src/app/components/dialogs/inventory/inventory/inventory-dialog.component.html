@@ -160,7 +160,7 @@
       <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Precio Compra</mat-label>
-          <input matInput type="number" formControlName="purchasePrice">
+          <input matInput [mask]="config.maskMoney" [thousandSeparator]="config.thousandSeparator" [decimalMarker]="config.decimalMarker" inputmode="numeric" formControlName="purchasePrice">
           <mat-icon matSuffix>attach_money</mat-icon>
         </mat-form-field>
       </div>
@@ -168,7 +168,7 @@
       <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Precio Venta</mat-label>
-          <input matInput type="number" formControlName="salePrice">
+          <input matInput [mask]="config.maskMoney" [thousandSeparator]="config.thousandSeparator" [decimalMarker]="config.decimalMarker" inputmode="numeric" formControlName="salePrice">
           <mat-icon matSuffix>attach_money</mat-icon>
         </mat-form-field>
       </div>

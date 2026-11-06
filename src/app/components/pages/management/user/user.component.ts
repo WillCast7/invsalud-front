@@ -22,6 +22,7 @@ import { ColumnTableInterface } from '../../../../models/table/column-table-inte
 import { TableOption } from '../../../../models/table/table-options-interface';
 import { UserTableInterface } from '../../../../models/user-interface';
 import { UserDialogComponent } from '../../../dialogs/user-dialog/user-dialog.component';
+import { config } from '../../../../../environment/aurea';
 
 @Component({
   selector: 'app-user',
@@ -56,11 +57,11 @@ export class UserComponent {
   displayedColumns: ColumnTableInterface[] = [
     { key: 'id', label: 'id.', isSortable: true },
     { key: 'documentType', label: 'Tipo', isSortable: true },
-    { key: 'documentNumber', label: 'Número', isSortable: true },
+    { key: 'documentNumber', label: 'Número', isSortable: true, pipe: 'mask', pipeArgs: config.maskDni },
     { key: 'fullName', label: 'Nombres', isSortable: true },
-    { key: 'phoneNumber', label: 'Teléfono', isSortable: false },
+    { key: 'phoneNumber', label: 'Teléfono', isSortable: false, pipe: 'mask', pipeArgs: config.maskPhone },
     { key: 'address', label: 'Dirección', isSortable: false },
-    { key: 'birthDate', label: 'Fecha de nacimiento', isSortable: false }
+    { key: 'birthDate', label: 'Fecha de nacimiento', isSortable: false, pipe: 'date' }
   ];
 
   tableOptions: TableOption[] = [

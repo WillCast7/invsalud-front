@@ -1,16 +1,16 @@
 import {
   MatTooltip,
   TooltipComponent
-} from "./chunk-AEQUR2PE.js";
+} from "./chunk-5U3HXKCP.js";
 import {
   OverlayModule
-} from "./chunk-WE7A33Q7.js";
-import {
-  A11yModule
-} from "./chunk-SHVIFRWA.js";
+} from "./chunk-NIAYQBB5.js";
 import {
   CdkScrollableModule
-} from "./chunk-ENBIGDWV.js";
+} from "./chunk-6GWM5CFZ.js";
+import {
+  A11yModule
+} from "./chunk-2ST4TWCR.js";
 import {
   BidiModule
 } from "./chunk-JLBUACPJ.js";
@@ -50,4 +50,4 @@ var MatTooltipModule = class _MatTooltipModule {
 export {
   MatTooltipModule
 };
-//# sourceMappingURL=chunk-R7Y4AMUW.js.map
+//# sourceMappingURL=chunk-GFR5HPGT.js.map

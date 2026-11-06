@@ -55,8 +55,8 @@ export class InventoryExpiredComponent {
     { key: 'id', label: 'ID', isSortable: true },
     { key: 'product', label: 'Producto', isSortable: true },
     { key: 'batch', label: 'Lote', isSortable: true },
-    { key: 'purchasePrice', label: 'P. Compra', isSortable: true },
-    { key: 'salePrice', label: 'P. Venta', isSortable: true },
+    { key: 'purchasePrice', label: 'P. Compra', isSortable: true, pipe: 'currency' },
+    { key: 'salePrice', label: 'P. Venta', isSortable: true, pipe: 'currency' },
     { key: 'totalUnits', label: 'Unid. Totales', isSortable: true },
     { key: 'availableUnits', label: 'Unid. Disp.', isSortable: true },
     { key: 'expirationDate', label: 'Fecha Venc.', isSortable: true, pipe: 'date' }

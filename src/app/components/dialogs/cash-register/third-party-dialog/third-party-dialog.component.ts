@@ -15,7 +15,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RestApiService } from '../../../../services/rest-api.service';
 import { AlertService } from '../../../../services/alerts.service';
 import { ConfigparamsInterface } from '../../../../models/configparams-interface';
-import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { config, ngxMaskOptions } from '../../../../../environment/aurea';
 import { ThirdpartyRoleInterface } from '../../../../models/inventory/thirdparty-role-interface';
 import { ThirdPartyExample, ThirdPartyInterface } from '../../../../models/inventory/thirdparty-interface';
 import { MatDividerModule } from '@angular/material/divider';
@@ -44,6 +45,7 @@ interface Food {
     MatSelect,
     MatOption,
     NgxMaskDirective,
+    NgxMaskPipe,
     MatDatepickerModule,
     MatNativeDateModule,
     MatButtonToggleModule,
@@ -55,7 +57,7 @@ interface Food {
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
     { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
-    provideNgxMask()
+    provideNgxMask(ngxMaskOptions)
   ],
 
   templateUrl: './third-party-dialog.component.html',
@@ -63,6 +65,7 @@ interface Food {
 })
 
 export class ThirdPartyDialogComponent {
+  config = config;
   today: Date = new Date(new Date().setHours(0, 0, 0, 0));
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<ThirdPartyDialogComponent>);

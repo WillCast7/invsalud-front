@@ -13,6 +13,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { CommonModule } from '@angular/common';
+import { NgxMaskPipe } from 'ngx-mask';
+import { config } from '../../../../environment/aurea';
 
 import { RestApiService } from '../../../services/rest-api.service';
 import { AlertService } from '../../../services/alerts.service';
@@ -38,7 +40,8 @@ import { ThirdPartyDialogComponent } from '../cash-register/third-party-dialog/t
     MatDividerModule,
     MatChipsModule,
     MatAutocompleteModule,
-    CommonModule
+    CommonModule,
+    NgxMaskPipe
   ],
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
@@ -48,6 +51,7 @@ import { ThirdPartyDialogComponent } from '../cash-register/third-party-dialog/t
   styleUrl: './resolution-dialog.component.css'
 })
 export class ResolutionDialogComponent implements OnInit {
+  config = config;
   today: Date = new Date(new Date().setHours(0, 0, 0, 0));
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<ResolutionDialogComponent>);

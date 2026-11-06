@@ -118,7 +118,7 @@
             @for (supplier of suppliersFinded; track supplier.id) {
             <mat-option [value]="supplier">
               <span class="fw-medium">{{supplier.fullName}}</span> -
-              <small class="text-muted">{{supplier.documentType}} {{supplier.documentNumber}}</small>
+              <small class="text-muted">{{supplier.documentType}} {{supplier.documentNumber | mask: config.maskDni}}</small>
             </mat-option>
             }
           </mat-autocomplete>
@@ -136,7 +136,7 @@
             <strong>Documento:</strong>
             <br>
             {{ mainForm.get('thirdParty')?.value?.documentType }}
-            {{ mainForm.get('thirdParty')?.value?.documentNumber }}
+            {{ mainForm.get('thirdParty')?.value?.documentNumber | mask: config.maskDni }}
           </span>
           <span>
             <strong>Email:</strong>

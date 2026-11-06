@@ -15,6 +15,8 @@ import { AlertService } from '../../../../services/alerts.service';
 import { PrescriptionInventoryInterface, PrescriptionInventoryExample } from '../../../../models/inventory/prescription-inventory';
 import { ProductInterface } from '../../../../models/inventory/product-interface';
 import { BatchInterface } from '../../../../models/inventory/batch-interface';
+import { NgxMaskDirective } from 'ngx-mask';
+import { config } from '../../../../../environment/aurea';
 
 @Component({
   selector: 'app-inventory-dialog',
@@ -30,7 +32,8 @@ import { BatchInterface } from '../../../../models/inventory/batch-interface';
     MatDividerModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    CommonModule
+    CommonModule,
+    NgxMaskDirective
   ],
   providers: [
     { provide: DateAdapter, useClass: NativeDateAdapter },
@@ -40,6 +43,7 @@ import { BatchInterface } from '../../../../models/inventory/batch-interface';
   styleUrl: './inventory-dialog.component.css'
 })
 export class InventoryDialogComponent {
+  config = config;
   today: Date = new Date(new Date().setHours(0, 0, 0, 0));
   private dialogRef = inject(MatDialogRef<InventoryDialogComponent>);
   inventory: PrescriptionInventoryInterface = PrescriptionInventoryExample;
@@ -73,7 +77,11 @@ export class InventoryDialogComponent {
 
   onSubmit() {
     if (this.inventoryForm.valid) {
-      const payload = this.inventoryForm.value;
+      const payload = {
+        ...this.inventoryForm.value,
+        purchasePrice: Number(this.inventoryForm.value.purchasePrice) || 0,
+        salePrice: Number(this.inventoryForm.value.salePrice) || 0
+      };
       const url = "/prescription-inventory";
 
       const request$ = this.data.mode === 'create'

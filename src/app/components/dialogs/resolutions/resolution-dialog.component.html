@@ -30,7 +30,7 @@
           @for (tp of selectedThirdParties; track tp.id) {
           <mat-chip class="small">
             <mat-icon matChipAvatar style="font-size: 18px; width: 18px; height: 18px;">business</mat-icon>
-            {{ tp.fullName }} ({{ tp.documentNumber }})
+            {{ tp.fullName }} ({{ tp.documentNumber | mask: config.maskDni }})
           </mat-chip>
           } @empty {
           <span class="text-muted italic small">Sin terceros asignados.</span>
@@ -122,7 +122,7 @@
           <mat-icon matSuffix class="text-muted">search</mat-icon>
           <mat-autocomplete #autoTp="matAutocomplete" (optionSelected)="onThirdPartySelected($event)">
             @for (tp of thirdPartiesList; track tp.id) {
-            <mat-option [value]="tp">{{ tp.fullName }} - {{ tp.documentNumber }}</mat-option>
+            <mat-option [value]="tp">{{ tp.fullName }} - {{ tp.documentNumber | mask: config.maskDni }}</mat-option>
             }
           </mat-autocomplete>
           <mat-hint>Busque y seleccione uno o varios terceros para vincularlos a esta resolución</mat-hint>
@@ -134,7 +134,7 @@
             @for (tp of selectedThirdParties; track tp.id) {
             <mat-chip (removed)="removeThirdParty(tp)" class="small">
               <mat-icon matChipAvatar style="font-size: 18px; width: 18px; height: 18px;">business</mat-icon>
-              {{ tp.fullName }} ({{ tp.documentNumber }})
+              {{ tp.fullName }} ({{ tp.documentNumber | mask: config.maskDni }})
               <button matChipRemove aria-label="Remover tercero">
                 <mat-icon>cancel</mat-icon>
               </button>

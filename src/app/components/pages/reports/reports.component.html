@@ -66,7 +66,7 @@
                             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSupplierSelected($event)">
                                 @for (option of suppliersFinded; track option.id) {
                                 <mat-option [value]="option.documentNumber">
-                                    <span class="fw-medium">{{option.documentNumber}}</span> -
+                                    <span class="fw-medium">{{option.documentNumber | mask: config.maskDni}}</span> -
                                     <small>{{option.fullName}}</small>
                                 </mat-option>
                                 }
@@ -184,7 +184,7 @@
                             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSupplierSelected($event)">
                                 @for (option of suppliersFinded; track option.id) {
                                 <mat-option [value]="option.documentNumber">
-                                    <span class="fw-medium">{{option.documentNumber}}</span> -
+                                    <span class="fw-medium">{{option.documentNumber | mask: config.maskDni}}</span> -
                                     <small>{{option.fullName}}</small>
                                 </mat-option>
                                 }

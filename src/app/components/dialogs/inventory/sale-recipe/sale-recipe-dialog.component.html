@@ -74,7 +74,7 @@
         <mat-label>Tercero (Cliente/Proveedor)</mat-label>
         <mat-select formControlName="thirdParty" [compareWith]="compareWithId">
           <mat-option *ngFor="let supplier of suppliers" [value]="supplier">
-            {{ supplier.fullName }} - {{ supplier.documentNumber }}
+            {{ supplier.fullName }} - {{ supplier.documentNumber | mask: config.maskDni }}
           </mat-option>
         </mat-select>
       </mat-form-field>

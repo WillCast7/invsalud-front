@@ -13,7 +13,7 @@
 
       <mat-form-field appearance="outline" class="col-12 mt-2">
         <mat-label>Número de Cédula</mat-label>
-        <input matInput formControlName="documentNumber" required placeholder="1234567890">
+        <input matInput formControlName="documentNumber" [mask]="config.maskDni" inputmode="numeric" required placeholder="1.234.567.890">
         @if (recoveryForm.get('documentNumber')?.hasError('required')) {
           <mat-error>La cédula es requerida</mat-error>
         }

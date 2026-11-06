@@ -5,6 +5,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
+import { AlertService } from '../../../../services/alerts.service';
+import { RestApiService } from '../../../../services/rest-api.service';
+import { ThirdpartyRoleInterface } from '../../../../models/inventory/thirdparty-role-interface';
+import { ConfigparamsInterface } from '../../../../models/configparams-interface';
 
 @Component({
   selector: 'app-payment-method',
@@ -28,13 +32,27 @@ export class PaymentMethodComponent {
     paymentMethod: ['', Validators.required]
   });
 
-  methods = [
-    { value: 'PSE', label: 'PSE' },
-    { value: 'Efectivo', label: 'Efectivo' },
-    { value: 'Tarjeta de crédito', label: 'Tarjeta de Crédito' },
-    { value: 'Tarjeta de débito', label: 'Tarjeta de Débito' },
-    { value: 'Otro', label: 'Otro' }
-  ];
+  constructor(
+    private restService: RestApiService,
+    private alertService: AlertService,
+  ) { }
+
+  methods: ConfigparamsInterface[] = []
+
+  searchPaymentMethods() {
+    this.restService.getRequest("/configparams/active/parent/paymentmethods").subscribe({
+      next: (objData) => {
+        this.methods = objData.data.documentTypes;
+      },
+      error: (error) => {
+        this.alertService.infoMixin.fire({
+          icon: 'error',
+          title: error.error.message,
+        });
+      },
+      complete: () => { return }
+    });
+  }
 
   onConfirm(): void {
     if (this.paymentForm.valid) {

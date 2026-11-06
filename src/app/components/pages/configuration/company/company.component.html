@@ -106,6 +106,14 @@
                   <p class="fs-5 fw-bold mb-0 text-dark">{{ company().iva || 0 }}%</p>
                 </div>
                 <div class="col-12 mt-3 pt-3 border-top">
+                  <label class="text-muted small d-block text-uppercase fw-bold">Precio de Venta de Recetarios</label>
+                  <p class="fs-5 fw-bold mb-0 text-success d-flex align-items-center gap-2">
+                    <mat-icon style="color: #3d5a80;">payments</mat-icon>
+                    {{ (company().price || 0) | currency:'$':'symbol':'1.0-0' }}
+                  </p>
+                  <small class="text-muted">Precio unitario configurado para la venta y cotización de recetarios</small>
+                </div>
+                <div class="col-12 mt-3 pt-3 border-top">
                   <label class="text-muted small d-block text-uppercase fw-bold">Días Límite de Resolución</label>
                   <p class="fs-5 fw-bold mb-0 text-dark d-flex align-items-center gap-2">
                     <mat-icon style="color: #3d5a80;">event_available</mat-icon>
@@ -136,7 +144,7 @@
                 </div>
                 <div class="col-sm-6">
                   <label class="text-muted small d-block text-uppercase fw-bold">Teléfono</label>
-                  <p class="fs-6 mb-0 text-dark">{{ company().phone || 'No registrado' }}</p>
+                  <p class="fs-6 mb-0 text-dark">{{ (company().phone | mask: config.maskPhone) || 'No registrado' }}</p>
                 </div>
                 <div class="col-12">
                   <label class="text-muted small d-block text-uppercase fw-bold">Dirección Física</label>

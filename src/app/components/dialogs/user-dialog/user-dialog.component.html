@@ -1,108 +1,96 @@
 <h2 mat-dialog-title>
-  <mat-icon class="vertical-align-middle me-2">person</mat-icon>
-  {{title()}}
+  {{title()}} #{{ user.id }}
 </h2>
 @if(data.mode === "view") {
-<h2 mat-dialog-title class="d-flex align-items-center justify-content-between border-bottom pb-3">
-  <div class="d-flex align-items-center gap-2">
-    <mat-icon color="primary" class="scale-150">account_circle</mat-icon>
-    <span class="fw-light text-secondary">Usuario:</span>
-    <span class="fw-bold">{{ user.userName }}</span>
-  </div>
-  <span
-    class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2"
-    style="font-size: 0.8rem;">
-    {{ user.role.roleName || 'SIN ROL' }}
-  </span>
-</h2>
-
 <mat-dialog-content class="py-4">
   <div class="container-fluid">
 
-    <div class="row mb-4">
-      <div class="col-12 mb-3">
-        <h3 class="mat-title-medium text-primary d-flex align-items-center gap-2">
-          <mat-icon>person</mat-icon> Datos Personales
+    <div class="row g-3 mb-4">
+      <div class="col-12 mb-2">
+        <h3 class="mat-title-medium text-secondary mb-2">
+          Datos Personales
         </h3>
         <mat-divider></mat-divider>
       </div>
 
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 col-sm-6">
         <div class="detail-item">
-          <label>Nombre Completo</label>
-          <p>{{ user.person.names }} {{ user.person.surnames }}</p>
+          <span class="detail-label">Nombre Completo</span>
+          <p class="detail-value">{{ user.person.names }} {{ user.person.surnames }}</p>
         </div>
       </div>
 
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 col-sm-6">
         <div class="detail-item">
-          <label>Identificación</label>
-          <p>{{ user.person.documentType }} - {{ user.person.documentNumber }}</p>
-        </div>
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <div class="detail-item">
-          <label>Teléfono</label>
-          <p class="d-flex align-items-center gap-1">
-            <mat-icon class="text-secondary fs-6">smartphone</mat-icon>
-            {{ user.person.phoneNumber }}
+          <span class="detail-label">Identificación</span>
+          <p class="detail-value">
+            {{ user.person.documentType ? user.person.documentType + ' - ' : '' }}{{ (user.person.documentNumber | mask: config.maskDni) || 'No registrada' }}
           </p>
         </div>
       </div>
 
-      <div class="col-md-8 mb-3">
+      <div class="col-md-4 col-sm-6">
         <div class="detail-item">
-          <label>Fecha de Nacimiento</label>
-          <p class="d-flex align-items-center gap-1">
-            <mat-icon class="text-secondary fs-6">event</mat-icon>
-            {{ user.person.birthDate | date:'fullDate' }}
+          <span class="detail-label">Teléfono</span>
+          <p class="detail-value">
+            {{ (user.person.phoneNumber | mask: config.maskPhone) || 'No registrado' }}
           </p>
         </div>
       </div>
 
-      <div class="col-12">
+      <div class="col-md-4 col-sm-6">
         <div class="detail-item">
-          <label>Dirección de Residencia</label>
-          <p class="d-flex align-items-center gap-1">
-            <mat-icon class="text-secondary fs-6">push_pin</mat-icon>
-            {{ user.person.address }}
-          </p>
+          <span class="detail-label">Fecha de Nacimiento</span>
+          <p class="detail-value">{{ (user.person.birthDate | date:'dd/MM/yyyy') || 'No registrada' }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-8 col-12">
+        <div class="detail-item">
+          <span class="detail-label">Dirección</span>
+          <p class="detail-value">{{ user.person.address || 'No registrada' }}</p>
         </div>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-12 mb-3">
-        <h3 class="mat-title-medium text-primary d-flex align-items-center gap-2">
-          <mat-icon>admin_panel_settings</mat-icon> Detalles de Cuenta
+    <div class="row g-3">
+      <div class="col-12 mb-2">
+        <h3 class="mat-title-medium text-secondary mb-2">
+          Detalles de Cuenta
         </h3>
         <mat-divider></mat-divider>
       </div>
 
-      <div class="col-md-6">
+      <div class="col-md-3 col-sm-6">
         <div class="detail-item">
-          <label>Correo Electrónico</label>
-          <p class="text-lowercase">{{ user.email }}</p>
+          <span class="detail-label">Usuario</span>
+          <p class="detail-value font-monospace">{{ user.userName }}</p>
         </div>
       </div>
 
-      <div class="col-md-3">
+      <div class="col-md-4 col-sm-6">
         <div class="detail-item">
-          <label>Estado de Acceso</label>
+          <span class="detail-label">Correo Electrónico</span>
+          <p class="detail-value text-lowercase">{{ user.email }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6">
+        <div class="detail-item">
+          <span class="detail-label">Rol</span>
+          <p class="detail-value font-monospace">{{ user.role.roleName || 'SIN ROL' }}</p>
+        </div>
+      </div>
+
+      <div class="col-md-2 col-sm-6">
+        <div class="detail-item">
+          <span class="detail-label">Estado</span>
           <div class="d-flex align-items-center gap-2 mt-1">
-            <div class="status-indicator" [ngClass]="user.enable ? 'bg-success' : 'bg-danger'"></div>
-            <span [class]="user.enable ? 'text-success' : 'text-danger'">
+            <span class="status-indicator" [ngClass]="user.enable ? 'bg-success' : 'bg-danger'"></span>
+            <span class="fw-semibold small" [ngClass]="user.enable ? 'text-success' : 'text-danger'">
               {{ user.enable ? 'Habilitado' : 'Bloqueado' }}
             </span>
           </div>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="detail-item text-md-end">
-          <label>ID Interno</label>
-          <p class="text-muted font-monospace">#{{ user.id }}</p>
         </div>
       </div>
     </div>
@@ -110,7 +98,7 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end" class="p-3">
-  <button mat-button mat-dialog-close class="cancel-button">Cancelar</button>
+  <button mat-button mat-dialog-close class="cancel-button">Cerrar</button>
 </mat-dialog-actions>
 } @else {
 <mat-dialog-content class="pt-3">
@@ -169,7 +157,7 @@
       <div class="col-md-8">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Número de Documento</mat-label>
-          <input matInput formControlName="documentNumber">
+          <input matInput formControlName="documentNumber" [mask]="config.maskDni">
         </mat-form-field>
       </div>
       <div class="col-md-6">
@@ -187,7 +175,7 @@
       <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Teléfono</mat-label>
-          <input matInput formControlName="phoneNumber">
+          <input matInput formControlName="phoneNumber" [mask]="config.maskPhone">
           <mat-icon matSuffix>phone</mat-icon>
         </mat-form-field>
       </div>

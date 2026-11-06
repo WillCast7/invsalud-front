@@ -19,7 +19,7 @@
         <label class="text-muted small d-block">Identificación</label>
         <span class="fs-6 fw-bold">
           <mat-icon class="vertical-align-middle fs-6" style="width:18px; height:18px">badge</mat-icon>
-          {{ thirdPartySearched.documentType }} {{ thirdPartySearched.documentNumber }}
+          {{ thirdPartySearched.documentType }} {{ thirdPartySearched.documentNumber | mask: config.maskDni }}
         </span>
       </div>
     </div>
@@ -36,7 +36,7 @@
         <label class="text-muted small d-block">Teléfono / Celular</label>
         <div class="d-flex align-items-center gap-2">
           <mat-icon class="text-secondary fs-5">phone</mat-icon>
-          <span>{{ thirdPartySearched.phoneNumber || 'No registrado' }}</span>
+          <span>{{ (thirdPartySearched.phoneNumber | mask: config.maskPhone) || 'No registrado' }}</span>
         </div>
       </div>
     </div>
@@ -136,7 +136,7 @@
       <div class="col-md-5">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Número de Documento</mat-label>
-          <input matInput formControlName="documentNumber" placeholder="Ej: 12345678">
+          <input matInput formControlName="documentNumber" [mask]="config.maskDni" inputmode="numeric" placeholder="Ej: 1.234.567.890">
         </mat-form-field>
       </div>
 
@@ -161,7 +161,7 @@
       <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Teléfono</mat-label>
-          <input matInput mask="000 000 0000" formControlName="phoneNumber">
+          <input matInput [mask]="config.maskPhone" inputmode="numeric" formControlName="phoneNumber">
         </mat-form-field>
       </div>
       <div class="col-md-6">
